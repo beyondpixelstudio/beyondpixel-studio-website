@@ -1,0 +1,61 @@
+---
+import { business } from '../data/business.ts';
+---
+
+<header class="hdr glass">
+  <div class="wrap hdr__in">
+    <a class="hdr__brand" href="/">
+      <span class="hdr__name">Beyond Pixel</span>
+      <span class="hdr__tag mono">{business.tagline}</span>
+    </a>
+
+    <nav class="hdr__nav" aria-label="Primary">
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+      <a href="#why">Why us</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="hdr__act">
+      <a class="hdr__tel mono" href={business.phone.href}>{business.phone.display}</a>
+      <a class="btn hdr__cta" href="#contact">Request a Quote</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Glass earns its place here: the page genuinely scrolls underneath. */
+  .hdr {
+    position: sticky; top: 0; z-index: 900;
+    border-inline: 0; border-top: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--text) 9%, transparent);
+  }
+  .hdr__in {
+    display: flex; align-items: center; gap: var(--s-3);
+    min-height: 68px;
+  }
+  .hdr__brand {
+    display: flex; flex-direction: column; text-decoration: none; color: var(--text);
+    margin-inline-end: auto; line-height: 1.1;
+  }
+  .hdr__name {
+    font-family: var(--font-display); font-stretch: var(--display-width);
+    font-weight: 700; font-size: 19px; letter-spacing: .01em;
+  }
+  .hdr__tag { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); }
+
+  .hdr__nav { display: none; gap: var(--s-3); }
+  .hdr__nav a {
+    color: var(--text-muted); text-decoration: none; font-size: var(--fs-sm);
+    padding: 8px 2px; transition: color .18s var(--ease);
+  }
+  .hdr__nav a:hover { color: var(--text); }
+
+  .hdr__act { display: flex; align-items: center; gap: var(--s-2); }
+  .hdr__tel { display: none; color: var(--text); text-decoration: none; font-size: var(--fs-sm); }
+  .hdr__tel:hover { color: var(--ember-text); }
+  .hdr__cta { min-height: 42px; padding: 9px 16px; font-size: var(--fs-sm); }
+
+  @media (min-width: 700px) { .hdr__tel { display: inline; } }
+  @media (min-width: 900px) { .hdr__nav { display: flex; } }
+</style>

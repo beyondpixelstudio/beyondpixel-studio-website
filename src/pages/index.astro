@@ -1,20 +1,315 @@
 ---
-// PLACEHOLDER — replaced in Phase 2c by the real homepage.
-// Exists only so `npm run build` can verify the toolchain end to end.
-import '../styles/tokens.css';
+import Base from '../layouts/Base.astro';
+import IrisReveal from '../components/IrisReveal.astro';
 import { business } from '../data/business.ts';
+import { services } from '../data/services.ts';
+
+/**
+ * Homepage: highlights only. Its job is to ROUTE, not to sell everything —
+ * persuasion happens on the six service pages.
+ *
+ * The H1 takes the broad category head term. A narrower H1 would compete with
+ * /corporate-video-production-bhubaneswar for that page's own keyword.
+ */
+const title = 'Video Production Company in Bhubaneswar | Beyond Pixel Studio';
+const description =
+  'Corporate video production, live event streaming, drone and commercial photography in Bhubaneswar. Own crew, own equipment. Request a custom quote.';
+
+const why = [
+  {
+    h: 'Our own crew, our own kit',
+    p: 'Nothing subcontracted out. The people who quote your job are the people who turn up and shoot it.',
+  },
+  {
+    h: 'Multi-camera live streaming',
+    p: 'Conferences, convocations and official functions streamed live, with a crew who have done it before.',
+  },
+  {
+    h: 'Government and institutional work',
+    p: 'Ministerial coverage, PSU and university events — protocol, access and clearances handled without drama.',
+  },
+  {
+    h: `${business.rating.value.toFixed(1)} across ${business.rating.count} reviews`,
+    p: `Rated ${business.rating.value.toFixed(1)} on ${business.rating.source}. Real clients, real projects, publicly verifiable.`,
+  },
+];
+
+const process = [
+  { n: '01', h: 'Brief', p: 'What it is for, who it is for, and when you need it.' },
+  { n: '02', h: 'Plan & quote', p: 'Crew, kit, days and deliverables — itemised, so nothing appears later.' },
+  { n: '03', h: 'Production', p: 'We shoot. You get a call sheet, not a surprise.' },
+  { n: '04', h: 'Delivery', p: 'Edited, graded, and cut for every platform you actually publish to.' },
+];
+
+/** Labelled empty states — honest, and never mistakable for real work. */
+const slates = [
+  { id: '01', cat: 'Corporate' },
+  { id: '02', cat: 'Institutional' },
+  { id: '03', cat: 'Government' },
+  { id: '04', cat: 'Corporate' },
+  { id: '05', cat: 'Institutional' },
+  { id: '06', cat: 'Government' },
+];
 ---
 
-<html lang="en-IN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{business.name} — scaffold</title>
-  </head>
-  <body>
-    <h1>{business.name}</h1>
-    <p>{business.tagline}</p>
-    <p>{business.address.display}</p>
-    <p><a href={business.phone.href}>{business.phone.display}</a></p>
-  </body>
-</html>
+<Base title={title} description={description} reveal>
+  <IrisReveal slot="reveal" />
+
+  {/* ---------------------------------------------------------------- HERO */}
+  <section class="hero">
+    <span class="flare" aria-hidden="true"></span>
+    <div class="wrap hero__in">
+      <p class="eyebrow">{business.tagline}</p>
+      <h1>Video Production Company in <em>Bhubaneswar</em></h1>
+      <p class="lead hero__lead">
+        Corporate films, live event streaming and aerial cinematography for companies,
+        institutions and government departments across Odisha — shot by our own crew,
+        on our own equipment.
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn" href="#contact">Request a Custom Quote</a>
+        <a class="btn btn--ghost" href="#work">See our work</a>
+      </div>
+
+      <p class="rating">
+        <span class="rating__stars" aria-hidden="true">★★★★★</span>
+        <span class="mono">
+          {business.rating.value.toFixed(1)} · {business.rating.count} reviews on {business.rating.source}
+        </span>
+      </p>
+    </div>
+  </section>
+
+  {/* --------------------------------------------------------- TRUST BAR */}
+  <section class="section section--band trust" aria-label="Clients">
+    <div class="wrap">
+      <p class="trust__lead mono">Trusted by</p>
+      <ul class="trust__list" data-reveal>
+        {business.clients.map((c) => <li>{c}</li>)}
+      </ul>
+      <p class="trust__note">Plus government and ministerial event coverage across Odisha.</p>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  {/* ----------------------------------------------------------- SERVICES */}
+  <section class="section" id="services">
+    <div class="wrap">
+      <p class="eyebrow">What we do</p>
+      <h2 data-reveal>Six things, done properly.</h2>
+
+      <ul class="svc">
+        {services.map((s, i) => (
+          <li class="svc__card" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+            <div class="svc__top">
+              <h3><a href={`/${s.slug}/`}>{s.name}</a></h3>
+              {s.national && <span class="svc__flag mono">Nationwide</span>}
+            </div>
+            <p class="svc__sum">{s.summary}</p>
+            <p class="svc__aud">{s.audience}</p>
+            <span class="svc__go mono" aria-hidden="true">→</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* --------------------------------------------------------------- WORK */}
+  <section class="section section--band" id="work">
+    <div class="wrap">
+      <p class="eyebrow">Selected work</p>
+      <h2 data-reveal>The reel goes here.</h2>
+      <p class="lead work__lead">
+        Slots are labelled and empty on purpose. Real project footage drops into these
+        frames — we would rather show you nothing than show you stock.
+      </p>
+
+      <ul class="work">
+        {slates.map((s, i) => (
+          <li class="slate ar-wide" data-reveal style={`--reveal-delay:${i * 50}ms`}>
+            <div class="slate__head">
+              <span class="mono">SLATE {s.id}</span>
+              <span class="mono slate__cat">{s.cat}</span>
+            </div>
+            <dl class="slate__meta mono">
+              <div><dt>CLIENT</dt><dd>—</dd></div>
+              <div><dt>FORMAT</dt><dd>—</dd></div>
+              <div><dt>RUNTIME</dt><dd>—:—:—:—</dd></div>
+              <div><dt>YEAR</dt><dd>—</dd></div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  {/* ---------------------------------------------------------------- WHY */}
+  <section class="section" id="why">
+    <div class="wrap">
+      <p class="eyebrow">Why Beyond Pixel</p>
+      <h2 data-reveal>Reasons that survive a reference check.</h2>
+      <ul class="why">
+        {why.map((w, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 60}ms`}>
+            <h3>{w.h}</h3>
+            <p>{w.p}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------ PROCESS */}
+  <section class="section section--band">
+    <div class="wrap">
+      <p class="eyebrow">How we work</p>
+      <h2 data-reveal>Four steps, no mystery.</h2>
+      <ol class="proc">
+        {process.map((p, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 60}ms`}>
+            <span class="proc__n mono">{p.n}</span>
+            <h3>{p.h}</h3>
+            <p>{p.p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {/* -------------------------------------------------------------- WHERE */}
+  <section class="section">
+    <div class="wrap where">
+      <div>
+        <p class="eyebrow">Where we work</p>
+        <h2 data-reveal>Based in Patia. Working across Odisha.</h2>
+      </div>
+      <p class="lead" data-reveal>
+        {business.areaServed.join(', ')} and across {business.areaServedBroad} — one crew,
+        one call, no local fixer to coordinate. AI video production is delivered nationwide.
+      </p>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------------- FINAL CTA */}
+  <section class="section cta">
+    <div class="wrap cta__in" data-reveal>
+      <h2>Tell us what you are planning.</h2>
+      <p class="lead cta__lead">
+        Send the date, the venue and roughly what you need. You get an itemised quote,
+        not a brochure.
+      </p>
+      <div class="hero__cta">
+        <a class="btn" href={`mailto:${business.email}`}>Request a Custom Quote</a>
+        <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* --- Hero --------------------------------------------------------------
+     Nothing here is opacity:0 at first paint. The iris covers it; it does not
+     gate it. That is what keeps LCP measured at the real paint time. */
+  .hero { position: relative; z-index: 2; padding-block: clamp(72px, 13vw, 150px) clamp(56px, 9vw, 104px); }
+  .hero__in { position: relative; }
+  h1 :global(em) { font-style: normal; color: var(--ember-text); }
+  .hero__lead { margin-top: var(--s-3); }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+
+  .rating { display: flex; align-items: center; gap: 10px; margin-top: var(--s-3); flex-wrap: wrap; }
+  .rating__stars { color: var(--tungsten); letter-spacing: .12em; font-size: 15px; }
+  .rating .mono { font-size: 13px; color: var(--text-muted); }
+
+  /* --- Trust bar ---------------------------------------------------------
+     Client names as TEXT: indexable (logos are not) and needing no trademark
+     permission. Logo slots go in here if sign-off is ever obtained. */
+  .trust { padding-block: var(--s-5); }
+  .trust__lead { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--s-3); }
+  .trust__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); }
+  .trust__list li {
+    font-family: var(--font-display); font-stretch: var(--display-width);
+    font-weight: 700; font-size: clamp(15px, 1.7vw, 19px);
+    letter-spacing: .01em; color: var(--text);
+  }
+  .trust__note { margin-top: var(--s-3); font-size: var(--fs-sm); color: var(--text-muted); }
+
+  /* --- Services ----------------------------------------------------------- */
+  .svc { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+  .svc__card {
+    position: relative; background: var(--raised);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    border-radius: var(--radius); padding: var(--s-3) var(--s-3) var(--s-4);
+    transition: background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+  }
+  .svc__card:hover { background: var(--overlay); border-color: color-mix(in srgb, var(--ember-text) 40%, transparent); transform: translateY(-2px); }
+  .svc__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-2); }
+  .svc__card h3 a { color: var(--text); text-decoration: none; }
+  /* The whole card is the target; the link keeps the accessible name. */
+  .svc__card h3 a::after { content: ''; position: absolute; inset: 0; }
+  .svc__card:hover h3 a { color: var(--ember-text); }
+  .svc__flag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--daylight); border: 1px solid currentColor; border-radius: 99px; padding: 3px 9px; white-space: nowrap; }
+  .svc__sum { margin-top: 10px; color: var(--text); font-size: var(--fs-sm); }
+  .svc__aud { margin-top: 6px; color: var(--text-muted); font-size: var(--fs-sm); }
+  .svc__go { position: absolute; right: var(--s-3); bottom: var(--s-2); color: var(--ember-text); opacity: 0; transition: opacity .2s var(--ease), translate .2s var(--ease); }
+  .svc__card:hover .svc__go { opacity: 1; translate: 4px 0; }
+
+  /* --- Work: labelled empty states ---------------------------------------- */
+  .work__lead { margin-top: var(--s-3); }
+  .work { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+  .slate {
+    position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: var(--s-3);
+    border: 1px dashed color-mix(in srgb, var(--text) 20%, transparent);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--void) 55%, transparent);
+  }
+  /* Framing marks. The 16:9 box is mostly empty by design, so it needs to read
+     as a camera frame waiting for a shot — not as a card someone forgot. */
+  .slate::before, .slate::after {
+    content: ''; position: absolute; width: 15px; height: 15px;
+    border-color: color-mix(in srgb, var(--text) 26%, transparent);
+    border-style: solid;
+  }
+  .slate::before { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+  .slate::after { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+  .slate__head { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .18em; color: var(--text-muted); }
+  .slate__cat { color: var(--daylight); }
+  .slate__meta { margin: 0; display: grid; gap: 4px; font-size: 11px; color: var(--text-dim); }
+  .slate__meta > div { display: flex; gap: 10px; }
+  .slate__meta dt { letter-spacing: .16em; min-width: 68px; }
+  .slate__meta dd { margin: 0; }
+
+  /* --- Why / process ------------------------------------------------------ */
+  .why, .proc { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-4); }
+  .why p, .proc p { margin-top: 8px; color: var(--text-muted); font-size: var(--fs-sm); }
+  .proc__n { display: block; color: var(--ember-text); font-size: 13px; letter-spacing: .12em; margin-bottom: 8px; }
+
+  /* --- Where / CTA -------------------------------------------------------- */
+  .where { display: grid; gap: var(--s-3); }
+  .cta__in { text-align: center; display: grid; justify-items: center; }
+  .cta__lead { margin-top: var(--s-3); }
+  .cta .hero__cta { justify-content: center; }
+
+  /* --- Breakpoints -------------------------------------------------------- */
+  /* Below 480 the two hero buttons sat at different widths, which reads as
+     accidental. Full-width stacked is also the better thumb target. */
+  @media (max-width: 479px) {
+    .hero__cta { flex-direction: column; align-items: stretch; }
+    .hero__cta .btn { width: 100%; }
+  }
+  @media (min-width: 620px) {
+    .svc, .work { grid-template-columns: repeat(2, 1fr); }
+    .why, .proc { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 980px) {
+    .svc, .work { grid-template-columns: repeat(3, 1fr); }
+    .why, .proc { grid-template-columns: repeat(4, 1fr); gap: var(--s-3); }
+    .where { grid-template-columns: 1fr 1fr; align-items: end; gap: var(--s-5); }
+  }
+</style>
