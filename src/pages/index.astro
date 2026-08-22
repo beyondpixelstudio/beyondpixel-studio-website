@@ -1,0 +1,20 @@
+---
+// PLACEHOLDER — replaced in Phase 2c by the real homepage.
+// Exists only so `npm run build` can verify the toolchain end to end.
+import '../styles/tokens.css';
+import { business } from '../data/business.ts';
+---
+
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{business.name} — scaffold</title>
+  </head>
+  <body>
+    <h1>{business.name}</h1>
+    <p>{business.tagline}</p>
+    <p>{business.address.display}</p>
+    <p><a href={business.phone.href}>{business.phone.display}</a></p>
+  </body>
+</html>

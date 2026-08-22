@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Beyond Pixel Studio — design tokens
+   --------------------------------------------------------------------------
+   SINGLE SOURCE OF TRUTH for colour. scripts/check-contrast.mjs parses this
+   file directly and verifies every pair; `npm run contrast` must pass before
+   any component ships. Ratios quoted below are produced by that script, not
+   computed by hand.
+
+   Governing rule: ONE COLOUR PERSUADES (Ember). Everything else informs.
+   ========================================================================== */
+
+:root {
+  /* --- Elevation ----------------------------------------------------------
+     Four steps. Purple-biased black rather than neutral or blue-black —
+     unusual in this category and tied to the mark. Glass needs these layers
+     to have anything to read against. */
+  --void:          #14102A; /* page ground */
+  --surface:       #1A1536; /* alternating bands */
+  --raised:        #221B44; /* cards, form fields */
+  --overlay:       #2B2255; /* hover / active surface */
+
+  /* --- Text ---------------------------------------------------------------
+     Ink #2B1B4E from the original brief was "primary text / dark base" — that
+     assumed a light background. On dark it becomes an elevation colour, not
+     text, so a light primary is introduced here. */
+  --text:          #FAFAF8; /* primary          17.67:1 on --void  AAA */
+  --text-muted:    #ADA6C8; /* secondary         7.97:1 on --void  AAA */
+  --text-dim:      #6E6796; /* RULES AND TICKS ONLY — never body text */
+
+  /* --- Ember: the only persuasive colour ----------------------------------
+     Three roles, three tokens. White on the brief's #E8532A measures 3.68:1
+     and fails AA, so the FILL is darkened until the label passes, the HOVER
+     lightens only as far as the white label still clears AA, and Ember as
+     TEXT is lifted until it clears AA on all four elevation surfaces — not
+     just the page ground, because cards carry Ember links too.
+
+     This is the same fill/text split the RP Films system uses for crimson
+     (#C8102E fill, #FF4D62 text). It is not a compromise; it is how a single
+     brand colour survives contact with WCAG. */
+  --ember:         #C7431E; /* BUTTON FILLS — white label 4.94:1  AA */
+  --ember-hover:   #CC4620; /* button hover — lightened as far as the white label allows */
+  --ember-text:    #F2704A; /* Ember AS TEXT — clears AA on void/surface/raised/overlay */
+
+  /* --- Signature and trust ------------------------------------------------ */
+  --magenta:       #9B2FC0; /* signature FILLS only — never body text */
+  --magenta-text:  #C98CE4; /* magenta as text   7.35:1 on --void  AAA */
+  --ocean:         #1B6CA8; /* trust fills */
+  --ocean-text:    #7FB4E2; /* links, badges     8.38:1 on --void  AAA */
+
+  /* --- Data colours -------------------------------------------------------
+     Colour temperature vocabulary from the client's own world. These encode
+     information (format, kit, temperature) and MAY NEVER be used to persuade. */
+  --tungsten:      #F2A65A; /* 3200K             9.12:1 on --void  AAA */
+  --daylight:      #6E9BD1; /* 5600K             6.39:1 on --void  AA  */
+
+  /* --- Button label -------------------------------------------------------
+     Declared as a token so the checker verifies it against the Ember fills
+     rather than assuming white is safe. */
+  --on-ember:      #FFFFFF;
+}

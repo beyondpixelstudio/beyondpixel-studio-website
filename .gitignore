@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+
+# Secrets — SMTP and WhatsApp credentials never enter the repo
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.log
