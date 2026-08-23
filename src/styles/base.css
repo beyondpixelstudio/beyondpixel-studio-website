@@ -224,8 +224,13 @@ a { color: var(--ocean-text); }
 /* --- Glass ---------------------------------------------------------------- */
 .glass {
   background: color-mix(in srgb, var(--raised) 76%, transparent);
+  /* Standard property ONLY — do not hand-write the -webkit- prefix here.
+     lightningcss deduplicates the pair and keeps the prefixed one, and modern
+     Chrome does not support -webkit-backdrop-filter (CSS.supports returns
+     false for it), so the declaration vanished entirely and this pill has not
+     actually been frosted. The minifier adds whatever prefixes its targets
+     need; writing them by hand is what broke it. */
   backdrop-filter: blur(16px) saturate(130%);
-  -webkit-backdrop-filter: blur(16px) saturate(130%);
   box-shadow: var(--edge);
 }
 
