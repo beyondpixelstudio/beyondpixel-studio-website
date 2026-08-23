@@ -58,7 +58,21 @@ const WA_DIGITS = [...truth.matchAll(/wa:\s*'(\d+)'/g)].map((m) => m[1]);
 
 /* -- Per-page checks ----------------------------------------------------- */
 
-const strip = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+/* Entities are decoded BEFORE anything is measured. Google counts the rendered
+   characters, not the source bytes — a title containing "&" ships as "&amp;"
+   and measures five characters too long, which is a fault in the ruler rather
+   than in the title. */
+const decode = (s) =>
+  s
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d));
+
+const strip = (s) => decode(s.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
 
 for (const page of pages) {
   const html = readFileSync(page, 'utf8');
@@ -72,7 +86,7 @@ for (const page of pages) {
   if (!title) note(page, 'no <title>');
   else if (title.length > 60) note(page, `title is ${title.length} chars (max 60): "${title}"`);
 
-  const desc = html.match(/<meta name="description" content="([^"]*)"/i)?.[1] ?? '';
+  const desc = decode(html.match(/<meta name="description" content="([^"]*)"/i)?.[1] ?? '');
   if (!desc) note(page, 'no meta description');
   else if (desc.length > 160) note(page, `description is ${desc.length} chars (max 160)`);
 

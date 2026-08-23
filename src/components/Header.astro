@@ -14,11 +14,11 @@ import { business } from '../data/business.ts';
         src="/logo-mark-128.png"
         alt=""
         width="128"
-        height="128"
+        height="72"
         decoding="async"
       />
       <span class="hdr__words">
-        <span class="hdr__name">Beyond Pixel</span>
+        <span class="hdr__name">Beyond Pixel Studio</span>
         <span class="hdr__tag mono">{business.tagline}</span>
       </span>
     </a>
@@ -54,13 +54,22 @@ import { business } from '../data/business.ts';
     margin-inline-end: auto; line-height: 1.1;
   }
   .hdr__words { display: flex; flex-direction: column; }
-  /* The mark is dense colour on a dark ground, so it carries its own soft key
-     rather than sitting flat against the glass. */
+  /* The mark is 128x72 — a WIDE lotus, not a square icon. It was being given a
+     34x34 box, which squashed it to 56% of its width and left the petals
+     looking like thin spikes. `height: auto` lets it keep its own ratio, and it
+     is sized off WIDTH alone so the ratio can never be overridden by accident.
+
+     Enlarged too: at 34px wide the mark was smaller than the wordmark beside it
+     and read as a bullet point rather than a logo.
+
+     Dense colour on a dark ground, so it carries its own soft key rather than
+     sitting flat against the glass. */
   .hdr__mark {
-    width: 34px; height: 34px; flex: none;
-    filter: drop-shadow(0 2px 8px rgb(0 0 0 / .45));
+    width: 60px; height: auto; flex: none;
+    filter: drop-shadow(0 2px 10px rgb(0 0 0 / .5));
     transition: transform .4s var(--ease);
   }
+  @media (max-width: 419px) { .hdr__mark { width: 46px; } }
   .hdr__brand:hover .hdr__mark { transform: rotate(-6deg) scale(1.06); }
   @media (prefers-reduced-motion: reduce) {
     .hdr__brand:hover .hdr__mark { transform: none; }

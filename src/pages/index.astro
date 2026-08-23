@@ -12,10 +12,12 @@ import { services } from '../data/services.ts';
  * The H1 takes the broad category head term. A narrower H1 would compete with
  * /corporate-video-production-bhubaneswar for that page's own keyword.
  */
-/* 54 chars. The full "| Beyond Pixel Studio" suffix took it to 61 and Google
-   would have truncated the brand mid-word — the six service pages already use
-   the short "| Beyond Pixel" form, so this is consistent as well as shorter. */
-const title = 'Video Production Company in Bhubaneswar | Beyond Pixel';
+/* 58 chars. The brand is always written in full — "Beyond Pixel Studio", never
+   "Beyond Pixel". The preposition is what got dropped to make room, not the
+   name: "Video Production Company Bhubaneswar" still carries the keyword and
+   the location adjacently, which is all the title needs to do. Every service
+   title is built the same way, and all seven stay inside Google's 60. */
+const title = 'Video Production Company Bhubaneswar | Beyond Pixel Studio';
 const description =
   'Corporate video production, live event streaming, drone and commercial photography in Bhubaneswar. Own crew, own equipment. Request a custom quote.';
 
@@ -163,7 +165,7 @@ const slates = [
   {/* ---------------------------------------------------------------- WHY */}
   <section class="section" id="why">
     <div class="wrap">
-      <p class="eyebrow">Why Beyond Pixel</p>
+      <p class="eyebrow">Why Beyond Pixel Studio</p>
       <h2 data-reveal>Reasons that survive a reference check.</h2>
       <ul class="why">
         {why.map((w, i) => (

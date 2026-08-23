@@ -58,7 +58,7 @@ export const services: Service[] = [
     slug: 'corporate-video-production-bhubaneswar',
     name: 'Corporate Video Production',
     h1: 'Corporate Video Production in Bhubaneswar',
-    title: 'Corporate Video Production in Bhubaneswar | Beyond Pixel',
+    title: 'Corporate Video Production Bhubaneswar | Beyond Pixel Studio',
     description:
       'Corporate films, brand videos and CSR documentation for companies and institutions across Odisha. Own crew, own equipment. Request a custom quote.',
     summary: 'Brand films, CSR documentation, training and internal communication.',
@@ -86,7 +86,7 @@ export const services: Service[] = [
     slug: 'live-event-streaming-bhubaneswar',
     name: 'Event Coverage & Live Streaming',
     h1: 'Live Event Streaming in Bhubaneswar',
-    title: 'Live Event Streaming in Bhubaneswar | Beyond Pixel',
+    title: 'Live Event Streaming Bhubaneswar | Beyond Pixel Studio',
     description:
       'Multi-camera live streaming and event coverage for conferences, convocations and official functions across Odisha. Request a custom quote.',
     summary: 'Multi-camera coverage streamed where your audience already is.',
@@ -114,7 +114,7 @@ export const services: Service[] = [
     slug: 'commercial-photography-videography-bhubaneswar',
     name: 'Commercial Photography & Videography',
     h1: 'Commercial Photography & Videography in Bhubaneswar',
-    title: 'Commercial Photography in Bhubaneswar | Beyond Pixel',
+    title: 'Commercial Photography Bhubaneswar | Beyond Pixel Studio',
     description:
       'Product, architectural, campus and campaign photography and video for brands and institutions in Bhubaneswar. Request a custom quote.',
     summary: 'Product, architectural, campus and campaign work.',
@@ -142,7 +142,7 @@ export const services: Service[] = [
     slug: 'drone-aerial-videography-bhubaneswar',
     name: 'Drone & Aerial Videography',
     h1: 'Drone & Aerial Videography in Bhubaneswar',
-    title: 'Drone & Aerial Videography in Bhubaneswar | Beyond Pixel',
+    title: 'Drone & Aerial Videography Bhubaneswar | Beyond Pixel Studio',
     description:
       'Aerial cinematography for campuses, industrial sites, construction progress and events across Odisha. Request a custom quote.',
     summary: 'Aerial cinematography for campuses, plants, sites and events.',
@@ -217,7 +217,7 @@ export const services: Service[] = [
     slug: 'ai-video-production',
     name: 'AI Video Production',
     h1: 'AI Video Production',
-    title: 'AI Video Production Services India | Beyond Pixel',
+    title: 'AI Video Production India | Beyond Pixel Studio',
     description:
       'AI-assisted video production for brands nationwide — concept, generation, editing and finishing, supervised by a working crew. Request a quote.',
     summary: 'AI-assisted concept, generation, edit and finish.',
