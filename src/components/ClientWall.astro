@@ -1,112 +1,134 @@
 ---
 /**
- * Continuous client marquee.
+ * Client wall — two rows, counter-scrolling.
  *
- * HOW THE LOOP IS SEAMLESS: the track holds the list TWICE and translates by
- * exactly -50%. At the moment the animation restarts, the second copy is
- * sitting precisely where the first began, so there is no jump. Any other
- * distance leaves a visible seam.
+ * Built to the n8n integrations strip in the reference recording. Matched from
+ * it: two rows; the top row travelling left while the bottom travels right; the
+ * same set in both rows, offset so no two tiles line up vertically; rounded
+ * tiles with a hairline edge; a wide mask fading the strip to nothing at both
+ * ends; and slightly different durations per row so the two never sync up.
+ *
+ * TWO DELIBERATE DEVIATIONS, both forced by the artwork rather than chosen:
+ *
+ *  1. TILE SHAPE. The reference tiles are squares because its logos are square
+ *     app icons. These are corporate wordmarks — wide lockups with text — and a
+ *     square tile renders them at a fraction of the size. The tile follows the
+ *     artwork's own 1.6:1.
+ *
+ *  2. TILE FILL. The reference tiles are dark, which works because its icons are
+ *     bright and saturated. These marks are drawn for white paper: keyed onto a
+ *     dark tile, SOA, Oxford, Sankalp, Reliance and HCLTech's tagline all drop
+ *     to near-invisible — tested before deciding. A light tile keeps every mark
+ *     legible, which is the entire point of showing them.
+ *
+ * HOW THE LOOP IS SEAMLESS: each row holds its set TWICE and translates by
+ * exactly -50%. At the moment the animation restarts, the second copy sits
+ * precisely where the first began. Any other distance leaves a visible seam.
  *
  * ACCESSIBILITY:
- *  - the duplicate copy is `aria-hidden` so a screen reader hears 23 clients,
- *    not 46, and the real list keeps its semantics.
- *  - the marquee pauses on hover AND on focus-within, so a keyboard user can
- *    stop it; WCAG 2.2 SC 2.2.2 requires moving content to be pausable.
- *  - under `prefers-reduced-motion` the animation is dropped entirely and the
- *    strip becomes an ordinary horizontally scrollable list.
- *
- * The logos are colour marks on white, so they sit on white chips rather than
- * being knocked out — inverting two dozen multi-coloured logos would wreck
- * most of them, and a white chip is what the studio's own poster does.
+ *  - only the first row's first copy is exposed; every other copy is
+ *    aria-hidden, so a screen reader hears the 23 clients once, not 92 times.
+ *  - it pauses on hover AND on focus-within — WCAG 2.2 SC 2.2.2 requires moving
+ *    content to be pausable.
+ *  - under `prefers-reduced-motion` the animation is dropped and each row
+ *    becomes an ordinary horizontally scrollable strip.
  */
 import { clients } from '../data/clients.ts';
 
 interface Props {
-  /** Seconds for one full pass. Longer list, longer duration. */
+  /** Seconds for one full pass of the top row. */
   duration?: number;
 }
-const { duration = 60 } = Astro.props;
+const { duration = 64 } = Astro.props;
+
+/* The bottom row is the same set rotated by half its length, so the two rows
+   never show the same mark above and below each other. */
+const half = Math.floor(clients.length / 2);
+const rowA = clients;
+const rowB = [...clients.slice(half), ...clients.slice(0, half)];
 ---
 
-<div class="wall" style={`--wall-dur:${duration}s`}>
-  <div class="wall__track">
-    <ul class="wall__set">
-      {clients.map((c) => (
-        <li class="wall__item">
-          <img
-            src={`/clients/${c.logo}.webp`}
-            alt={c.name}
-            width="340"
-            height="188"
-            loading="lazy"
-            decoding="async"
-          />
-        </li>
+<div class="wall" style={`--dur-a:${duration}s; --dur-b:${Math.round(duration * 1.28)}s`}>
+  {[
+    { items: rowA, dir: 'a' },
+    { items: rowB, dir: 'b' },
+  ].map((row, ri) => (
+    <div class:list={['wall__row', `wall__row--${row.dir}`]}>
+      {[0, 1].map((copy) => (
+        <ul class="wall__set" aria-hidden={ri === 0 && copy === 0 ? undefined : 'true'}>
+          {row.items.map((c) => (
+            <li class="wall__item">
+              <img
+                src={`/clients/${c.logo}.webp`}
+                alt={ri === 0 && copy === 0 ? c.name : ''}
+                width="340"
+                height="188"
+                {/* NOT lazy. A marquee moves tiles into view continuously, and
+                    the lazy threshold is measured against the viewport — so a
+                    tile is only requested once it is already arriving, and it
+                    scrolls in blank. There are 92 <img> elements but only 23
+                    unique files (~160KB total); the duplicates all hit cache.
+                    `fetchpriority=low` keeps them behind the hero. */}
+                loading="eager"
+                fetchpriority="low"
+                decoding="async"
+              />
+            </li>
+          ))}
+        </ul>
       ))}
-    </ul>
-    {/* The seam copy. Hidden from assistive tech — it is the same 23 clients. */}
-    <ul class="wall__set" aria-hidden="true">
-      {clients.map((c) => (
-        <li class="wall__item">
-          <img src={`/clients/${c.logo}.webp`} alt="" width="340" height="188" loading="lazy" decoding="async" />
-        </li>
-      ))}
-    </ul>
-  </div>
+    </div>
+  ))}
 </div>
 
 <style>
   .wall {
     position: relative;
-    overflow: hidden;
-    /* Fades the strip into the page at both ends so logos enter and leave
-       rather than being chopped off by a hard edge. */
-    -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-    mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    display: grid;
+    gap: var(--s-2);
+    /* The reference fades over a wide distance — tiles arrive and leave rather
+       than being chopped off by a hard edge. */
+    -webkit-mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
   }
-  .wall__track {
-    display: flex;
-    width: max-content;
-    animation: wallRun var(--wall-dur, 60s) linear infinite;
-  }
-  .wall:hover .wall__track,
-  .wall:focus-within .wall__track { animation-play-state: paused; }
 
-  @keyframes wallRun {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
+  .wall__row { display: flex; width: max-content; }
+  .wall__row--a { animation: runLeft var(--dur-a) linear infinite; }
+  /* The counter-direction is the move that makes the strip read as a field
+     rather than as a conveyor belt. */
+  .wall__row--b { animation: runRight var(--dur-b) linear infinite; }
+
+  .wall:hover .wall__row,
+  .wall:focus-within .wall__row { animation-play-state: paused; }
+
+  @keyframes runLeft  { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
+  @keyframes runRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 
   .wall__set {
     display: flex; align-items: center;
     list-style: none; margin: 0; padding: 0;
-    gap: var(--s-3);
-    padding-inline: calc(var(--s-3) / 2);
+    gap: var(--s-2);
+    padding-inline: calc(var(--s-2) / 2);
   }
+
   .wall__item {
     flex: none;
-    width: 158px; height: 92px;
-    padding: 7px;
+    /* 1.6:1 — the artwork's own ratio, not the reference's square. */
+    width: 132px; height: 82px;
+    padding: 9px;
     position: relative;
-    border-radius: var(--r-sm);
-    /* Glass, not flat white. The logos need a light backing to stay legible,
-       but a plain white rectangle on a black page reads as a hole punched in
-       it. A vertical sheen plus a warm-tinted lower half gives the chip a
-       surface, and the ring keeps its edge from dissolving into the frame. */
+    border-radius: 14px;
     background:
-      linear-gradient(180deg, rgb(255 255 255 / .96) 0%, rgb(248 246 250 / .9) 55%, rgb(238 234 244 / .86) 100%);
+      linear-gradient(180deg, rgb(255 255 255 / .97) 0%, rgb(247 245 250 / .93) 55%, rgb(236 232 242 / .9) 100%);
     box-shadow:
       inset 0 1px 0 0 rgb(255 255 255 / .9),
-      inset 0 0 0 1px rgb(255 255 255 / .5),
-      0 2px 10px rgb(0 0 0 / .35);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    transition:
-      transform var(--t-slow) var(--ease),
-      box-shadow var(--t-slow) var(--ease);
+      inset 0 0 0 1px rgb(255 255 255 / .45),
+      0 2px 10px rgb(0 0 0 / .3);
+    transition: transform var(--t-slow) var(--ease), box-shadow var(--t-slow) var(--ease);
   }
-  /* The sweep. A single highlight travelling across the chip on hover, which is
-     what makes glass read as glass rather than as a pale card. */
+
+  /* A single highlight travelling across the tile on hover — what makes glass
+     read as glass rather than as a pale card. */
   .wall__item::after {
     content: '';
     position: absolute; inset: 0;
@@ -118,27 +140,29 @@ const { duration = 60 } = Astro.props;
     transition: translate 700ms var(--ease), opacity 200ms var(--ease);
   }
   .wall__item:hover {
-    transform: translateY(-4px) scale(1.04);
+    transform: translateY(-4px) scale(1.05);
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / .9),
+      inset 0 1px 0 0 rgb(255 255 255 / .95),
       inset 0 0 0 1px rgb(255 255 255 / .6),
       0 10px 26px rgb(0 0 0 / .5),
-      0 0 0 1px rgb(199 67 30 / .35),
-      0 6px 28px rgb(199 67 30 / .28);
+      0 0 0 1px rgb(199 67 30 / .38),
+      0 6px 28px rgb(199 67 30 / .3);
   }
   .wall__item:hover::after { translate: 120% 0; opacity: 1; }
 
+  /* `object-fit: contain` on a fixed box. The marks are mixed aspect ratios, and
+     letting them size themselves lets the taller ones overflow and clip. */
   .wall__item img { width: 100%; height: 100%; object-fit: contain; }
 
   @media (min-width: 700px) {
-    .wall__item { width: 190px; height: 108px; }
+    .wall__item { width: 156px; height: 96px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .wall { overflow-x: auto; }
-    .wall__track { animation: none; }
-    /* The duplicate adds nothing once it is not scrolling past. */
+    .wall__row { animation: none; overflow-x: auto; width: 100%; }
+    /* The seam copies add nothing once nothing is scrolling past. */
     .wall__set[aria-hidden='true'] { display: none; }
+    .wall__row--b { display: none; }
     .wall__item:hover { transform: none; }
     .wall__item::after { display: none; }
   }
