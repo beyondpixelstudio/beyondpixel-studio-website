@@ -254,12 +254,23 @@
        share each curve exactly, so the seams fall where the flat mark draws its
        highlight lines. */
     const SHUTTER_N = 6;
-    /* 0.95, not the 0.62 it started at. The rosette radiates through a full
-       360 degrees, so thirty-six petal bases crowd the centre — at 0.62 the
-       shutter was rendering correctly and still could not be picked out. In the
-       flat mark the aperture sits IN FRONT of the petal bases and overlaps
-       them, and at this size it does the same thing here. */
-    const R_OUT = 0.95; // outer circle
+
+    /* SIZE IS TAKEN FROM THE ARTWORK, NOT CHOSEN.
+       Measured off logo-mark-512.png: the aperture is 60px across in a lotus
+       505px wide, so it occupies 0.119 of the mark's width. Deriving it from
+       the outer ring here means the shutter keeps that proportion even if the
+       petals are ever resized.
+
+       It was 0.95 — 37% of the flower, three times the mark — because it had
+       been enlarged twice while chasing a bug that turned out to be face
+       culling, not size. Once the blades actually rendered, the enlargement was
+       just wrong: this aperture is a small jewel at the heart of the flower,
+       not a lens cap over it. */
+    const FLOWER_R = RING_SPEC[0].r + RING_SPEC[0].h; // outer petal tip
+    const R_OUT = FLOWER_R * 0.119; // outer circle — the mark's own ratio
+    // Note: the shutter sits ~0.9 forward of the petals, so perspective renders
+    // it about 8% larger than that flat ratio. Left as is — the aperture is the
+    // smallest element in the scene and the margin keeps the hexagon readable.
     const C_HEX = R_OUT * 0.46; // hexagon circumradius — this IS the opening
     const TWIST = 0.62; // radians the rim leads the hexagon by
 
@@ -353,10 +364,13 @@
     pupil.position.z = -0.07;
     shutter.add(pupil);
 
-    /* Well forward of the innermost petal ring, which sits at z 0.56. The
-       previous core was left at z 0 and the petal bases simply buried it — it
-       was in the scene the whole time and could not be seen. */
-    shutter.position.z = 1.45;
+    /* Just clear of the petals, not floating in front of them. The innermost
+       ring reaches z 0.78 at full bloom, so 0.9 puts the aperture in front of
+       everything by a small margin and lets it sit IN the flower's heart — the
+       way the mark nestles it among the petal bases. At 1.45, which is where it
+       sat while it was three times too large, a jewel this size read as a
+       separate object hovering over the bloom. */
+    shutter.position.z = 0.9;
     bloom.add(shutter);
 
     /* Nearly head-on. The rosette lives in the picture plane, so the tilt only
