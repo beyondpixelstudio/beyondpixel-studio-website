@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import IrisReveal from '../components/IrisReveal.astro';
-import { business } from '../data/business.ts';
+import LotusBloom from '../components/LotusBloom.astro';
+import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
 
 /**
@@ -11,7 +12,10 @@ import { services } from '../data/services.ts';
  * The H1 takes the broad category head term. A narrower H1 would compete with
  * /corporate-video-production-bhubaneswar for that page's own keyword.
  */
-const title = 'Video Production Company in Bhubaneswar | Beyond Pixel Studio';
+/* 54 chars. The full "| Beyond Pixel Studio" suffix took it to 61 and Google
+   would have truncated the brand mid-word — the six service pages already use
+   the short "| Beyond Pixel" form, so this is consistent as well as shorter. */
+const title = 'Video Production Company in Bhubaneswar | Beyond Pixel';
 const description =
   'Corporate video production, live event streaming, drone and commercial photography in Bhubaneswar. Own crew, own equipment. Request a custom quote.';
 
@@ -57,6 +61,7 @@ const slates = [
 
   {/* ---------------------------------------------------------------- HERO */}
   <section class="hero">
+    <LotusBloom />
     <span class="flare" aria-hidden="true"></span>
     <div class="wrap hero__in">
       <p class="eyebrow">{business.tagline}</p>
@@ -68,7 +73,9 @@ const slates = [
       </p>
 
       <div class="hero__cta">
-        <a class="btn" href="#contact">Request a Custom Quote</a>
+        <a class="btn" href={wa('Hello, I would like a custom quote for a video production.')}>
+          Request a Custom Quote
+        </a>
         <a class="btn btn--ghost" href="#work">See our work</a>
       </div>
 
@@ -100,9 +107,15 @@ const slates = [
       <p class="eyebrow">What we do</p>
       <h2 data-reveal>Six things, done properly.</h2>
 
-      <ul class="svc">
+      {/* One perspective for the whole grid, so the cards tilt like a single
+          sheet of glass rather than twelve independent objects. */}
+      <ul class="svc stage">
         {services.map((s, i) => (
-          <li class="svc__card" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+          <li class="svc__card tilt" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+            <span class="tilt__sheen" aria-hidden="true"></span>
+            {/* NOT `tilt__lift` — see base.css. Its translateZ would make this
+                div the containing block for the stretched `h3 a::after`, which
+                silently shrinks the whole-card click target to this title row. */}
             <div class="svc__top">
               <h3><a href={`/${s.slug}/`}>{s.name}</a></h3>
               {s.national && <span class="svc__flag mono">Nationwide</span>}
@@ -126,9 +139,9 @@ const slates = [
         frames — we would rather show you nothing than show you stock.
       </p>
 
-      <ul class="work">
+      <ul class="work stage">
         {slates.map((s, i) => (
-          <li class="slate ar-wide" data-reveal style={`--reveal-delay:${i * 50}ms`}>
+          <li class="slate ar-wide tilt" data-reveal style={`--reveal-delay:${i * 50}ms`}>
             <div class="slate__head">
               <span class="mono">SLATE {s.id}</span>
               <span class="mono slate__cat">{s.cat}</span>
@@ -203,9 +216,14 @@ const slates = [
         not a brochure.
       </p>
       <div class="hero__cta">
-        <a class="btn" href={`mailto:${business.email}`}>Request a Custom Quote</a>
+        <a class="btn" href={wa('Hello, I am planning a shoot and would like a quote.')}>
+          Enquire on WhatsApp
+        </a>
         <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
       </div>
+      <p class="cta__alt">
+        Prefer email? <a href={`mailto:${business.email}`}>{business.email}</a>
+      </p>
     </div>
   </section>
 </Base>
@@ -214,8 +232,49 @@ const slates = [
   /* --- Hero --------------------------------------------------------------
      Nothing here is opacity:0 at first paint. The iris covers it; it does not
      gate it. That is what keeps LCP measured at the real paint time. */
-  .hero { position: relative; z-index: 2; padding-block: clamp(72px, 13vw, 150px) clamp(56px, 9vw, 104px); }
-  .hero__in { position: relative; }
+  .hero {
+    position: relative; z-index: 2;
+    padding-block: clamp(72px, 13vw, 150px) clamp(56px, 9vw, 104px);
+    /* The bloom needs vertical room to be a subject rather than a texture, but
+       the copy must still start above the fold on a laptop — hence a min-height
+       tied to viewport, not a fixed height. `svh` so mobile browser chrome
+       collapsing does not resize the scene mid-scroll. */
+    min-height: min(92svh, 900px);
+    display: flex; align-items: center;
+    isolation: isolate;
+  }
+  /* Copy sits above the canvas, and its own readability layer sits between —
+     the bloom is bright at the centre and 17px body text cannot compete with a
+     magenta petal passing behind it. */
+  /* `width: 100%` is load-bearing. `.hero` is a flex container so the copy can
+     centre vertically, which makes `.wrap` a flex ITEM — and a flex item is
+     shrink-to-fit, so the container collapsed to the width of its widest child
+     and `margin-inline: auto` then centred the whole copy block in the viewport
+     instead of aligning it left. The copy drifted right and straight into the
+     bloom. Stretching it back to full width restores the container's own
+     centring and gutters. */
+  .hero__in { position: relative; z-index: 2; width: 100%; }
+  /* The copy is a COLUMN, not a full-width block. Two reasons, and they happen
+     to want the same number: a 38rem measure keeps the H1 to a readable line
+     length instead of letting it run the full 1240 container, and it leaves the
+     right of the frame genuinely empty for the bloom to occupy. Capping the
+     children rather than `.wrap` itself keeps the container's own centring and
+     gutters intact. No media query — a constrained measure is correct at every
+     width, and below the container width this resolves to 100% anyway.
+
+     46rem, not less: --fs-h1 tops out at 78px, and a narrower column at that
+     size broke the headline into four ragged lines. The measure has to be set
+     against the display size actually in use, not against a body-text ideal. */
+  .hero__in > * { max-width: 46rem; }
+  .hero__in::before {
+    content: ''; position: absolute; z-index: -1;
+    inset: -10% -14% -14% -20%;
+    background: radial-gradient(
+      62% 68% at 26% 50%,
+      color-mix(in srgb, var(--void) 88%, transparent) 0 42%,
+      transparent 78%
+    );
+  }
   h1 :global(em) { font-style: normal; color: var(--ember-text); }
   .hero__lead { margin-top: var(--s-3); }
   .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
@@ -245,7 +304,11 @@ const slates = [
     border-radius: var(--radius); padding: var(--s-3) var(--s-3) var(--s-4);
     transition: background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
   }
-  .svc__card:hover { background: var(--overlay); border-color: color-mix(in srgb, var(--ember-text) 40%, transparent); transform: translateY(-2px); }
+  /* NO `transform` here. `.svc__card:hover` outranks `.tilt`, so a hover lift
+     declared on this rule silently replaced the entire 3D rotation with a flat
+     2px nudge — the tilt rig was writing --rx/--ry correctly and nothing was
+     reading them. The lift is the rig's `--lift` instead. */
+  .svc__card:hover { background: var(--overlay); border-color: color-mix(in srgb, var(--ember-text) 40%, transparent); }
   .svc__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-2); }
   .svc__card h3 a { color: var(--text); text-decoration: none; }
   /* The whole card is the target; the link keeps the accessible name. */
@@ -295,6 +358,7 @@ const slates = [
   .cta__in { text-align: center; display: grid; justify-items: center; }
   .cta__lead { margin-top: var(--s-3); }
   .cta .hero__cta { justify-content: center; }
+  .cta__alt { margin-top: var(--s-3); font-size: var(--fs-sm); color: var(--text-muted); }
 
   /* --- Breakpoints -------------------------------------------------------- */
   /* Below 480 the two hero buttons sat at different widths, which reads as

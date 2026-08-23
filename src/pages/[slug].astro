@@ -1,0 +1,284 @@
+---
+/**
+ * The service page template. ONE file renders all six.
+ *
+ * Adding or editing a service is a change to services.ts and nothing else —
+ * which is the whole point. Six hand-built pages drift apart in structure,
+ * schema and tone within a month of the first edit; six renders of one template
+ * cannot.
+ *
+ * Each page carries its own Service schema and a BreadcrumbList. Both are built
+ * from the same data that renders the visible page, so structured data and
+ * visible content can never disagree — which is the actual requirement Google
+ * enforces, and the usual reason a rich result gets dropped.
+ */
+import Base from '../layouts/Base.astro';
+import { business, wa } from '../data/business.ts';
+import { services } from '../data/services.ts';
+
+export function getStaticPaths() {
+  return services.map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
+}
+
+const { service } = Astro.props;
+
+/** Cross-links: every other service, so no page is a dead end. */
+const others = services.filter((s) => s.slug !== service.slug);
+
+const where = service.national
+  ? 'Delivered nationwide from Bhubaneswar.'
+  : `${business.areaServed.join(', ')} and across ${business.areaServedBroad}.`;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: service.name,
+  serviceType: service.name,
+  description: service.description,
+  url: `${business.url}/${service.slug}/`,
+  provider: { '@id': `${business.url}/#organization` },
+  areaServed: service.national
+    ? { '@type': 'Country', name: 'India' }
+    : business.areaServed.map((c) => ({ '@type': 'City', name: c })),
+  // What the job contains, as an itemised offer catalogue. This is the visible
+  // list — not a second, more flattering version written for the crawler.
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: `${service.name} — what is included`,
+    itemListElement: service.includes.map((i) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: i },
+    })),
+  },
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${business.url}/` },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: service.name,
+      item: `${business.url}/${service.slug}/`,
+    },
+  ],
+};
+---
+
+<Base title={service.title} description={service.description}>
+  <script
+    type="application/ld+json"
+    is:inline
+    slot="head"
+    set:html={JSON.stringify(schema)}
+  />
+  <script
+    type="application/ld+json"
+    is:inline
+    slot="head"
+    set:html={JSON.stringify(breadcrumb)}
+  />
+
+  {/* ------------------------------------------------------------- HEADER */}
+  <section class="shead">
+    <span class="flare" aria-hidden="true"></span>
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">{service.name}</li>
+        </ol>
+      </nav>
+
+      <p class="eyebrow">{service.national ? 'Nationwide' : 'Bhubaneswar, Odisha'}</p>
+      <h1>{service.h1}</h1>
+      <p class="lead shead__lead">{service.intro}</p>
+
+      <div class="shead__cta">
+        <a class="btn" href={wa(service.whatsapp)}>Enquire on WhatsApp</a>
+        <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  {/* ------------------------------------------------------------- DETAIL */}
+  <section class="section">
+    <div class="wrap detail">
+      <div class="detail__col">
+        <p class="eyebrow">What is included</p>
+        <h2 data-reveal>Itemised, so nothing appears later.</h2>
+        <ul class="ticks">
+          {service.includes.map((i, n) => (
+            <li data-reveal style={`--reveal-delay:${n * 45}ms`}>
+              <span class="ticks__m" aria-hidden="true"></span>
+              <span>{i}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="detail__col">
+        <p class="eyebrow">What you receive</p>
+        <h2 data-reveal>Deliverables.</h2>
+        <ul class="ticks ticks--alt">
+          {service.deliverables.map((d, n) => (
+            <li data-reveal style={`--reveal-delay:${n * 45}ms`}>
+              <span class="ticks__m" aria-hidden="true"></span>
+              <span>{d}</span>
+            </li>
+          ))}
+        </ul>
+
+        <p class="detail__where mono">{where}</p>
+      </div>
+    </div>
+  </section>
+
+  {/* --------------------------------------------------------------- WORK */}
+  <section class="section section--band">
+    <div class="wrap">
+      <p class="eyebrow">Selected work</p>
+      <h2 data-reveal>Frames reserved for this service.</h2>
+      <p class="lead">
+        Empty and labelled on purpose. Footage from real {service.name.toLowerCase()} jobs
+        drops into these slots — we would rather show you nothing than show you stock.
+      </p>
+      <ul class="slates stage">
+        {[1, 2, 3].map((n) => (
+          <li class="slate ar-wide tilt" data-reveal style={`--reveal-delay:${n * 60}ms`}>
+            <span class="tilt__sheen" aria-hidden="true"></span>
+            <div class="slate__head">
+              <span class="mono">SLATE 0{n}</span>
+              <span class="mono slate__cat">{service.portfolio.replace('-', ' / ')}</span>
+            </div>
+            <dl class="slate__meta mono">
+              <div><dt>CLIENT</dt><dd>—</dd></div>
+              <div><dt>RUNTIME</dt><dd>—:—:—:—</dd></div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  {/* ------------------------------------------------------------ OTHERS */}
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Also from Beyond Pixel</p>
+      <h2 data-reveal>The rest of what we do.</h2>
+      <ul class="more stage">
+        {others.map((s, n) => (
+          <li class="more__card tilt" data-reveal style={`--reveal-delay:${n * 50}ms`}>
+            <span class="tilt__sheen" aria-hidden="true"></span>
+            <h3><a href={`/${s.slug}/`}>{s.name}</a></h3>
+            <p>{s.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------------- FINAL CTA */}
+  <section class="section section--band cta">
+    <div class="wrap cta__in" data-reveal>
+      <h2>Tell us what you are planning.</h2>
+      <p class="lead cta__lead">
+        Send the date, the venue and roughly what you need. You get an itemised quote,
+        not a brochure.
+      </p>
+      <div class="shead__cta cta__btns">
+        <a class="btn" href={wa(service.whatsapp)}>Enquire on WhatsApp</a>
+        <a class="btn btn--ghost" href="/contact/">All contact details</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shead {
+    position: relative; z-index: 2;
+    padding-block: clamp(48px, 8vw, 92px) clamp(40px, 6vw, 72px);
+  }
+  .shead__lead { margin-top: var(--s-3); }
+  .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+
+  /* --- Breadcrumb --------------------------------------------------------- */
+  .crumb ol {
+    list-style: none; margin: 0 0 var(--s-3); padding: 0;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .crumb li + li::before { content: '/'; margin-right: 8px; color: var(--text-dim); }
+  .crumb a { color: var(--text-muted); text-decoration: none; }
+  .crumb a:hover { color: var(--ember-text); }
+
+  /* --- Detail columns ----------------------------------------------------- */
+  .detail { display: grid; gap: var(--s-5); }
+  .ticks { list-style: none; margin: var(--s-3) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+  .ticks li { display: flex; gap: 12px; align-items: flex-start; font-size: var(--fs-sm); color: var(--text-muted); }
+  /* A shape, not a character: ✓ reads as a checkbox and this is not a form.
+     A small square catch-light is the aperture vocabulary the rest of the site
+     already uses. */
+  .ticks__m {
+    flex: none; width: 7px; height: 7px; margin-top: 8px;
+    background: var(--ember-text); border-radius: 1px; rotate: 45deg;
+  }
+  .ticks--alt .ticks__m { background: var(--daylight); }
+  .detail__where {
+    margin-top: var(--s-4); padding-top: var(--s-3);
+    border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    font-size: 13px; color: var(--text-dim);
+  }
+
+  /* --- Slates and cross-links --------------------------------------------- */
+  .slates, .more { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+  .slate {
+    position: relative; display: flex; flex-direction: column; justify-content: space-between;
+    padding: var(--s-3);
+    border: 1px dashed color-mix(in srgb, var(--text) 20%, transparent);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--void) 55%, transparent);
+  }
+  .slate__head { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .18em; color: var(--text-muted); }
+  .slate__cat { color: var(--daylight); text-transform: uppercase; }
+  .slate__meta { margin: 0; display: grid; gap: 4px; font-size: 11px; color: var(--text-dim); }
+  .slate__meta > div { display: flex; gap: 10px; }
+  .slate__meta dt { letter-spacing: .16em; min-width: 68px; }
+  .slate__meta dd { margin: 0; }
+
+  .more__card {
+    position: relative; background: var(--raised);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    border-radius: var(--radius); padding: var(--s-3);
+  }
+  .more__card h3 a { color: var(--text); text-decoration: none; }
+  .more__card h3 a::after { content: ''; position: absolute; inset: 0; }
+  .more__card:hover h3 a { color: var(--ember-text); }
+  .more__card p { margin-top: 8px; font-size: var(--fs-sm); color: var(--text-muted); }
+
+  /* --- CTA ---------------------------------------------------------------- */
+  .cta__in { text-align: center; display: grid; justify-items: center; }
+  .cta__lead { margin-top: var(--s-3); }
+  .cta__btns { justify-content: center; }
+
+  @media (max-width: 479px) {
+    .shead__cta { flex-direction: column; align-items: stretch; }
+    .shead__cta .btn { width: 100%; }
+  }
+  @media (min-width: 620px) {
+    .slates, .more { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 900px) {
+    .detail { grid-template-columns: 1.1fr 1fr; gap: var(--s-6); }
+  }
+  @media (min-width: 980px) {
+    .slates { grid-template-columns: repeat(3, 1fr); }
+    .more { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

@@ -164,19 +164,118 @@ a { color: var(--ocean-text); }
 /* --- Motion: rack focus ---------------------------------------------------
    A camera company's page comes INTO FOCUS; it does not slide in.
    Sections are visible by default and only hidden once .js confirms the
-   observer is live, so a JS failure can never leave the page blank. */
+   observer is live, so a JS failure can never leave the page blank.
+
+   NOTE the `translate` property rather than `transform: translateY()`. Cards
+   are both revealed AND tilted, and two rules writing `transform` means the
+   more specific one silently wins — `.js [data-reveal].is-in` would have
+   clamped every tilt to flat. `translate` is its own animatable property and
+   composes with `transform` instead of overwriting it. */
 .js [data-reveal] {
   opacity: 0;
   filter: blur(9px);
-  transform: translateY(18px);
-  transition: opacity .7s var(--ease), filter .7s var(--ease), transform .7s var(--ease);
+  translate: 0 18px;
+  transition: opacity .7s var(--ease), filter .7s var(--ease), translate .7s var(--ease);
   transition-delay: var(--reveal-delay, 0ms);
 }
-.js [data-reveal].is-in { opacity: 1; filter: blur(0); transform: none; }
+.js [data-reveal].is-in { opacity: 1; filter: blur(0); translate: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .js [data-reveal] { opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; }
+  .js [data-reveal] { opacity: 1 !important; filter: none !important; translate: none !important; transition: none !important; }
   .btn:hover { transform: none; }
+  /* Belt and braces: the tilt rig already refuses to start under reduced
+     motion, but if it ever did, this pins every card flat regardless. */
+  .tilt { transform: none !important; transition: none !important; }
+}
+
+/* --- Depth: the 3D system -------------------------------------------------
+   Three techniques, in ascending order of cost. Everything here degrades to a
+   flat, finished page — none of it is load-bearing.
+
+   The house rule for all of it: DEPTH IS EARNED BY THE LENS, NOT BY THE UI.
+   A camera company may tilt, rack and dolly. It may not bounce, spin or flip.
+   Every rotation below is under 9 degrees for that reason — past roughly ten,
+   a tilt stops reading as parallax and starts reading as a novelty. */
+
+/* 1. Perspective root. Declared on the container, never the moving child, so
+      sibling cards share one vanishing point instead of each having its own —
+      which is what makes a grid tilt like a physical sheet rather than like
+      twelve unrelated toys. */
+.stage {
+  perspective: 1400px;
+  perspective-origin: 50% 42%;
+}
+
+/* 2. Pointer-tracked tilt. --rx/--ry are written by the rig in Base.astro and
+      default to zero, so the untouched state is flat and the no-JS state is
+      flat forever. */
+.tilt {
+  --rx: 0deg; --ry: 0deg; --lift: 0px;
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translate3d(0, var(--lift), 0);
+  transform-style: preserve-3d;
+  transition: transform .45s var(--ease);
+}
+/* While the pointer is down on the card, follow it immediately — a 450ms ease
+   on an element tracking a live pointer feels like lag, not smoothing. */
+.tilt.is-tracking { transition: transform .08s linear; }
+
+/* Children can sit at their own depth. Small numbers: at 1400px perspective,
+   24px of Z is already a visible separation.
+
+   WARNING — never put this on an ancestor of a stretched link. A transform
+   makes an element the containing block for its absolutely positioned
+   descendants, so a card whose whole surface is clickable via
+   `a::after { position: absolute; inset: 0 }` loses that: the overlay stops
+   resolving against the card and resolves against THIS element instead,
+   quietly shrinking a 195px target to the height of one line of text. Nothing
+   looks wrong; the card simply stops being clickable except on the title. */
+.tilt__lift { transform: translateZ(24px); }
+
+/* The sheen is what sells a tilt as a surface catching light rather than a
+   rectangle rotating. It tracks the pointer, so the highlight moves as though
+   the practical overhead were fixed and the card were moving under it. */
+.tilt__sheen {
+  position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; opacity: 0;
+  transition: opacity .35s var(--ease);
+  background: radial-gradient(
+    38% 38% at var(--gx, 50%) var(--gy, 50%),
+    color-mix(in srgb, var(--text) 13%, transparent),
+    transparent 72%
+  );
+}
+.tilt:hover .tilt__sheen, .tilt:focus-within .tilt__sheen { opacity: 1; }
+
+/* 3. Scroll-driven dolly. Native scroll timelines — no observer, no scroll
+      listener, no main-thread work at all. Unsupported browsers simply get the
+      static state, which is the designed state anyway. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .dolly {
+      animation: dollyIn linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 42%;
+    }
+    /* Transform only — no opacity. The rack-focus reveal already owns opacity,
+       and an animation beats a transition on the same property, so fading here
+       too would let the dolly overrule the reveal and flash content in early. */
+    @keyframes dollyIn {
+      from { transform: perspective(1200px) translate3d(0, 42px, -110px) rotateX(6deg); }
+      to   { transform: none; }
+    }
+
+    /* Headings crest slightly past the section as it passes — the parallax that
+       makes a page feel like it has a near plane and a far plane. */
+    .drift {
+      animation: driftUp linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    @keyframes driftUp {
+      from { translate: 0 22px; }
+      to   { translate: 0 -22px; }
+    }
+  }
 }
 
 .skip {

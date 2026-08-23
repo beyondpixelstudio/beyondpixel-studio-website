@@ -1,0 +1,539 @@
+---
+/**
+ * Lotus Bloom — the hero's 3D scene
+ *
+ * The mark IS the scene. Rather than decorating the hero with generic WebGL
+ * (floating spheres, particle fields, a distorted blob), this builds the actual
+ * logo in three dimensions: three rings of lotus petals around a working camera
+ * aperture, lit by the same two practicals the CSS `.cine__bloom` layer paints.
+ * The key light sits at 78%/8% in CSS; the WebGL key sits upper-right. They are
+ * the same light, so the canvas and the page agree about where the sun is.
+ *
+ * -------------------------------------------------------------------------
+ * WHAT PROTECTS THE PAGE FROM IT
+ *
+ * A 150KB renderer for decoration is only defensible if it can never cost the
+ * user anything. Five gates, all of which must pass before three.js is even
+ * fetched — the import is dynamic, so a device that fails a gate downloads none
+ * of it:
+ *
+ *   1. after `load` + idle — never competes with LCP or with font swap
+ *   2. `prefers-reduced-motion: no-preference` — this is a large moving object
+ *   3. viewport >= 1100px — see WIDTH below
+ *   4. WebGL actually available — a context probe, not a UA sniff
+ *   5. `deviceMemory` >= 4 where reported — low-end Android is the real risk
+ *
+ * WIDTH: the gate and the CSS offset are the SAME number, deliberately. The
+ * scene is composed as a two-column hero — copy left, flower right. Below that
+ * width there is no right column, so the flower lands behind the H1 and reads
+ * as a coloured smear that costs the headline its contrast and gains nothing.
+ * Running it there is worse than not running it, so it does not run there. The
+ * breakpoint is declared once, in JS, as WIDE below. The stylesheet needs no
+ * copy of it: the layout shift is keyed off `.is-live`, which by construction
+ * only appears when the gate has already passed.
+ *
+ * And once running: an IntersectionObserver halts the loop the moment the hero
+ * leaves the viewport, so scrolling the page does not spin a GPU on a scene
+ * nobody can see.
+ *
+ * The static fallback underneath is not a blank box — it is a complete CSS
+ * treatment that the majority of mobile visitors will see as the intended
+ * design. It has to look finished on its own, because for most of this
+ * audience it IS the design.
+ * -------------------------------------------------------------------------
+ */
+---
+
+<div class="bloom" aria-hidden="true">
+  {/* The fallback. Painted always; the canvas fades in over it if it earns the
+      right to. Concentric conic rings read as an aperture at a glance. */}
+  <div class="bloom__static">
+    <span class="bloom__ring bloom__ring--out"></span>
+    <span class="bloom__ring bloom__ring--mid"></span>
+    <span class="bloom__ring bloom__ring--core"></span>
+  </div>
+
+  <canvas class="bloom__gl" data-bloom></canvas>
+</div>
+
+<script>
+  import type * as THREE_NS from 'three';
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-bloom]');
+
+  /* -- Gates ------------------------------------------------------------- */
+
+  const webglOK = () => {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  };
+
+  /** The two-column threshold. Declared here and nowhere else. */
+  const WIDE = 1100;
+
+  const allowed = () =>
+    !!canvas &&
+    window.matchMedia('(prefers-reduced-motion: no-preference)').matches &&
+    window.matchMedia(`(min-width: ${WIDE}px)`).matches &&
+    // `deviceMemory` is Chromium-only. Absent (Safari, Firefox) is not a
+    // failure — only a reported value below 4 is.
+    ((navigator as any).deviceMemory ?? 8) >= 4 &&
+    webglOK();
+
+  const idle = (fn: () => void) =>
+    'requestIdleCallback' in window
+      ? (window as any).requestIdleCallback(fn, { timeout: 2600 })
+      : setTimeout(fn, 900);
+
+  if (allowed()) {
+    if (document.readyState === 'complete') idle(() => void boot());
+    else window.addEventListener('load', () => idle(() => void boot()), { once: true });
+  }
+
+  /* -- Scene ------------------------------------------------------------- */
+
+  async function boot() {
+    const THREE = (await import('three')) as typeof THREE_NS;
+    const gl = canvas!;
+
+    /* The logo's colour sweep, sampled left to right off the supplied artwork:
+       orange-red, orange, rose, magenta, violet, indigo, ocean. Petals take
+       their colour from their position in the ring, so the full sweep rotates
+       past the viewer exactly as it reads in the flat mark. */
+    const RAMP = ['#E8532A', '#F0863C', '#C4485F', '#9B2FC0', '#5B2AC0', '#2E3A9E', '#1B6CA8'].map(
+      (h) => new THREE.Color(h)
+    );
+
+    const rampAt = (t: number) => {
+      const x = Math.min(Math.max(t, 0), 1) * (RAMP.length - 1);
+      const i = Math.min(Math.floor(x), RAMP.length - 2);
+      return RAMP[i].clone().lerp(RAMP[i + 1], x - i);
+    };
+
+    const scene = new THREE.Scene();
+
+    // A long lens. Wide-angle on a radial subject exaggerates the near petals
+    // and the flower stops reading as symmetrical — the same reason a portrait
+    // is not shot on 24mm.
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+    camera.position.set(0, 0.15, 11.4);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: gl,
+      antialias: true,
+      alpha: true, // the cine grain and vignette must show through
+      powerPreference: 'high-performance',
+    });
+    renderer.setClearAlpha(0);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.12;
+
+    /* ---- Petal geometry ------------------------------------------------
+       A lotus petal is a pointed oval that CUPS. Extruding a flat outline gets
+       the silhouette but reads as a paper fan; the vertex pass below dishes it
+       along both axes, and that single step is the difference between a ring of
+       cards and a flower. */
+    const petalGeo = (w: number, h: number, cup: number) => {
+      const s = new THREE.Shape();
+      s.moveTo(0, 0);
+      s.bezierCurveTo(w, h * 0.2, w * 0.9, h * 0.66, 0, h);
+      s.bezierCurveTo(-w * 0.9, h * 0.66, -w, h * 0.2, 0, 0);
+
+      const g = new THREE.ExtrudeGeometry(s, {
+        depth: 0.035,
+        bevelEnabled: true,
+        bevelThickness: 0.022,
+        bevelSize: 0.022,
+        bevelSegments: 2,
+        curveSegments: 22,
+      });
+
+      // Dish it: quadratic across the width, and a gentle backward bend up the
+      // length so the tip flares away from the core.
+      const pos = g.attributes.position as THREE_NS.BufferAttribute;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const t = y / h;
+        pos.setZ(i, pos.getZ(i) - cup * (x * x * 2.6 + t * t * 0.85));
+      }
+      pos.needsUpdate = true;
+      g.computeVertexNormals();
+      g.translate(0, 0, 0);
+      return g;
+    };
+
+    /* ---- Rings ---------------------------------------------------------
+       Three rings, matching the mark: broad outer petals lying nearly flat, a
+       shorter upright mid ring, and the thin inner slivers. Each ring is its
+       own group so it can breathe at its own rate. */
+    type Ring = {
+      group: THREE_NS.Group;
+      rest: number; // pitch when fully bloomed, radians
+      close: number; // pitch when closed into a bud
+      spin: number; // own rotation rate
+      pivots: THREE_NS.Group[];
+    };
+
+    const bloom = new THREE.Group();
+    const rings: Ring[] = [];
+
+    /* THE ROSETTE PLANE.
+       Petals radiate around Z — the axis pointing at the viewer — so the ring
+       is a rosette in the picture plane, which is the pose the flat mark is
+       drawn in. Arranging them around Y instead builds a flower seen from the
+       side: correct botany, but it presents the ring edge-on and renders as a
+       horizontal spray with no silhouette. The mark is the brief here, not the
+       botany.
+
+       `rest` is therefore the petal's tilt OUT of that plane at full bloom —
+       near zero for the outer ring, rising inward so the rosette cups toward
+       the viewer. `close` folds it forward into a bud for the entry animation.
+       `z` stacks the rings in depth so the inner ones sit genuinely in front. */
+    const RING_SPEC = [
+      { n: 14, w: 0.52, h: 2.15, cup: 0.44, rest: 0.04, close: 1.15, r: 0.42, z: 0, spin: 0.05 },
+      { n: 12, w: 0.38, h: 1.62, cup: 0.38, rest: 0.20, close: 1.02, r: 0.30, z: 0.3, spin: -0.07 },
+      { n: 10, w: 0.17, h: 1.14, cup: 0.26, rest: 0.38, close: 0.92, r: 0.18, z: 0.56, spin: 0.1 },
+    ];
+
+    for (const spec of RING_SPEC) {
+      const geo = petalGeo(spec.w, spec.h, spec.cup);
+      const group = new THREE.Group();
+      const pivots: THREE_NS.Group[] = [];
+
+      for (let i = 0; i < spec.n; i++) {
+        const t = i / (spec.n - 1);
+
+        const mat = new THREE.MeshPhysicalMaterial({
+          color: rampAt(t),
+          roughness: 0.34,
+          metalness: 0.12,
+          clearcoat: 0.85,
+          clearcoatRoughness: 0.28,
+          // A whisper of self-illumination. The petals must not go black when
+          // they rotate away from both practicals — a dead petal in a rotating
+          // ring reads as a rendering fault, not as shadow.
+          emissive: rampAt(t).multiplyScalar(0.16),
+          side: THREE.DoubleSide,
+        });
+
+        // The pivot spaces the petal around the rosette; the petal tilts out of
+        // the plane inside it. Two nested transforms, so opening the bloom never
+        // disturbs the spacing.
+        const pivot = new THREE.Group();
+        pivot.rotation.z = (i / spec.n) * Math.PI * 2;
+
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.y = spec.r; // outward along the pivot's own axis
+        mesh.position.z = spec.z; // ring depth
+        pivot.add(mesh);
+        group.add(pivot);
+        pivots.push(pivot);
+      }
+
+      bloom.add(group);
+      rings.push({ group, rest: spec.rest, close: spec.close, spin: spec.spin, pivots });
+    }
+
+    /* ---- The aperture at the core --------------------------------------
+       Six blades in a working iris, counter-rotating against the petals. This
+       is the "pixel" half of the name sitting inside the lotus half. */
+    const iris = new THREE.Group();
+    const bladeShape = new THREE.Shape();
+    bladeShape.moveTo(0, 0);
+    bladeShape.lineTo(0.42, 0.1);
+    bladeShape.lineTo(0.3, 0.46);
+    bladeShape.lineTo(0, 0.3);
+    const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, {
+      depth: 0.02,
+      bevelEnabled: true,
+      bevelThickness: 0.012,
+      bevelSize: 0.012,
+      bevelSegments: 1,
+    });
+
+    for (let i = 0; i < 6; i++) {
+      const m = new THREE.Mesh(
+        bladeGeo,
+        new THREE.MeshPhysicalMaterial({
+          color: rampAt(i / 5),
+          roughness: 0.2,
+          metalness: 0.55,
+          emissive: rampAt(i / 5).multiplyScalar(0.34),
+        })
+      );
+      m.rotation.z = (i / 6) * Math.PI * 2;
+      iris.add(m);
+    }
+    bloom.add(iris);
+
+    // The mark's outer ring, rendered as a thin torus so the core has an edge
+    // to catch the key light on.
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.62, 0.018, 12, 96),
+      new THREE.MeshPhysicalMaterial({
+        color: 0xf2a65a,
+        roughness: 0.18,
+        metalness: 0.7,
+        emissive: new THREE.Color(0xf2a65a).multiplyScalar(0.2),
+      })
+    );
+    bloom.add(ring);
+
+    /* Nearly head-on. The rosette lives in the picture plane, so the tilt only
+       needs to be enough to reveal that the petals are solids with thickness —
+       any more and the ring foreshortens into an ellipse and loses the mark's
+       silhouette. */
+    const PITCH = -0.14;
+    bloom.rotation.x = PITCH;
+    scene.add(bloom);
+
+    /* ---- Light ---------------------------------------------------------
+       Two practicals, matching the CSS: tungsten key upper-right, daylight fill
+       lower-left. Plus a magenta kicker directly behind the core to separate the
+       petal edges from the near-black ground. */
+    const key = new THREE.DirectionalLight(0xf2a65a, 3.1);
+    key.position.set(4.2, 4.6, 3.4);
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0x6e9bd1, 1.5);
+    fill.position.set(-4.4, -2.6, 2.2);
+    scene.add(fill);
+
+    const kick = new THREE.PointLight(0x9b2fc0, 26, 14, 2);
+    kick.position.set(0, 0.2, -2.4);
+    scene.add(kick);
+
+    scene.add(new THREE.AmbientLight(0x2b2255, 1.4));
+
+    /* ---- Sizing --------------------------------------------------------
+       DPR capped at 1.75. Beyond that the pixels are free of charge to the eye
+       and expensive to the GPU. */
+    /* Where the flower sits across the frame, 0 = left edge, 1 = right.
+       0.82 puts it in the right of the composition with its outer petals
+       running off the edge. Measured against the copy, not guessed: at 0.78 the
+       inner petals reached the end of the lead paragraph's longest line. */
+    const FRAME_X = 0.82;
+    let offsetX = 0;
+
+    const resize = () => {
+      const r = gl.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      camera.aspect = r.width / r.height;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+      renderer.setSize(r.width, r.height, false);
+
+      // Convert FRAME_X into world units at the flower's depth. Recomputed on
+      // every resize because the visible world width depends on the aspect —
+      // a fixed world offset would drift across the frame as the window
+      // changes shape.
+      const worldH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI) / 360);
+      offsetX = (FRAME_X - 0.5) * worldH * camera.aspect;
+    };
+    resize();
+    addEventListener('resize', resize, { passive: true });
+
+    /* ---- Input ---------------------------------------------------------
+       Pointer parallax and scroll recession, both damped. Raw pointer values
+       drive a rig like a nervous tic; the lerp is what makes it read as a
+       camera on a fluid head. */
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+    addEventListener(
+      'pointermove',
+      (e) => {
+        pointer.tx = (e.clientX / innerWidth) * 2 - 1;
+        pointer.ty = (e.clientY / innerHeight) * 2 - 1;
+      },
+      { passive: true }
+    );
+
+    let scrolled = 0;
+    const onScroll = () => {
+      scrolled = Math.min(scrollY / Math.max(innerHeight * 0.9, 1), 1);
+    };
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+
+    /* ---- Loop ----------------------------------------------------------- */
+
+    const clock = new THREE.Clock();
+    let open = 0; // 0 = bud, 1 = full bloom
+    let running = true;
+    let frame = 0;
+
+    // Only render while the hero is actually on screen.
+    const io = new IntersectionObserver(
+      ([e]) => {
+        running = e.isIntersecting;
+        if (running) {
+          clock.getDelta(); // discard the paused interval
+          frame = requestAnimationFrame(tick);
+        } else {
+          cancelAnimationFrame(frame);
+        }
+      },
+      { threshold: 0 }
+    );
+    io.observe(gl);
+
+    function tick() {
+      frame = requestAnimationFrame(tick);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const t = clock.elapsedTime;
+
+      // Bloom in once, then hold. Cubic ease-out.
+      open = Math.min(open + dt * 0.62, 1);
+      const eased = 1 - Math.pow(1 - open, 3);
+
+      // Scroll closes it slightly and pushes it back, so it yields to the
+      // content coming up rather than competing with it.
+      const recede = scrolled;
+
+      rings.forEach((r, i) => {
+        // Rings counter-rotate in the rosette plane, like iris blades.
+        r.group.rotation.z += r.spin * dt;
+
+        // Each ring breathes on its own phase — a rigidly synchronised flower
+        // reads as machinery.
+        const breathe = Math.sin(t * 0.42 + i * 1.1) * 0.045;
+        const pitch =
+          r.close + (r.rest - r.close) * eased * (1 - recede * 0.34) + breathe * eased;
+
+        r.pivots.forEach((p) => {
+          (p.children[0] as THREE_NS.Mesh).rotation.x = pitch;
+        });
+      });
+
+      iris.rotation.z -= dt * 0.42;
+      iris.scale.setScalar(0.6 + eased * 0.4 + Math.sin(t * 0.7) * 0.02);
+      ring.rotation.z += dt * 0.08;
+
+      // Damped parallax. The rig moves a long way less than the pointer does.
+      pointer.x += (pointer.tx - pointer.x) * Math.min(dt * 2.4, 1);
+      pointer.y += (pointer.ty - pointer.y) * Math.min(dt * 2.4, 1);
+
+      bloom.rotation.y = pointer.x * 0.26;
+      bloom.rotation.x = PITCH + pointer.y * 0.14 - recede * 0.2;
+      bloom.position.x = offsetX + pointer.x * 0.18;
+      bloom.position.y = -pointer.y * 0.12 - recede * 0.5;
+      bloom.position.z = -recede * 3.4;
+
+      // Fade out over the first screen rather than letting it collide with the
+      // trust bar.
+      const vis = 1 - Math.min(recede * 1.25, 1);
+      gl.style.opacity = String(vis * 0.96);
+
+      renderer.render(scene, camera);
+    }
+
+    // Reveal the canvas over the static fallback only once there is a real
+    // frame behind it — otherwise the fallback flashes out to nothing.
+    // Composed before the first render, so the flower never appears centred for
+    // a frame and then jumps right.
+    bloom.position.x = offsetX;
+    renderer.render(scene, camera);
+    gl.classList.add('is-live');
+    frame = requestAnimationFrame(tick);
+
+    // A lost context must not leave a frozen canvas sitting over the fallback.
+    gl.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      cancelAnimationFrame(frame);
+      gl.classList.remove('is-live');
+    });
+  }
+</script>
+
+<style>
+  .bloom {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    /* Behind the hero copy, above the page ground. */
+    z-index: 0;
+  }
+
+  /* --- Static fallback ----------------------------------------------------
+     What most phone visitors see, and it has to be finished in its own right.
+     Three concentric conic rings, masked to thin bands: an aperture read from
+     the front. Under 1KB of CSS and no JavaScript at all. */
+  .bloom__static {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(120vw, 940px);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    opacity: 0.5;
+    transition: opacity 0.9s var(--ease);
+  }
+
+  .bloom__ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0.5turn,
+      #e8532a,
+      #f0863c,
+      #c4485f,
+      #9b2fc0,
+      #5b2ac0,
+      #2e3a9e,
+      #1b6ca8,
+      #e8532a
+    );
+    -webkit-mask: radial-gradient(circle, transparent 0 var(--in), #000 var(--in) var(--out), transparent var(--out));
+    mask: radial-gradient(circle, transparent 0 var(--in), #000 var(--in) var(--out), transparent var(--out));
+    animation: bloomSpin var(--dur) linear infinite;
+  }
+  .bloom__ring--out  { --in: 40%; --out: 42%; --dur: 90s; opacity: .55; }
+  .bloom__ring--mid  { --in: 27%; --out: 30%; --dur: 62s; opacity: .75; animation-direction: reverse; }
+  .bloom__ring--core { --in: 13%; --out: 19%; --dur: 34s; opacity: .95; filter: blur(1px); }
+
+  @keyframes bloomSpin {
+    to { rotate: 1turn; }
+  }
+
+  /* --- Canvas ------------------------------------------------------------- */
+  .bloom__gl {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 1.1s var(--ease);
+  }
+  .bloom__gl.is-live { opacity: 0.96; }
+
+  /* Once the real thing is running, the stand-in gets out of its way. */
+  .bloom:has(.bloom__gl.is-live) .bloom__static { opacity: 0; }
+
+  /* The flower takes the right of the frame and leaves the copy clean ground —
+     the two-column composition the flat mark already implies.
+
+     Keyed off `.is-live` rather than a media query on purpose: the scene only
+     goes live above the WIDE threshold, so this offset applies exactly when
+     there is a right column to move into, and the number itself never has to
+     exist in two files that can drift apart. The static fallback stays centred,
+     which is correct — it is background texture, not a subject. */
+  /* The canvas stays FULL-BLEED and the flower is composed within it, in world
+     space, by FRAME_X in the script.
+
+     Insetting the canvas instead was the obvious move and it was wrong: the
+     canvas edge clipped the petals dead straight down the middle of the hero,
+     which reads as a broken render rather than as a crop. A subject may bleed
+     off the edge of the FRAME; it may not be sliced by an invisible box inside
+     it. */
+
+  @media (prefers-reduced-motion: reduce) {
+    .bloom__ring { animation: none; }
+  }
+</style>

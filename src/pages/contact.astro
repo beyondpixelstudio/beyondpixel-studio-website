@@ -1,0 +1,265 @@
+---
+/**
+ * Contact.
+ *
+ * The ONLY page where the alternate number and the manager mailbox appear.
+ * Everywhere else — header, footer, schema, meta — carries the primary line
+ * alone. That is deliberate: directories and aggregators scrape whatever is
+ * most prominent and most repeated, so a second number given equal weight on
+ * every page is how a business ends up with two "official" numbers in
+ * circulation and a diluted NAP. Here it is labelled an alternate, which is
+ * what it is.
+ *
+ * There is no contact form. This market enquires on WhatsApp — a form that
+ * posts to a shared inbox is the path nobody takes, and a static site would
+ * need a third-party endpoint to accept one, which means another dependency and
+ * another privacy surface for no gain.
+ */
+import Base from '../layouts/Base.astro';
+import { business, wa } from '../data/business.ts';
+import { services } from '../data/services.ts';
+
+const title = 'Contact Beyond Pixel Studio | Patia, Bhubaneswar';
+const description =
+  'Call, WhatsApp or email Beyond Pixel Studio in Patia, Bhubaneswar for corporate video, event streaming, drone and studio bookings across Odisha.';
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${business.url}/` },
+    { '@type': 'ListItem', position: 2, name: 'Contact', item: `${business.url}/contact/` },
+  ],
+};
+
+const lines = [
+  {
+    label: 'Phone & WhatsApp',
+    note: 'Primary line. Fastest response.',
+    display: business.phone.display,
+    tel: business.phone.href,
+    waHref: wa('Hello, I would like to enquire about a shoot.'),
+    primary: true,
+  },
+  {
+    label: 'Alternate line',
+    note: 'If the primary line is engaged — often during a shoot.',
+    display: business.phoneAlt.display,
+    tel: business.phoneAlt.href,
+    waHref: wa('Hello, I would like to enquire about a shoot.', 'alt'),
+    primary: false,
+  },
+];
+
+const mail = [
+  {
+    label: 'General enquiries',
+    addr: business.email,
+    note: 'Quotes, new projects, and anything not yet booked.',
+  },
+  {
+    label: 'Production desk',
+    addr: business.emailManager,
+    note: 'Jobs already booked — call sheets, schedules, deliverables.',
+  },
+];
+---
+
+<Base title={title} description={description}>
+  <script
+    type="application/ld+json"
+    is:inline
+    slot="head"
+    set:html={JSON.stringify(breadcrumb)}
+  />
+
+  <section class="chead">
+    <span class="flare" aria-hidden="true"></span>
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">Contact</li>
+        </ol>
+      </nav>
+
+      <p class="eyebrow">Patia, Bhubaneswar</p>
+      <h1>Tell us what you are planning.</h1>
+      <p class="lead chead__lead">
+        Send the date, the venue and roughly what you need. You get an itemised quote,
+        not a brochure. WhatsApp is the quickest way to reach us — a message there
+        lands with someone, not in a queue.
+      </p>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  {/* --------------------------------------------------------------- LINES */}
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Call or message</p>
+      <h2 data-reveal>Two lines. One studio.</h2>
+
+      <ul class="lines stage">
+        {lines.map((l, i) => (
+          <li
+            class:list={['line', 'tilt', { 'line--alt': !l.primary }]}
+            data-reveal
+            style={`--reveal-delay:${i * 70}ms`}
+          >
+            <span class="tilt__sheen" aria-hidden="true"></span>
+            <p class="line__label mono">{l.label}</p>
+            <a class="line__num" href={l.tel}>{l.display}</a>
+            <p class="line__note">{l.note}</p>
+            <a class="btn line__wa" href={l.waHref}>WhatsApp this line</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------------------- MAIL */}
+  <section class="section section--band">
+    <div class="wrap">
+      <p class="eyebrow">Email</p>
+      <h2 data-reveal>Two mailboxes, so a live shoot never waits behind an enquiry.</h2>
+      <ul class="mail">
+        {mail.map((m, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 70}ms`}>
+            <p class="mail__label mono">{m.label}</p>
+            <a class="mail__addr" href={`mailto:${m.addr}`}>{m.addr}</a>
+            <p class="mail__note">{m.note}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  {/* --------------------------------------------------------------- VISIT */}
+  <section class="section">
+    <div class="wrap visit">
+      <div>
+        <p class="eyebrow">Studio</p>
+        <h2 data-reveal>Where to find us.</h2>
+        {/* The canonical NAP string, rendered verbatim from business.ts. */}
+        <address class="visit__addr">{business.address.display}</address>
+        <p class="visit__note">
+          The studio is a working floor — please call or message before visiting, so
+          someone is there and a shoot is not in progress.
+        </p>
+        <a class="btn btn--ghost visit__map" href={business.social.googleBusiness}>
+          Open in Google Maps
+        </a>
+      </div>
+
+      <div>
+        <p class="eyebrow">Coverage</p>
+        <h2 data-reveal>Where we work.</h2>
+        <p class="lead">
+          {business.areaServed.join(', ')} and across {business.areaServedBroad} — one
+          crew, one call, no local fixer to coordinate.
+        </p>
+        <p class="visit__note">
+          AI video production is delivered nationwide and needs no travel at all.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------ QUICK ENQUIRY */}
+  <section class="section section--band">
+    <div class="wrap">
+      <p class="eyebrow">Straight to the point</p>
+      <h2 data-reveal>Message us about a specific service.</h2>
+      <p class="lead">
+        Each of these opens WhatsApp with the service already named, so the first
+        reply can be about your dates rather than about what you meant.
+      </p>
+      <ul class="quick">
+        {services.map((s, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 45}ms`}>
+            <a href={wa(s.whatsapp)}>
+              <span>{s.name}</span>
+              <span class="quick__go mono" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .chead { position: relative; z-index: 2; padding-block: clamp(48px, 8vw, 92px) clamp(40px, 6vw, 72px); }
+  .chead__lead { margin-top: var(--s-3); }
+
+  .crumb ol {
+    list-style: none; margin: 0 0 var(--s-3); padding: 0;
+    display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--text-muted);
+  }
+  .crumb li + li::before { content: '/'; margin-right: 8px; color: var(--text-dim); }
+  .crumb a { color: var(--text-muted); text-decoration: none; }
+  .crumb a:hover { color: var(--ember-text); }
+
+  /* --- Lines ---------------------------------------------------------------
+     The primary carries the Ember edge. The alternate is deliberately quieter —
+     equal visual weight is exactly how a second number becomes a second
+     "official" number in the directories. */
+  .lines { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-3); }
+  .line {
+    position: relative; background: var(--raised);
+    border: 1px solid color-mix(in srgb, var(--ember-text) 34%, transparent);
+    border-radius: var(--radius); padding: var(--s-3) var(--s-3) var(--s-4);
+  }
+  .line--alt { border-color: color-mix(in srgb, var(--text) 10%, transparent); }
+  .line__label { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ember-text); }
+  .line--alt .line__label { color: var(--text-muted); }
+  .line__num {
+    display: inline-block; margin-top: 10px;
+    font-family: var(--font-display); font-stretch: var(--display-width);
+    font-weight: 700; font-size: clamp(23px, 3.1vw, 31px);
+    color: var(--text); text-decoration: none; letter-spacing: -.01em;
+  }
+  .line__num:hover { color: var(--ember-text); }
+  .line__note { margin-top: 8px; font-size: var(--fs-sm); color: var(--text-muted); }
+  .line__wa { margin-top: var(--s-3); }
+  .line--alt .line__wa { background: transparent; color: var(--text); border: 1px solid color-mix(in srgb, var(--text) 22%, transparent); }
+  .line--alt .line__wa:hover { background: var(--overlay); }
+
+  /* --- Mail ---------------------------------------------------------------- */
+  .mail { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-4); }
+  .mail__label { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--text-muted); }
+  .mail__addr { display: inline-block; margin-top: 8px; font-size: var(--fs-lead); color: var(--ocean-text); text-decoration: none; word-break: break-word; }
+  .mail__addr:hover { text-decoration: underline; }
+  .mail__note { margin-top: 6px; font-size: var(--fs-sm); color: var(--text-muted); }
+
+  /* --- Visit --------------------------------------------------------------- */
+  .visit { display: grid; gap: var(--s-5); }
+  .visit__addr { font-style: normal; margin-top: var(--s-3); font-size: var(--fs-lead); color: var(--text); max-width: 30ch; }
+  .visit__note { margin-top: var(--s-2); font-size: var(--fs-sm); color: var(--text-muted); max-width: 46ch; }
+  .visit__map { margin-top: var(--s-3); }
+
+  /* --- Quick enquiry ------------------------------------------------------- */
+  .quick { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-1); }
+  .quick a {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--s-2);
+    min-height: 56px; padding: 12px var(--s-3);
+    background: var(--raised); border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    border-radius: 8px; color: var(--text); text-decoration: none;
+    transition: background .18s var(--ease), border-color .18s var(--ease);
+  }
+  .quick a:hover { background: var(--overlay); border-color: color-mix(in srgb, var(--ember-text) 40%, transparent); }
+  .quick__go { color: var(--ember-text); }
+
+  @media (min-width: 700px) {
+    .lines { grid-template-columns: repeat(2, 1fr); }
+    .mail { grid-template-columns: repeat(2, 1fr); }
+    .quick { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 980px) {
+    .visit { grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+  }
+</style>

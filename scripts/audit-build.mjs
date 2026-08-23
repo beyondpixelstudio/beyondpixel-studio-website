@@ -1,0 +1,152 @@
+#!/usr/bin/env node
+/**
+ * Built-output audit.
+ *
+ * Checks the HTML that actually ships, not the source that produced it. The
+ * distinction matters: the six service links on the homepage pointed at pages
+ * that did not exist for an entire phase, and nothing in the source looked
+ * wrong — services.ts listed six slugs and the template linked to all six. Only
+ * the built directory knew there was no page behind them.
+ *
+ * Checks:
+ *   1. every internal link resolves to a file in dist/
+ *   2. exactly one <h1> per page, and no heading level skipped
+ *   3. <title> <= 60 and meta description <= 160
+ *   4. canonical, lang, viewport, and a description present
+ *   5. every wa.me link carries the canonical WhatsApp digits
+ *   6. the phone number renders as ONE string across the whole site
+ *
+ * Exits non-zero on failure.
+ */
+
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join, relative } from 'node:path';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(here, '..');
+const DIST = join(ROOT, 'dist');
+
+if (!existsSync(DIST)) {
+  console.error('\n  dist/ not found. Run `npm run build` first.\n');
+  process.exit(1);
+}
+
+/* -- Collect pages ------------------------------------------------------- */
+
+const pages = [];
+(function walk(dir) {
+  for (const e of readdirSync(dir)) {
+    const p = join(dir, e);
+    if (statSync(p).isDirectory()) walk(p);
+    else if (e.endsWith('.html')) pages.push(p);
+  }
+})(DIST);
+
+const problems = [];
+const note = (page, msg) => problems.push(`${relative(DIST, page) || 'index.html'}: ${msg}`);
+
+/* -- Canonical contact values, read from the source of truth ------------- */
+
+const truth = readFileSync(join(ROOT, 'src', 'data', 'business.ts'), 'utf8');
+const grab = (k) => truth.match(new RegExp(`${k}:\\s*'([^']+)'`))?.[1];
+const PHONE_DISPLAY = grab('display');
+/* Both lines are legitimate wa.me targets — the contact page offers the
+   alternate deliberately. The check is that a link points at a number we own,
+   not that every link points at the primary. */
+const WA_DIGITS = [...truth.matchAll(/wa:\s*'(\d+)'/g)].map((m) => m[1]);
+
+/* -- Per-page checks ----------------------------------------------------- */
+
+const strip = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+for (const page of pages) {
+  const html = readFileSync(page, 'utf8');
+
+  // --- head essentials
+  if (!/<html[^>]+lang=/i.test(html)) note(page, 'no lang attribute on <html>');
+  if (!/name="viewport"/i.test(html)) note(page, 'no viewport meta');
+  if (!/rel="canonical"/i.test(html)) note(page, 'no canonical link');
+
+  const title = strip(html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] ?? '');
+  if (!title) note(page, 'no <title>');
+  else if (title.length > 60) note(page, `title is ${title.length} chars (max 60): "${title}"`);
+
+  const desc = html.match(/<meta name="description" content="([^"]*)"/i)?.[1] ?? '';
+  if (!desc) note(page, 'no meta description');
+  else if (desc.length > 160) note(page, `description is ${desc.length} chars (max 160)`);
+
+  // --- headings
+  const heads = [...html.matchAll(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi)].map((m) => ({
+    level: +m[1],
+    text: strip(m[2]),
+  }));
+  const h1s = heads.filter((h) => h.level === 1);
+  if (h1s.length !== 1) note(page, `${h1s.length} <h1> elements (must be exactly 1)`);
+
+  let prev = 0;
+  for (const h of heads) {
+    if (prev && h.level > prev + 1) {
+      note(page, `heading jumps h${prev} -> h${h.level} at "${h.text.slice(0, 44)}"`);
+    }
+    prev = h.level;
+  }
+
+  // --- links
+  for (const m of html.matchAll(/href="([^"]+)"/g)) {
+    const href = m[1];
+    if (/^(https?:|mailto:|tel:|#|data:)/.test(href)) continue;
+    const clean = href.split('#')[0].split('?')[0];
+    if (!clean.startsWith('/')) continue;
+    if (/\.[a-z0-9]{2,5}$/i.test(clean)) {
+      if (!existsSync(join(DIST, clean))) note(page, `dead asset link ${href}`);
+    } else {
+      const target = join(DIST, clean, 'index.html');
+      if (!existsSync(target)) note(page, `dead internal link ${href}`);
+    }
+  }
+
+  // --- WhatsApp deep links
+  for (const m of html.matchAll(/https:\/\/wa\.me\/(\d+)/g)) {
+    if (!WA_DIGITS.includes(m[1])) {
+      note(page, `wa.me link uses ${m[1]}, which is not one of our numbers`);
+    }
+  }
+
+  // --- phone rendering: the visible string must be the canonical one
+  //
+  // <script> and <style> contents are dropped first. JSON-LD legitimately
+  // carries the E.164 form (+917608924893), which is what schema.org requires
+  // and is not a rendering of the number for a human to read — counting it as
+  // one made every page fail on correct markup.
+  const digitsOnly = PHONE_DISPLAY.replace(/\D/g, '');
+  const text = strip(
+    html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')
+  );
+  // any run of the number's digits that is NOT formatted the canonical way
+  const loose = new RegExp(digitsOnly.replace(/(\d)/g, '$1[\\s-]?'), 'g');
+  for (const m of text.match(loose) ?? []) {
+    if (m !== PHONE_DISPLAY.replace('+91 ', '').trim() && !PHONE_DISPLAY.includes(m)) {
+      note(page, `phone rendered as "${m}" — canonical is "${PHONE_DISPLAY}"`);
+    }
+  }
+}
+
+/* -- Report -------------------------------------------------------------- */
+
+const line = '-'.repeat(78);
+console.log(`\n  Built-output audit — ${pages.length} pages in dist/\n  ${line}`);
+
+if (problems.length) {
+  for (const p of problems) console.log(`  FAIL  ${p}`);
+  console.log(`  ${line}\n  ${problems.length} problem(s).\n`);
+  process.exit(1);
+}
+
+console.log('  ok    every internal link resolves');
+console.log('  ok    one h1 per page, no heading levels skipped');
+console.log('  ok    titles <= 60, descriptions <= 160');
+console.log('  ok    canonical, lang and viewport present on every page');
+console.log(`  ok    every wa.me link points at one of ${WA_DIGITS.join(' / ')}`);
+console.log(`  ok    phone renders as "${PHONE_DISPLAY}" everywhere`);
+console.log(`  ${line}\n  Clean.\n`);

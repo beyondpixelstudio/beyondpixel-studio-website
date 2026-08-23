@@ -34,7 +34,20 @@ const clip = `polygon(50% 50%, 100% ${(50 - spread).toFixed(2)}%, 100% ${(50 + s
       <div class="iris__blade" style={`--a:${i * step}deg; clip-path:${clip};`} />
     ))
   }
-  <p class="iris__mark">Beyond Pixel</p>
+  {/* The real mark now, not the text stand-in. Preloaded in the ring's own
+      moment: it is 61KB and it has ~150ms before it is needed, which is why it
+      is a plain <img> in the markup rather than a CSS background — the parser
+      finds it in the preload scan, a background is only discovered after the
+      stylesheet resolves and would arrive late. */}
+  <img
+    class="iris__mark"
+    src="/logo-mark-512.png"
+    alt=""
+    width="512"
+    height="512"
+    fetchpriority="high"
+    decoding="sync"
+  />
 </div>
 
 <script is:inline>
@@ -113,21 +126,16 @@ const clip = `polygon(50% 50%, 100% ${(50 - spread).toFixed(2)}%, 100% ${(50 + s
     to { transform: scale(9); opacity: 0; }
   }
 
-  /* Placeholder for the real mark. Swap for the logo SVG when it arrives. */
   .iris__mark {
     position: absolute;
-    inset: 0;
-    display: grid;
-    place-content: center;
+    left: 50%;
+    top: 50%;
+    width: clamp(120px, 17vmax, 260px);
+    height: auto;
     margin: 0;
-    font-family: var(--font-display);
-    font-stretch: var(--display-width);
-    font-weight: 700;
-    font-size: clamp(20px, 3.4vw, 34px);
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--text);
+    translate: -50% -50%;
     opacity: 0;
+    filter: drop-shadow(0 6px 30px rgb(0 0 0 / .55));
     animation: markIn 620ms cubic-bezier(.16, 1, .3, 1) forwards;
   }
   @keyframes markIn {

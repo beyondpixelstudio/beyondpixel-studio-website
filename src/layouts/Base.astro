@@ -81,6 +81,12 @@ const schema = {
       set:html={JSON.stringify(schema)}
     />
 
+    {/* Page-specific structured data. The LocalBusiness block above is emitted
+        on every page and carries @id, so a Service or Breadcrumb graph injected
+        here can reference the organisation rather than restating its NAP — one
+        entity, described once, linked to from everywhere. */}
+    <slot name="head" />
+
     <script is:inline>
       // Runs before first paint. Two jobs, both of which must happen early:
       //   1. `.js` gates the reveal styles, so content is visible by default and
@@ -132,6 +138,76 @@ const schema = {
           { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
         );
         els.forEach(function (el) { io.observe(el); });
+      })();
+    </script>
+
+    <script is:inline>
+      // Tilt rig.
+      //
+      // Refuses to start under reduced motion or on a coarse pointer — a tilt
+      // that tracks a finger fights the scroll it is competing with, and on
+      // touch the card is under the thumb that would be reading it.
+      //
+      // ONE listener on the document, not one per card. Twenty cards each
+      // holding their own pointermove handler is twenty closures firing on
+      // every mouse move; this fires once and writes only to the card currently
+      // under the pointer.
+      (function () {
+        var fine = matchMedia('(pointer: fine)').matches;
+        var ok = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+        if (!fine || !ok) return;
+
+        var MAX = 7;       // degrees — past ~10 a tilt reads as a gimmick
+        var active = null;
+        var queued = false;
+        var last = null;
+
+        function clear(el) {
+          el.classList.remove('is-tracking');
+          el.style.setProperty('--rx', '0deg');
+          el.style.setProperty('--ry', '0deg');
+          el.style.setProperty('--lift', '0px');
+        }
+
+        function apply() {
+          queued = false;
+          if (!active || !last) return;
+          var r = active.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          // -0.5..0.5 from the card's own centre
+          var px = (last.clientX - r.left) / r.width - 0.5;
+          var py = (last.clientY - r.top) / r.height - 0.5;
+          // Y follows X, X inverts Y: pushing the top of a card away tips it
+          // back, which is the direction a physical card would go.
+          active.style.setProperty('--ry', (px * MAX * 2).toFixed(2) + 'deg');
+          active.style.setProperty('--rx', (-py * MAX * 2).toFixed(2) + 'deg');
+          active.style.setProperty('--lift', '-4px');
+          active.style.setProperty('--gx', (px * 100 + 50).toFixed(1) + '%');
+          active.style.setProperty('--gy', (py * 100 + 50).toFixed(1) + '%');
+        }
+
+        document.addEventListener(
+          'pointermove',
+          function (e) {
+            var el = e.target instanceof Element ? e.target.closest('.tilt') : null;
+            if (el !== active) {
+              if (active) clear(active);
+              active = el;
+              if (active) active.classList.add('is-tracking');
+            }
+            if (!active) return;
+            last = e;
+            // rAF-coalesced: a pointermove can fire well above display rate,
+            // and writing a transform more than once a frame is wasted work.
+            if (!queued) { queued = true; requestAnimationFrame(apply); }
+          },
+          { passive: true }
+        );
+
+        // Leaving the window entirely never fires a move over a non-card.
+        document.addEventListener('pointerleave', function () {
+          if (active) { clear(active); active = null; }
+        });
       })();
     </script>
   </body>

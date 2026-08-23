@@ -8,14 +8,19 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "contrast": "node scripts/check-contrast.mjs"
+    "contrast": "node scripts/check-contrast.mjs",
+    "nap": "node scripts/check-nap.mjs",
+    "audit": "node scripts/audit-build.mjs",
+    "verify": "npm run contrast && npm run nap && npm run build && npm run audit"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/dm-sans": "^5.3.0",
     "@fontsource/dm-mono": "^5.3.0",
+    "@types/three": "^0.185.4",
     "astro": "^7.2.4",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.3",
+    "three": "^0.185.1"
   }
 }

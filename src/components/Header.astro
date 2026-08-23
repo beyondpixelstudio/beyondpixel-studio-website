@@ -5,20 +5,34 @@ import { business } from '../data/business.ts';
 <header class="hdr glass">
   <div class="wrap hdr__in">
     <a class="hdr__brand" href="/">
-      <span class="hdr__name">Beyond Pixel</span>
-      <span class="hdr__tag mono">{business.tagline}</span>
+      {/* The MARK only, never the full lockup — the lockup in circulation bakes
+          in a superseded tagline and a retired phone number, and an image is the
+          one place a wrong NAP cannot be corrected by editing business.ts.
+          Decorative: the brand name sits beside it as real text. */}
+      <img
+        class="hdr__mark"
+        src="/logo-mark-128.png"
+        alt=""
+        width="128"
+        height="128"
+        decoding="async"
+      />
+      <span class="hdr__words">
+        <span class="hdr__name">Beyond Pixel</span>
+        <span class="hdr__tag mono">{business.tagline}</span>
+      </span>
     </a>
 
     <nav class="hdr__nav" aria-label="Primary">
-      <a href="#services">Services</a>
-      <a href="#work">Work</a>
-      <a href="#why">Why us</a>
-      <a href="#contact">Contact</a>
+      <a href="/#services">Services</a>
+      <a href="/#work">Work</a>
+      <a href="/#why">Why us</a>
+      <a href="/contact/">Contact</a>
     </nav>
 
     <div class="hdr__act">
       <a class="hdr__tel mono" href={business.phone.href}>{business.phone.display}</a>
-      <a class="btn hdr__cta" href="#contact">Request a Quote</a>
+      <a class="btn hdr__cta" href="/contact/">Request a Quote</a>
     </div>
   </div>
 </header>
@@ -35,16 +49,38 @@ import { business } from '../data/business.ts';
     min-height: 68px;
   }
   .hdr__brand {
-    display: flex; flex-direction: column; text-decoration: none; color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: var(--text);
     margin-inline-end: auto; line-height: 1.1;
+  }
+  .hdr__words { display: flex; flex-direction: column; }
+  /* The mark is dense colour on a dark ground, so it carries its own soft key
+     rather than sitting flat against the glass. */
+  .hdr__mark {
+    width: 34px; height: 34px; flex: none;
+    filter: drop-shadow(0 2px 8px rgb(0 0 0 / .45));
+    transition: transform .4s var(--ease);
+  }
+  .hdr__brand:hover .hdr__mark { transform: rotate(-6deg) scale(1.06); }
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__brand:hover .hdr__mark { transform: none; }
   }
   .hdr__name {
     font-family: var(--font-display); font-stretch: var(--display-width);
     font-weight: 700; font-size: 19px; letter-spacing: .01em;
+    white-space: nowrap; /* "Beyond / Pixel" over two lines is not a wordmark */
   }
   .hdr__tag { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); }
+  /* On a 375px bar the mark, the name, the tagline and the CTA cannot all fit,
+     and the tagline is the one that is decorative — it is still in the footer,
+     the hero eyebrow and the <title>. */
+  @media (max-width: 419px) { .hdr__tag { display: none; } }
 
-  .hdr__nav { display: none; gap: var(--s-3); }
+  /* `nowrap` because "Why us" broke across two lines at the moment the nav
+     appeared, which made the whole bar look like it had collapsed. A nav item
+     is a label, not a paragraph — it either fits on one line or the breakpoint
+     is wrong. */
+  .hdr__nav { display: none; gap: var(--s-3); white-space: nowrap; }
   .hdr__nav a {
     color: var(--text-muted); text-decoration: none; font-size: var(--fs-sm);
     padding: 8px 2px; transition: color .18s var(--ease);
@@ -52,10 +88,13 @@ import { business } from '../data/business.ts';
   .hdr__nav a:hover { color: var(--text); }
 
   .hdr__act { display: flex; align-items: center; gap: var(--s-2); }
-  .hdr__tel { display: none; color: var(--text); text-decoration: none; font-size: var(--fs-sm); }
+  .hdr__tel { display: none; color: var(--text); text-decoration: none; font-size: var(--fs-sm); white-space: nowrap; }
   .hdr__tel:hover { color: var(--ember-text); }
-  .hdr__cta { min-height: 42px; padding: 9px 16px; font-size: var(--fs-sm); }
+  .hdr__cta { min-height: 42px; padding: 9px 16px; font-size: var(--fs-sm); white-space: nowrap; }
 
   @media (min-width: 700px) { .hdr__tel { display: inline; } }
-  @media (min-width: 900px) { .hdr__nav { display: flex; } }
+  /* 1040, not 900: at 900 the nav, the number and the CTA were all present and
+     all wrapping. The nav is the item that can wait — the phone number and the
+     quote button are what the bar is for. */
+  @media (min-width: 1040px) { .hdr__nav { display: flex; } }
 </style>
