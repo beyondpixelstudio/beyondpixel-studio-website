@@ -1,0 +1,69 @@
+---
+/**
+ * Social links, as icons.
+ *
+ * They existed already — as four text items in the footer's "Elsewhere" column,
+ * which is where links go to be missed. Icons in a row read as "these are our
+ * channels" at a glance, and the text label stays as the accessible name so the
+ * meaning is not carried by the glyph alone.
+ *
+ * `rel="me"` is what tells an aggregator these profiles belong to the same
+ * entity as the site, and it pairs with the `sameAs` array already in the
+ * LocalBusiness schema.
+ */
+import { business } from '../data/business.ts';
+
+interface Props {
+  /** `row` for the footer, `lg` for a contact page block. */
+  size?: 'row' | 'lg';
+}
+const { size = 'row' } = Astro.props;
+
+const links = [
+  { name: 'Instagram', href: business.social.instagram, d: 'M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.5.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.4 1-.9 1.4-.4.5-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.4-1.4-.9-.5-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.4-1 .9-1.4.4-.5.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2Zm0 5.1a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4Zm0 7.8a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2Zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0Z' },
+  { name: 'Facebook', href: business.social.facebook, d: 'M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z' },
+  { name: 'YouTube', href: business.social.youtube, d: 'M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8A26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15.1V8.9l5.2 3.1-5.2 3.1Z' },
+  { name: 'Google Business Profile', href: business.social.googleBusiness, d: 'M21.8 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.5a4.7 4.7 0 0 1-2 3.1v2.5h3.2c1.9-1.7 3-4.3 3-7.4Zm-9.8 10c2.7 0 5-.9 6.7-2.4l-3.2-2.5a6.1 6.1 0 0 1-9.1-3.2H3.1v2.6A10 10 0 0 0 12 22.2Zm-5.6-8.1a6 6 0 0 1 0-3.8V7.7H3.1a10 10 0 0 0 0 8.9l3.3-2.5Zm5.6-6.4c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 0 0 3.1 7.7l3.3 2.6A6 6 0 0 1 12 7.7Z' },
+];
+---
+
+<ul class:list={['soc', `soc--${size}`]}>
+  {links.map((l) => (
+    <li>
+      <a class="soc__a" href={l.href} rel="me noopener" aria-label={l.name} title={l.name}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d={l.d} fill="currentColor" />
+        </svg>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .soc { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .soc--lg { gap: var(--s-3); }
+
+  .soc__a {
+    /* 44px is the comfortable touch target, well clear of the 24px floor. */
+    width: 44px; height: 44px;
+    display: grid; place-content: center;
+    border-radius: var(--r-sm);
+    background: var(--raised);
+    box-shadow: var(--edge);
+    color: var(--text-muted);
+    transition: color var(--t-fast) var(--ease), background var(--t-fast) var(--ease),
+                transform var(--t-fast) var(--ease);
+  }
+  .soc__a svg { width: 19px; height: 19px; display: block; }
+  .soc__a:hover {
+    color: var(--text);
+    background: var(--overlay);
+    transform: translateY(-2px);
+  }
+  .soc--lg .soc__a { width: 52px; height: 52px; }
+  .soc--lg .soc__a svg { width: 22px; height: 22px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .soc__a:hover { transform: none; }
+  }
+</style>

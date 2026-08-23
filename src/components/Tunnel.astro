@@ -90,6 +90,28 @@ const rings = Array.from({ length: RINGS }, (_, i) => {
     to   { transform: scale(1.045) rotate(3deg); }
   }
 
+  /* SCROLL ZOOM. The corridor pushes in as the page scrolls, so the background
+     has the same depth cue as the content moving over it.
+
+     Driven by a native scroll timeline — no listener, no rAF, no main-thread
+     work at all. `scale` is its own property here, so it composes with the
+     `translate` that centres the svg instead of fighting it, and browsers
+     without scroll timelines simply get the static corridor. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .tunnel svg {
+        animation-name: tunnelZoom;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll(root block);
+      }
+      @keyframes tunnelZoom {
+        from { scale: 1; }
+        to   { scale: 2.1; }
+      }
+    }
+  }
+
   .tunnel__spin {
     transform-origin: 500px 500px;
     animation: tunnelSpin 240s linear infinite;

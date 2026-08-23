@@ -67,7 +67,15 @@
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Reserve the scrollbar's width whether or not the page scrolls. Without it a
+     short page has no scrollbar and its content sits ~15px right of a long
+     page's, so the whole layout jumps sideways on navigation. Everything is
+     centred either way; this is what stops the centre MOVING between pages. */
+  scrollbar-gutter: stable;
+}
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
@@ -344,8 +352,17 @@ a { color: var(--ocean-text); }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
+    /* LONGHANDS, never the `animation` shorthand. Per spec the shorthand resets
+       animation-timeline to `auto`, and the minifier will happily fold a
+       following `animation-timeline` back into it — producing
+       `animation: linear both dollyIn view()`, which is invalid and drops the
+       whole declaration. The effect then degrades to "no animation", which
+       looks exactly like "browser does not support it", which is why this sat
+       broken and unnoticed. */
     .dolly {
-      animation: dollyIn linear both;
+      animation-name: dollyIn;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 8% cover 42%;
     }
@@ -356,7 +373,9 @@ a { color: var(--ocean-text); }
       to   { transform: none; }
     }
     .drift {
-      animation: driftUp linear both;
+      animation-name: driftUp;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: view();
       animation-range: cover 0% cover 100%;
     }

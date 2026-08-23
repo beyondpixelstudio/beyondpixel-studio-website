@@ -19,6 +19,7 @@
 import Base from '../layouts/Base.astro';
 import EnquiryForm from '../components/EnquiryForm.astro';
 import Reviews from '../components/Reviews.astro';
+import Social from '../components/Social.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
 
@@ -174,6 +175,9 @@ const mail = [
         <p class="visit__note">
           AI video production is delivered nationwide and needs no travel at all.
         </p>
+
+        <p class="eyebrow visit__soc">Follow us</p>
+        <Social size="lg" />
       </div>
     </div>
   </section>
@@ -269,6 +273,7 @@ const mail = [
   .visit__addr { font-style: normal; margin-top: var(--s-4); font-size: var(--fs-lead); color: var(--text); max-width: 30ch; }
   .visit__note { margin-top: var(--s-3); font-size: var(--fs-sm); color: var(--text-muted); max-width: 46ch; }
   .visit__map { margin-top: var(--s-4); }
+  .visit__soc { margin-top: var(--s-5); margin-bottom: var(--s-3); }
 
   /* --- Quick enquiry ------------------------------------------------------- */
   .quick { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-2); }

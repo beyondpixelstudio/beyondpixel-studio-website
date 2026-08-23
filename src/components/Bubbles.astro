@@ -1,0 +1,66 @@
+---
+/**
+ * Drifting colour bubbles that lean towards the pointer.
+ *
+ * NO `filter: blur()`. Blurring six large elements every frame is one of the
+ * most expensive things a page can ask a compositor to do, and it is not
+ * needed: a radial-gradient with a soft stop is ALREADY blurred, for free, and
+ * it never triggers a filter pass. That single choice is the difference between
+ * this being ambient and it costing frames.
+ *
+ * Parallax comes from `--mx`/`--my`, written ONCE on <html> by the rig in
+ * Base.astro and read here. Each bubble multiplies them by its own depth, so
+ * the near ones travel further than the far ones and the field gains depth
+ * rather than sliding as one sheet.
+ */
+const BUBBLES = [
+  { x: '12%', y: '18%', s: 460, hue: '199 67 30',  a: 0.20, depth: 26, dur: 34 },
+  { x: '78%', y: '12%', s: 380, hue: '155 47 192', a: 0.17, depth: -34, dur: 41 },
+  { x: '66%', y: '72%', s: 520, hue: '27 108 168', a: 0.16, depth: 18, dur: 47 },
+  { x: '24%', y: '80%', s: 340, hue: '242 166 90', a: 0.13, depth: -22, dur: 38 },
+  { x: '45%', y: '40%', s: 600, hue: '155 47 192', a: 0.10, depth: 12, dur: 55 },
+  { x: '90%', y: '52%', s: 300, hue: '199 67 30',  a: 0.15, depth: -16, dur: 43 },
+];
+---
+
+<div class="bub" aria-hidden="true">
+  {BUBBLES.map((b, i) => (
+    <span
+      class="bub__b"
+      style={`--x:${b.x}; --y:${b.y}; --s:${b.s}px; --hue:${b.hue}; --a:${b.a}; --depth:${b.depth}; --dur:${b.dur}s; --delay:${i * -6}s`}
+    />
+  ))}
+</div>
+
+<style>
+  .bub { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+
+  .bub__b {
+    position: absolute;
+    left: var(--x); top: var(--y);
+    width: var(--s); height: var(--s);
+    margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgb(var(--hue) / var(--a)) 0%,
+      rgb(var(--hue) / calc(var(--a) * 0.45)) 38%,
+      transparent 70%
+    );
+    /* `translate` carries the pointer lean and `transform` carries the drift,
+       so the two never overwrite each other. */
+    translate: calc(var(--mx, 0) * var(--depth) * 1px) calc(var(--my, 0) * var(--depth) * 1px);
+    transition: translate 900ms cubic-bezier(.22, .61, .36, 1);
+    animation: bubDrift var(--dur) ease-in-out var(--delay) infinite alternate;
+    will-change: translate, transform;
+  }
+
+  @keyframes bubDrift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(4%, -6%, 0) scale(1.14); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bub__b { animation: none; translate: none; transition: none; }
+  }
+</style>

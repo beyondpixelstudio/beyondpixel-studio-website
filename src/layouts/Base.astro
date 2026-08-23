@@ -8,6 +8,7 @@ import '../styles/base.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Tunnel from '../components/Tunnel.astro';
+import Bubbles from '../components/Bubbles.astro';
 import { business, sameAs } from '../data/business.ts';
 
 interface Props {
@@ -112,6 +113,7 @@ const schema = {
 
     <div class="cine" aria-hidden="true">
       <Tunnel />
+      <Bubbles />
       <div class="cine__bloom"></div>
       <div class="cine__vignette"></div>
       <div class="cine__grain"></div>
@@ -140,6 +142,45 @@ const schema = {
           { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
         );
         els.forEach(function (el) { io.observe(el); });
+      })();
+    </script>
+
+    <script is:inline>
+      // Pointer rig.
+      //
+      // Writes --mx/--my (-1..1) ONCE on <html>. Anything that wants to lean
+      // towards the pointer reads those instead of adding its own listener —
+      // six bubbles with six listeners would be six closures firing on every
+      // mouse move, for one number they all share.
+      //
+      // Skipped entirely on a coarse pointer: there is no cursor to follow, and
+      // registering the listener would cost a frame on every touch-drag.
+      (function () {
+        if (!matchMedia('(pointer: fine)').matches) return;
+        if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+
+        var d = document.documentElement;
+        var queued = false;
+        var x = 0;
+        var y = 0;
+
+        function write() {
+          queued = false;
+          d.style.setProperty('--mx', x.toFixed(3));
+          d.style.setProperty('--my', y.toFixed(3));
+        }
+
+        addEventListener(
+          'pointermove',
+          function (e) {
+            x = (e.clientX / innerWidth) * 2 - 1;
+            y = (e.clientY / innerHeight) * 2 - 1;
+            // rAF-coalesced: pointermove can fire well above display rate and
+            // writing a custom property more than once a frame is wasted work.
+            if (!queued) { queued = true; requestAnimationFrame(write); }
+          },
+          { passive: true }
+        );
       })();
     </script>
 

@@ -85,11 +85,17 @@ const slates = [
   </section>
 
   {/* ------------------------------------------------------- CLIENT WALL */}
-  <section class="trust" aria-label="Clients">
-    <div class="wrap trust__in">
+  <section class="section trust" aria-label="Clients">
+    <div class="wrap">
       <p class="trust__lead">Trusted by {clients.length}+ brands, campuses and institutions</p>
+      {/* FRAMED, not full-bleed. Every other section on the page is boxed to
+          --container, and a strip running edge to edge under a boxed hero read
+          as a band bolted on from a different design. Inside the container with
+          its own rounded frame it becomes a component of the page. */}
+      <div class="trust__frame">
+        <ClientWall duration={70} />
+      </div>
     </div>
-    <ClientWall duration={70} />
   </section>
 
   {/* ----------------------------------------------------------- SERVICES */}
@@ -298,10 +304,18 @@ const slates = [
   /* --- Trust bar ---------------------------------------------------------
      Client names as TEXT: indexable (logos are not) and needing no trademark
      permission. */
-  /* The wall runs edge to edge; only its label sits inside the container. */
-  .trust { position: relative; z-index: 2; padding-block: var(--s-5); border-block: 1px solid rgb(255 255 255 / .06); }
-  .trust__in { margin-bottom: var(--s-4); }
-  .trust__lead { font-size: 13px; letter-spacing: .04em; color: var(--text-dim); text-align: center; }
+  .trust { position: relative; z-index: 2; padding-block: clamp(var(--s-5), 5vw, var(--s-6)); }
+  .trust__lead {
+    font-size: 13px; letter-spacing: .04em; color: var(--text-dim);
+    text-align: center; margin-bottom: var(--s-4);
+  }
+  .trust__frame {
+    border-radius: var(--r-lg);
+    background: linear-gradient(180deg, rgb(255 255 255 / .04), transparent 60%), var(--surface);
+    box-shadow: var(--edge);
+    padding-block: var(--s-4);
+    overflow: hidden;
+  }
 
   /* --- Services ----------------------------------------------------------- */
   .svc { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }

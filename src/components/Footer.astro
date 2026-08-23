@@ -1,6 +1,7 @@
 ---
 import { business } from '../data/business.ts';
 import { services } from '../data/services.ts';
+import Social from './Social.astro';
 ---
 
 {/* No id="contact" here. It predates the /contact/ page and the homepage's own
@@ -33,13 +34,12 @@ import { services } from '../data/services.ts';
     </div>
 
     <div class="ftr__col">
-      <h2 class="ftr__h">Elsewhere</h2>
-      <ul>
-        <li><a class="ftr__link" href={business.social.instagram}>Instagram</a></li>
-        <li><a class="ftr__link" href={business.social.facebook}>Facebook</a></li>
-        <li><a class="ftr__link" href={business.social.youtube}>YouTube</a></li>
-        <li><a class="ftr__link" href={business.social.googleBusiness}>Google Business Profile</a></li>
-      </ul>
+      <h2 class="ftr__h">Follow us</h2>
+      <Social size="row" />
+      <p class="ftr__socnote">
+        Work in progress, finished films and behind the scenes — most of it goes
+        up on Instagram first.
+      </p>
     </div>
   </div>
 
@@ -73,6 +73,7 @@ import { services } from '../data/services.ts';
     transition: color var(--t-fast) var(--ease);
   }
   .ftr__link:hover { color: var(--text); }
+  .ftr__socnote { margin-top: var(--s-3); font-size: 13px; color: var(--text-dim); max-width: 30ch; }
   .ftr__base {
     display: flex; flex-wrap: wrap; gap: var(--s-3); justify-content: space-between;
     margin-top: var(--s-6); padding-top: var(--s-4);
