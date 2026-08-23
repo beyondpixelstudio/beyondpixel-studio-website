@@ -188,7 +188,7 @@ a { color: var(--ocean-text); }
   display: inline-flex; align-items: center; gap: var(--s-2);
   padding: 6px 14px 6px 10px;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--ember-hover), var(--ember-deep));
+  background: linear-gradient(135deg, var(--grad-a), var(--grad-b));
   box-shadow: var(--edge-hot);
   color: var(--on-ember);
   font-size: 13px; font-weight: 600; letter-spacing: .01em;
@@ -281,7 +281,9 @@ a { color: var(--ocean-text); }
   border: 0; border-radius: var(--r-sm); cursor: pointer;
   font-family: var(--font-body); font-size: var(--fs-sm); font-weight: 600;
   text-decoration: none; white-space: nowrap;
-  background: linear-gradient(180deg, var(--ember-hover), var(--ember-deep));
+  /* 135deg so the sweep runs corner to corner and actually reads as a gradient;
+     a 180deg ramp over two neighbouring oranges looked flat at button size. */
+  background: linear-gradient(135deg, var(--grad-a) 0%, var(--ember) 48%, var(--grad-b) 100%);
   color: var(--on-ember);
   box-shadow: var(--edge-hot);
   transition: filter var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);

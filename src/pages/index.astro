@@ -3,8 +3,11 @@ import Base from '../layouts/Base.astro';
 import IrisReveal from '../components/IrisReveal.astro';
 import LotusBloom from '../components/LotusBloom.astro';
 import Check from '../components/Check.astro';
+import ClientWall from '../components/ClientWall.astro';
+import Reviews from '../components/Reviews.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
+import { clients } from '../data/clients.ts';
 
 /**
  * Homepage: highlights only. Its job is to ROUTE, not to sell everything —
@@ -33,8 +36,8 @@ const crew = [
 
 const proof = [
   ['Government and institutional work.', 'Ministerial coverage, PSU and university events — protocol and clearances handled.'],
-  [`Rated ${business.rating.value.toFixed(1)} across ${business.rating.count} reviews.`, `Publicly verifiable on ${business.rating.source}.`],
-  ['Named clients, not logos we borrowed.', business.clients.slice(0, 4).join(', ') + ' and more.'],
+  ['Rated 5.0 across 91 reviews.', 'Publicly verifiable on JustDial, and on our Google Business Profile.'],
+  [`${clients.length} named clients, with their marks on the page.`, clients.slice(0, 4).map((c) => c.name).join(', ') + ' and more.'],
   ['Based in Patia, working across Odisha.', 'One crew, one call, no local fixer to coordinate.'],
 ];
 
@@ -76,23 +79,16 @@ const slates = [
         <a class="btn btn--ghost btn--lg" href="#work">See our work</a>
       </div>
 
-      <p class="rating">
-        <span class="rating__stars" aria-hidden="true">★★★★★</span>
-        <span class="mono">
-          {business.rating.value.toFixed(1)} · {business.rating.count} reviews on {business.rating.source}
-        </span>
-      </p>
+      <Reviews variant="hero" />
     </div>
   </section>
 
-  {/* --------------------------------------------------------- TRUST BAR */}
+  {/* ------------------------------------------------------- CLIENT WALL */}
   <section class="trust" aria-label="Clients">
     <div class="wrap trust__in">
-      <p class="trust__lead">Trusted by teams at</p>
-      <ul class="trust__list" data-reveal>
-        {business.clients.map((c) => <li>{c}</li>)}
-      </ul>
+      <p class="trust__lead">Trusted by {clients.length}+ brands, campuses and institutions</p>
     </div>
+    <ClientWall duration={70} />
   </section>
 
   {/* ----------------------------------------------------------- SERVICES */}
@@ -169,10 +165,9 @@ const slates = [
               </ul>
             </div>
             <div class="fcard__vis">
-              <p class="bigstat">{business.rating.value.toFixed(1)}</p>
-              <p class="bigstat__note">
-                across {business.rating.count} reviews<br />on {business.rating.source}
-              </p>
+              <p class="bigstat">5.0</p>
+              <p class="bigstat__note">across 91 reviews on JustDial</p>
+              <Reviews variant="block" />
             </div>
           </div>
         </article>
@@ -293,16 +288,10 @@ const slates = [
   /* --- Trust bar ---------------------------------------------------------
      Client names as TEXT: indexable (logos are not) and needing no trademark
      permission. */
+  /* The wall runs edge to edge; only its label sits inside the container. */
   .trust { position: relative; z-index: 2; padding-block: var(--s-5); border-block: 1px solid rgb(255 255 255 / .06); }
-  .trust__in { display: grid; gap: var(--s-3); align-items: center; }
-  .trust__lead { font-size: 13px; color: var(--text-dim); max-width: 16ch; }
-  .trust__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-5); }
-  .trust__list li {
-    font-family: var(--font-display); font-stretch: var(--display-width);
-    font-weight: 600; font-size: clamp(14px, 1.4vw, 17px);
-    color: var(--text-muted);
-  }
-  @media (min-width: 860px) { .trust__in { grid-template-columns: auto 1fr; gap: var(--s-6); } }
+  .trust__in { margin-bottom: var(--s-4); }
+  .trust__lead { font-size: 13px; letter-spacing: .04em; color: var(--text-dim); text-align: center; }
 
   /* --- Services ----------------------------------------------------------- */
   .svc { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
@@ -338,7 +327,7 @@ const slates = [
     font-weight: 500; font-size: clamp(56px, 7vw, 88px); line-height: 1;
     letter-spacing: -.03em; color: var(--text); text-align: center;
   }
-  .bigstat__note { margin-top: var(--s-3); text-align: center; color: var(--text-muted); font-size: var(--fs-sm); }
+  .bigstat__note { margin-top: var(--s-3); margin-bottom: var(--s-4); text-align: center; color: var(--text-muted); font-size: var(--fs-sm); }
 
   /* --- Work: labelled empty states ---------------------------------------- */
   .work { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }

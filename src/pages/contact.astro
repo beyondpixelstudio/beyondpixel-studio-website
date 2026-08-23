@@ -10,12 +10,15 @@
  * circulation and a diluted NAP. Here it is labelled an alternate, which is
  * what it is.
  *
- * There is no contact form. This market enquires on WhatsApp — a form that
- * posts to a shared inbox is the path nobody takes, and a static site would
- * need a third-party endpoint to accept one, which means another dependency and
- * another privacy surface for no gain.
+ * THE FORM COMPOSES A WHATSAPP MESSAGE; it does not post anywhere. A static
+ * site has nowhere to POST to, and the alternatives — a third-party form
+ * endpoint, or an inbox nobody watches mid-shoot — are worse than the channel
+ * this market already uses. The details are assembled in the browser and handed
+ * to WhatsApp, where the sender still presses send. See EnquiryForm.astro.
  */
 import Base from '../layouts/Base.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import Reviews from '../components/Reviews.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
 
@@ -175,12 +178,29 @@ const mail = [
     </div>
   </section>
 
-  {/* ------------------------------------------------------ QUICK ENQUIRY */}
-  <section class="section glow" style="--glow: rgb(199 67 30 / .16); --glow-x: 50%; --glow-y: 20%;">
+  {/* --------------------------------------------------------------- FORM */}
+  <section class="section glow" id="enquiry" style="--glow: rgb(199 67 30 / .16); --glow-x: 50%; --glow-y: 10%;">
     <div class="wrap">
       <div class="sechead">
-        <p class="eyebrow">Straight to the point</p>
-        <h2>Message us about a specific service.</h2>
+        <p class="eyebrow">Send an enquiry</p>
+        <h2>Tell us the date and the venue.</h2>
+        <p>
+          Fill this in and it opens WhatsApp with everything already written out.
+          Nothing leaves this page until you press send.
+        </p>
+      </div>
+      <div class="formwrap" data-reveal>
+        <EnquiryForm />
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------ QUICK ENQUIRY */}
+  <section class="section">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Or straight to the point</p>
+        <h2>Message us about one service.</h2>
         <p>
           Each of these opens WhatsApp with the service already named, so the first
           reply can be about your dates rather than about what you meant.
@@ -196,8 +216,10 @@ const mail = [
           </li>
         ))}
       </ul>
+      <div class="revwrap"><Reviews variant="block" /></div>
     </div>
   </section>
+
 </Base>
 
 <style>
@@ -210,7 +232,10 @@ const mail = [
     display: flex; flex-wrap: wrap; gap: var(--s-2); font-size: 13px; color: var(--text-muted);
   }
   .crumb li + li::before { content: '/'; margin-right: var(--s-2); color: var(--text-dim); }
-  .crumb a { color: var(--text-muted); text-decoration: none; }
+  /* Padded to clear WCAG 2.2's 24px target floor. A breadcrumb is navigation —
+     a list of discrete controls — not prose, so the "inline in a sentence"
+     exception does not cover it. */
+  .crumb a { display: inline-block; padding-block: 4px; color: var(--text-muted); text-decoration: none; }
   .crumb a:hover { color: var(--ember-text); }
 
   /* --- Lines ---------------------------------------------------------------
@@ -256,6 +281,9 @@ const mail = [
   }
   .quick a:hover { background: var(--overlay); }
   .quick__go { color: var(--ember-text); }
+
+  .formwrap { max-width: 940px; margin-inline: auto; }
+  .revwrap { margin-top: var(--s-6); }
 
   @media (min-width: 700px) {
     .lines { grid-template-columns: repeat(2, 1fr); }

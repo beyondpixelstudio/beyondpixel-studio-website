@@ -59,6 +59,14 @@
      4.94:1 measured at the top. A lighter stop would have quietly broken it. */
   --ember-deep:    #A5360F;
 
+  /* Primary-button gradient. It runs warm-orange to deep rose along 135deg —
+     the same sweep the lotus mark makes — instead of the near-flat orange it
+     had before. BOTH stops are contrast-verified against the white label; a
+     gradient is only as accessible as its lightest point, and that point is
+     --grad-a. */
+  --grad-a:        #CE461D;
+  --grad-b:        #A32A4E;
+
   /* --- Signature and trust ------------------------------------------------ */
   --magenta:       #9B2FC0; /* signature FILLS only — never body text */
   --magenta-text:  #C98CE4; /* magenta as text */

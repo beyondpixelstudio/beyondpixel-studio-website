@@ -238,7 +238,10 @@ const breadcrumb = {
     font-size: 13px; color: var(--text-muted);
   }
   .crumb li + li::before { content: '/'; margin-right: var(--s-2); color: var(--text-dim); }
-  .crumb a { color: var(--text-muted); text-decoration: none; }
+  /* Padded to clear WCAG 2.2's 24px target floor. A breadcrumb is navigation —
+     a list of discrete controls — not prose, so the "inline in a sentence"
+     exception does not cover it. */
+  .crumb a { display: inline-block; padding-block: 4px; color: var(--text-muted); text-decoration: none; }
   .crumb a:hover { color: var(--ember-text); }
 
   /* --- Feature-card stack ------------------------------------------------- */

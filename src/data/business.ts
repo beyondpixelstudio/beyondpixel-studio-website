@@ -92,37 +92,45 @@ export const business = {
   },
 
   /**
-   * Real and verifiable — 5.0 across 91 reviews on JustDial.
+   * REVIEW SOURCES.
    *
-   * DISPLAYED on the site, but deliberately NOT emitted as schema.org
+   * Displayed on the site, but deliberately NOT emitted as schema.org
    * `aggregateRating`. Google's structured-data guidelines disallow marking up
    * ratings collected on a third-party platform as if they were first-party,
    * and self-serving aggregateRating is the one schema abuse that draws manual
-   * actions. The RP Films system reached the same conclusion.
+   * actions. The ratings are shown visually instead, where they still do their
+   * job.
    *
-   * Once real Google Business Profile reviews are collected, revisit this.
+   * `value`/`count` are NULL until someone has read the real figure off the
+   * platform. A review count is a factual claim about other people's opinions;
+   * inventing a plausible-looking one is the single most damaging thing that
+   * could be put on this page, so the UI renders an unnumbered link instead and
+   * the number simply appears when it is known.
+   *
+   * TODO — Rajesh to supply the live Google rating and review count.
    */
-  rating: {
-    source: 'JustDial',
-    value: 5.0,
-    count: 91,
-    schemaSafe: false,
-  },
+  reviews: [
+    {
+      source: 'JustDial',
+      value: 5.0,
+      count: 91,
+      url: null,
+      note: 'Rated by clients on JustDial',
+    },
+    {
+      source: 'Google',
+      value: null,
+      count: null,
+      url: 'https://share.google/B92t3U7I2wQZpp4SS',
+      note: 'Read the reviews on our Google Business Profile',
+    },
+  ] as const,
 
   /**
-   * Named for credibility, as text rather than logos — indexable, and it needs
-   * no trademark permission. Logo slots exist in the TrustBar component for
-   * when/if sign-off is obtained.
+   * The client list moved to src/data/clients.ts, which carries the logos as
+   * well as the names — one list, not a text copy here and an image copy there
+   * that drift apart the first time a client is added.
    */
-  clients: [
-    'HCL Tech',
-    'NALCO',
-    'Reliance Foundation',
-    'Housing.com',
-    'IIT Bhubaneswar',
-    'SOA University',
-    'KIMS',
-  ],
 
   /**
    * Narrowed deliberately. Bhubaneswar, Cuttack and Puri are one working market —

@@ -1,0 +1,122 @@
+---
+/**
+ * Continuous client marquee.
+ *
+ * HOW THE LOOP IS SEAMLESS: the track holds the list TWICE and translates by
+ * exactly -50%. At the moment the animation restarts, the second copy is
+ * sitting precisely where the first began, so there is no jump. Any other
+ * distance leaves a visible seam.
+ *
+ * ACCESSIBILITY:
+ *  - the duplicate copy is `aria-hidden` so a screen reader hears 23 clients,
+ *    not 46, and the real list keeps its semantics.
+ *  - the marquee pauses on hover AND on focus-within, so a keyboard user can
+ *    stop it; WCAG 2.2 SC 2.2.2 requires moving content to be pausable.
+ *  - under `prefers-reduced-motion` the animation is dropped entirely and the
+ *    strip becomes an ordinary horizontally scrollable list.
+ *
+ * The logos are colour marks on white, so they sit on white chips rather than
+ * being knocked out — inverting two dozen multi-coloured logos would wreck
+ * most of them, and a white chip is what the studio's own poster does.
+ */
+import { clients } from '../data/clients.ts';
+
+interface Props {
+  /** Seconds for one full pass. Longer list, longer duration. */
+  duration?: number;
+}
+const { duration = 60 } = Astro.props;
+---
+
+<div class="wall" style={`--wall-dur:${duration}s`}>
+  <div class="wall__track">
+    <ul class="wall__set">
+      {clients.map((c) => (
+        <li class="wall__item">
+          <img
+            src={`/clients/${c.logo}.webp`}
+            alt={c.name}
+            width="300"
+            height="150"
+            loading="lazy"
+            decoding="async"
+          />
+        </li>
+      ))}
+    </ul>
+    {/* The seam copy. Hidden from assistive tech — it is the same 23 clients. */}
+    <ul class="wall__set" aria-hidden="true">
+      {clients.map((c) => (
+        <li class="wall__item">
+          <img src={`/clients/${c.logo}.webp`} alt="" width="300" height="150" loading="lazy" decoding="async" />
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .wall {
+    position: relative;
+    overflow: hidden;
+    /* Fades the strip into the page at both ends so logos enter and leave
+       rather than being chopped off by a hard edge. */
+    -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .wall__track {
+    display: flex;
+    width: max-content;
+    animation: wallRun var(--wall-dur, 60s) linear infinite;
+  }
+  .wall:hover .wall__track,
+  .wall:focus-within .wall__track { animation-play-state: paused; }
+
+  @keyframes wallRun {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  .wall__set {
+    display: flex; align-items: center;
+    list-style: none; margin: 0; padding: 0;
+    gap: var(--s-3);
+    padding-inline: calc(var(--s-3) / 2);
+  }
+  .wall__item {
+    flex: none;
+    width: 146px; height: 86px;
+    /* `display: block`, NOT grid. A percentage height on a grid item resolves
+       against the grid ROW, and an auto-sized row is indefinite — so
+       `height: 100%` silently fell back to `auto` and the taller logos
+       overflowed the chip and were clipped. Against a block container with a
+       definite height it resolves properly, and object-fit does the centring
+       that place-items was there for. */
+    display: block;
+    background: #fff;
+    border-radius: var(--r-sm);
+    padding: var(--s-2);
+    /* Slightly held back so the wall supports the page rather than shouting
+       over it; full strength on hover. */
+    opacity: .78;
+    transition: opacity var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+  }
+  .wall__item:hover { opacity: 1; transform: translateY(-2px); }
+  /* `object-fit: contain` on a fixed box, not auto sizing. The logos are
+     mixed aspect ratios, and letting them size themselves let the taller ones
+     overflow the chip and get clipped at top and bottom. */
+  .wall__item img { width: 100%; height: 100%; object-fit: contain; }
+
+  @media (min-width: 700px) {
+    .wall__item { width: 176px; height: 100px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wall { overflow-x: auto; }
+    .wall__track { animation: none; }
+    /* The duplicate adds nothing once it is not scrolling past. */
+    .wall__set[aria-hidden='true'] { display: none; }
+    .wall__item { opacity: 1; }
+    .wall__item:hover { transform: none; }
+  }
+</style>

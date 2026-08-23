@@ -1,0 +1,111 @@
+---
+/**
+ * Polygon tunnel — the site's ambient background motion.
+ *
+ * Nested nonagons, each a little smaller and a little further rotated than the
+ * one outside it, so the stack reads as a twisted corridor receding to a
+ * vanishing point. The whole group turns once every four minutes.
+ *
+ * WHY SVG AND NOT WEBGL: it is sixteen stroked polygons and one CSS rotation.
+ * The 3D lotus already justifies a renderer because it is the hero subject and
+ * it is gated behind five checks; a background texture cannot justify a second
+ * one, and this version runs on every page, at every width, on every device,
+ * for a few hundred bytes and no JavaScript at all.
+ *
+ * The geometry is computed here at BUILD time, so the browser receives plain
+ * markup — there is no layout maths on the main thread at runtime.
+ *
+ * Opacity peaks around a third of the way in rather than at the outer edge:
+ * the corridor should look lit from somewhere down its length, and a stack that
+ * simply fades outward reads as a flat target instead.
+ */
+const SIDES = 9;
+const RINGS = 16;
+const CX = 500;
+const CY = 500;
+
+const rings = Array.from({ length: RINGS }, (_, i) => {
+  const t = i / (RINGS - 1); // 0 = outermost, 1 = the vanishing point
+  const r = 500 * Math.pow(0.82, i);
+  const spin = i * 7; // degrees — this is what twists the corridor
+  const points = Array.from({ length: SIDES }, (_, k) => {
+    const a = ((spin + (k * 360) / SIDES) * Math.PI) / 180;
+    return `${(CX + r * Math.cos(a)).toFixed(1)},${(CY + r * Math.sin(a)).toFixed(1)}`;
+  }).join(' ');
+
+  // Peak brightness at t≈0.35, falling away to both ends.
+  const fall = 1 - Math.abs(t - 0.35) / 0.65;
+  const alpha = Math.max(0.04, 0.34 * fall);
+  // Warm at the mouth, cooler as it recedes — the same two practicals the rest
+  // of the page is lit by.
+  const hue = t < 0.45 ? 'var(--ember)' : t < 0.75 ? 'var(--magenta)' : 'var(--ocean)';
+  return { points, alpha: alpha.toFixed(3), hue, dur: (18 + i * 2.5).toFixed(1) };
+});
+---
+
+<div class="tunnel" aria-hidden="true">
+  <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" focusable="false">
+    <g class="tunnel__spin">
+      {rings.map((r) => (
+        <polygon
+          class="tunnel__ring"
+          points={r.points}
+          style={`--a:${r.alpha}; --c:${r.hue}; --d:${r.dur}s`}
+        />
+      ))}
+    </g>
+  </svg>
+</div>
+
+<style>
+  .tunnel {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .tunnel svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(190vmax, 2200px);
+    height: min(190vmax, 2200px);
+    translate: -50% -50%;
+    opacity: .5;
+  }
+
+  .tunnel__ring {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 1.6;
+    opacity: var(--a);
+    vector-effect: non-scaling-stroke;
+    transform-origin: 500px 500px;
+    /* Each ring breathes on its own period, which keeps the corridor from
+       reading as one rigid object being turned. */
+    animation: ringBreathe var(--d) ease-in-out infinite alternate;
+  }
+  @keyframes ringBreathe {
+    from { transform: scale(1) rotate(0deg); }
+    to   { transform: scale(1.045) rotate(3deg); }
+  }
+
+  .tunnel__spin {
+    transform-origin: 500px 500px;
+    animation: tunnelSpin 240s linear infinite;
+  }
+  @keyframes tunnelSpin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* On a wide screen the corridor sits off to the right, behind the hero
+     subject, the way the reference frames it. Centred below that, where there
+     is no room for it to be anywhere else. */
+  @media (min-width: 1100px) {
+    .tunnel svg { left: 74%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tunnel__spin, .tunnel__ring { animation: none; }
+  }
+</style>

@@ -79,6 +79,9 @@ const CHECKS = [
   // "the fill passes" is only true of the colour that was actually measured.
   ['on-ember', 'ember-deep', 4.5, 'Button label on gradient bottom stop'],
   ['ember-deep', 'void', 3.0, 'Gradient bottom stop vs ground'],
+  ['on-ember', 'grad-a', 4.5, 'Button label on gradient start (the light end)'],
+  ['on-ember', 'grad-b', 4.5, 'Button label on gradient end'],
+  ['grad-a', 'void', 3.0, 'Gradient start vs ground'],
   ['ember-hover', 'void', 3.0, 'Hover fill vs ground'],
 
   ['magenta-text', 'void', 4.5, 'Magenta as text'],

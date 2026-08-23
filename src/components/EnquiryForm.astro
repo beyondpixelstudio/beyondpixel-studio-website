@@ -1,0 +1,212 @@
+---
+/**
+ * Enquiry form that composes a WhatsApp message.
+ *
+ * WHY THIS AND NOT A NORMAL FORM: a static site has nowhere to POST to. The
+ * alternatives are a third-party form endpoint — another dependency, another
+ * privacy surface, another thing to expire — or an inbox nobody watches during
+ * a shoot. This composes the enquiry into WhatsApp instead, which is where this
+ * market already talks, and it arrives as a normal message with the service,
+ * date and venue already written out.
+ *
+ * NOTHING IS SENT FROM THIS PAGE. The details never touch a server: the form
+ * builds a wa.me link in the browser and hands it to WhatsApp, where the person
+ * still has to press send. That is worth saying out loud on the page, because a
+ * form that silently transmits is what people reasonably assume.
+ *
+ * WITHOUT JAVASCRIPT the composition cannot happen, so <noscript> replaces the
+ * submit with the plain WhatsApp link and the phone number — degraded, but
+ * never a dead end.
+ */
+import { business, wa } from '../data/business.ts';
+import { services } from '../data/services.ts';
+
+const fallback = wa('Hello, I would like to enquire about a shoot.');
+---
+
+<form class="enq panel" data-enquiry data-wa={business.phone.wa} novalidate>
+  <div class="enq__grid">
+    <p class="enq__field">
+      <label for="enq-name">Your name <span class="enq__req" aria-hidden="true">*</span></label>
+      <input id="enq-name" name="name" type="text" autocomplete="name" required
+             aria-describedby="enq-name-err" placeholder="e.g. Priya Mohanty" />
+      <span class="enq__err" id="enq-name-err" hidden></span>
+    </p>
+
+    <p class="enq__field">
+      <label for="enq-phone">Phone <span class="enq__opt">(optional)</span></label>
+      <input id="enq-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
+             placeholder="So we can call you back" />
+    </p>
+
+    <p class="enq__field">
+      <label for="enq-service">What do you need? <span class="enq__req" aria-hidden="true">*</span></label>
+      <select id="enq-service" name="service" required aria-describedby="enq-service-err">
+        <option value="">Choose a service…</option>
+        {services.map((s) => <option value={s.name}>{s.name}</option>)}
+        <option value="Something else">Something else</option>
+      </select>
+      <span class="enq__err" id="enq-service-err" hidden></span>
+    </p>
+
+    <p class="enq__field">
+      <label for="enq-date">Date of the shoot <span class="enq__opt">(if known)</span></label>
+      <input id="enq-date" name="date" type="date" />
+    </p>
+
+    <p class="enq__field enq__field--wide">
+      <label for="enq-venue">Venue or city <span class="enq__opt">(optional)</span></label>
+      <input id="enq-venue" name="venue" type="text" placeholder="e.g. KIIT campus, Bhubaneswar" />
+    </p>
+
+    <p class="enq__field enq__field--wide">
+      <label for="enq-msg">Anything else we should know? <span class="enq__opt">(optional)</span></label>
+      <textarea id="enq-msg" name="message" rows="3"
+                placeholder="Rough brief, number of days, deliverables you need…"></textarea>
+    </p>
+  </div>
+
+  <div class="enq__foot">
+    <button class="btn btn--lg" type="submit">Send on WhatsApp</button>
+    <p class="enq__note">
+      This opens WhatsApp with your details already written out. Nothing is sent
+      from this page — you press send.
+    </p>
+  </div>
+
+  <noscript>
+    <p class="enq__note enq__note--ns">
+      This form needs JavaScript to compose your message.
+      <a href={fallback}>Message us on WhatsApp</a> or call
+      <a href={business.phone.href}>{business.phone.display}</a>.
+    </p>
+  </noscript>
+</form>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-enquiry]');
+
+  if (form) {
+    /* wa.me digits are read from a data attribute written by the server, so the
+       number still lives only in business.ts — see scripts/check-nap.mjs. */
+    const digits = form.dataset.wa!;
+
+    const fieldError = (input: HTMLInputElement | HTMLSelectElement, msg: string | null) => {
+      const err = document.getElementById(`${input.id}-err`);
+      if (!err) return;
+      if (msg) {
+        err.textContent = msg;
+        err.hidden = false;
+        input.setAttribute('aria-invalid', 'true');
+      } else {
+        err.hidden = true;
+        input.removeAttribute('aria-invalid');
+      }
+    };
+
+    const required = ['enq-name', 'enq-service'];
+
+    // Clear an error the moment the person fixes it, rather than making them
+    // submit again to find out.
+    required.forEach((id) => {
+      const el = document.getElementById(id) as HTMLInputElement | null;
+      el?.addEventListener('input', () => {
+        if (el.value.trim()) fieldError(el, null);
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      let firstBad: HTMLElement | null = null;
+      for (const id of required) {
+        const el = document.getElementById(id) as HTMLInputElement;
+        const ok = el.value.trim().length > 0;
+        fieldError(el, ok ? null : 'This one we do need.');
+        if (!ok && !firstBad) firstBad = el;
+      }
+      if (firstBad) {
+        firstBad.focus();
+        return;
+      }
+
+      const val = (n: string) =>
+        (form.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? '';
+
+      // Built as labelled lines so it is readable in the WhatsApp thread as-is,
+      // and so a reply can quote one line of it.
+      const lines = [
+        'New enquiry from beyondpixel.studio',
+        '',
+        `Name: ${val('name')}`,
+        `Service: ${val('service')}`,
+      ];
+      if (val('phone')) lines.push(`Phone: ${val('phone')}`);
+      if (val('date')) lines.push(`Date: ${val('date')}`);
+      if (val('venue')) lines.push(`Venue: ${val('venue')}`);
+      if (val('message')) lines.push('', val('message'));
+
+      const url = `https://wa.me/${digits}?text=${encodeURIComponent(lines.join('\n'))}`;
+      // Same tab: on mobile this hands off to the WhatsApp app, and a popup
+      // blocker will not eat it the way it can eat window.open.
+      window.location.href = url;
+    });
+  }
+</script>
+
+<style>
+  .enq { padding: clamp(var(--s-4), 3vw, var(--s-6)); }
+  .enq__grid { display: grid; gap: var(--s-4); }
+  .enq__field { display: grid; gap: var(--s-2); margin: 0; }
+
+  .enq label { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+  .enq__req { color: var(--ember-text); }
+  .enq__opt { font-weight: 400; color: var(--text-dim); }
+
+  .enq input,
+  .enq select,
+  .enq textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px var(--s-3);
+    font: inherit; font-size: var(--fs-sm);
+    color: var(--text);
+    background: var(--void);
+    border: 1px solid rgb(255 255 255 / .12);
+    border-radius: var(--r-sm);
+    transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+  }
+  .enq textarea { min-height: 92px; resize: vertical; padding-block: var(--s-3); }
+  .enq ::placeholder { color: var(--text-dim); }
+  .enq input:hover, .enq select:hover, .enq textarea:hover { border-color: rgb(255 255 255 / .22); }
+  .enq input:focus-visible, .enq select:focus-visible, .enq textarea:focus-visible {
+    outline: 2px solid var(--ember-text); outline-offset: 2px; border-color: transparent;
+  }
+  /* The error border is paired with a text message, never used alone — colour
+     is not an accessible way to say what is wrong. */
+  .enq [aria-invalid='true'] { border-color: var(--ember-text); }
+
+  .enq__err { font-size: 13px; color: var(--ember-text); }
+
+  .enq__foot { display: grid; gap: var(--s-3); margin-top: var(--s-5); justify-items: start; }
+  .enq__note { font-size: 13px; color: var(--text-dim); max-width: 52ch; }
+  .enq__note--ns { margin-top: var(--s-3); color: var(--text-muted); }
+
+  /* `select` keeps the platform arrow but needs its own background repaired,
+     because a dark control on some platforms renders a light native surface. */
+  .enq select { appearance: none; background-image:
+      linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+      linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: var(--s-6);
+  }
+  .enq option { background: var(--raised); color: var(--text); }
+
+  @media (min-width: 720px) {
+    .enq__grid { grid-template-columns: 1fr 1fr; }
+    .enq__field--wide { grid-column: 1 / -1; }
+    .enq__foot { grid-template-columns: auto 1fr; align-items: center; gap: var(--s-4); }
+  }
+</style>
