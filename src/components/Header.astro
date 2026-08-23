@@ -2,108 +2,123 @@
 import { business } from '../data/business.ts';
 ---
 
-<header class="hdr glass">
-  <div class="wrap hdr__in">
-    <a class="hdr__brand" href="/">
-      {/* The MARK only, never the full lockup — the lockup in circulation bakes
-          in a superseded tagline and a retired phone number, and an image is the
-          one place a wrong NAP cannot be corrected by editing business.ts.
-          Decorative: the brand name sits beside it as real text. */}
-      <img
-        class="hdr__mark"
-        src="/logo-mark-128.png"
-        alt=""
-        width="128"
-        height="72"
-        decoding="async"
-      />
-      <span class="hdr__words">
-        <span class="hdr__name">Beyond Pixel Studio</span>
-        <span class="hdr__tag mono">{business.tagline}</span>
-      </span>
-    </a>
+<header class="hdr">
+  <div class="wrap">
+    {/* The bar is a FLOATING PILL, detached from the top edge — the reference's
+        most recognisable structural move. It keeps the page container's width
+        so the brand mark still shares a left edge with the H1 below it; a
+        narrower centred pill would look closer to the reference and would put
+        two competing left edges back on the page. */}
+    <div class="hdr__bar glass">
+      <a class="hdr__brand" href="/">
+        {/* The MARK only, never the full lockup — the lockup in circulation
+            bakes in a superseded tagline and a retired phone number, and an
+            image is the one place a wrong NAP cannot be corrected by editing
+            business.ts. Decorative: the brand name sits beside it as real text. */}
+        <img
+          class="hdr__mark"
+          src="/logo-mark-128.png"
+          alt=""
+          width="128"
+          height="72"
+          decoding="async"
+        />
+        <span class="hdr__words">
+          <span class="hdr__name">Beyond Pixel Studio</span>
+          <span class="hdr__tag">{business.tagline}</span>
+        </span>
+      </a>
 
-    <nav class="hdr__nav" aria-label="Primary">
-      <a href="/#services">Services</a>
-      <a href="/#work">Work</a>
-      <a href="/#why">Why us</a>
-      <a href="/contact/">Contact</a>
-    </nav>
+      <nav class="hdr__nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#work">Work</a>
+        <a href="/#why">Why us</a>
+        <a href="/contact/">Contact</a>
+      </nav>
 
-    <div class="hdr__act">
-      <a class="hdr__tel mono" href={business.phone.href}>{business.phone.display}</a>
-      <a class="btn hdr__cta" href="/contact/">Request a Quote</a>
+      <div class="hdr__act">
+        <a class="hdr__tel mono" href={business.phone.href}>{business.phone.display}</a>
+        <a class="btn hdr__cta" href="/contact/">Request a Quote</a>
+      </div>
     </div>
   </div>
 </header>
 
 <style>
-  /* Glass earns its place here: the page genuinely scrolls underneath. */
   .hdr {
     position: sticky; top: 0; z-index: 900;
-    border-inline: 0; border-top: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--text) 9%, transparent);
+    padding-block: 12px;
+    /* The gap above and below the pill has to stay transparent — that is what
+       makes it read as floating. A background here would turn it back into a
+       conventional bar. */
   }
-  .hdr__in {
-    display: flex; align-items: center; gap: var(--s-3);
-    min-height: 68px;
+  .hdr__bar {
+    display: flex; align-items: center; gap: var(--s-4);
+    min-height: 60px;
+    padding-inline: var(--s-4);
+    border-radius: var(--r-md);
   }
+
   .hdr__brand {
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: var(--s-2);
     text-decoration: none; color: var(--text);
     margin-inline-end: auto; line-height: 1.1;
   }
   .hdr__words { display: flex; flex-direction: column; }
-  /* The mark is 128x72 — a WIDE lotus, not a square icon. It was being given a
-     34x34 box, which squashed it to 56% of its width and left the petals
-     looking like thin spikes. `height: auto` lets it keep its own ratio, and it
-     is sized off WIDTH alone so the ratio can never be overridden by accident.
-
-     Enlarged too: at 34px wide the mark was smaller than the wordmark beside it
-     and read as a bullet point rather than a logo.
-
-     Dense colour on a dark ground, so it carries its own soft key rather than
-     sitting flat against the glass. */
+  /* The mark is 128x72 — a WIDE lotus, not a square icon. Exactly ONE dimension
+     is set so its ratio can never be overridden by accident, and that dimension
+     is HEIGHT: in a horizontal bar what reads is how tall the mark is against
+     the bar, and sizing by width instead had it rendering 17px tall, which both
+     looked like a bullet point and put the brand link under WCAG 2.2's 24px
+     target floor. */
   .hdr__mark {
-    width: 60px; height: auto; flex: none;
+    height: 34px; width: auto; flex: none;
     filter: drop-shadow(0 2px 10px rgb(0 0 0 / .5));
-    transition: transform .4s var(--ease);
+    transition: transform var(--t-slow) var(--ease);
   }
-  @media (max-width: 419px) { .hdr__mark { width: 46px; } }
   .hdr__brand:hover .hdr__mark { transform: rotate(-6deg) scale(1.06); }
-  @media (prefers-reduced-motion: reduce) {
-    .hdr__brand:hover .hdr__mark { transform: none; }
-  }
+
   .hdr__name {
     font-family: var(--font-display); font-stretch: var(--display-width);
-    font-weight: 700; font-size: 19px; letter-spacing: .01em;
-    white-space: nowrap; /* "Beyond / Pixel" over two lines is not a wordmark */
+    font-weight: 600; font-size: 17px; letter-spacing: -.01em;
+    white-space: nowrap; /* "Beyond Pixel / Studio" over two lines is not a wordmark */
   }
-  .hdr__tag { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); }
-  /* On a 375px bar the mark, the name, the tagline and the CTA cannot all fit,
-     and the tagline is the one that is decorative — it is still in the footer,
-     the hero eyebrow and the <title>. */
-  @media (max-width: 419px) { .hdr__tag { display: none; } }
+  .hdr__tag {
+    font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--text-dim); font-weight: 500;
+  }
 
-  /* `nowrap` because "Why us" broke across two lines at the moment the nav
-     appeared, which made the whole bar look like it had collapsed. A nav item
-     is a label, not a paragraph — it either fits on one line or the breakpoint
-     is wrong. */
-  .hdr__nav { display: none; gap: var(--s-3); white-space: nowrap; }
+  .hdr__nav { display: none; gap: var(--s-4); white-space: nowrap; }
   .hdr__nav a {
-    color: var(--text-muted); text-decoration: none; font-size: var(--fs-sm);
-    padding: 8px 2px; transition: color .18s var(--ease);
+    color: var(--text-muted); text-decoration: none; font-size: 15px;
+    padding: 8px 2px; transition: color var(--t-fast) var(--ease);
   }
   .hdr__nav a:hover { color: var(--text); }
 
-  .hdr__act { display: flex; align-items: center; gap: var(--s-2); }
+  .hdr__act { display: flex; align-items: center; gap: var(--s-3); }
   .hdr__tel { display: none; color: var(--text); text-decoration: none; font-size: var(--fs-sm); white-space: nowrap; }
   .hdr__tel:hover { color: var(--ember-text); }
-  .hdr__cta { min-height: 42px; padding: 9px 16px; font-size: var(--fs-sm); white-space: nowrap; }
+  .hdr__cta { min-height: 38px; padding: 8px 16px; font-size: 14px; }
 
+  /* On a 375px bar the mark, the full wordmark, the tagline and the CTA do not
+     fit — at the default sizes the CTA was being pushed off the right edge
+     entirely. The tagline goes first because it is decorative and still appears
+     in the hero, the footer and the <title>; everything else is scaled down
+     rather than dropped, so the brand name survives at every width. */
+  @media (max-width: 560px) {
+    .hdr__bar { padding-inline: var(--s-3); gap: var(--s-3); }
+    .hdr__tag { display: none; }
+    .hdr__mark { height: 26px; }
+    .hdr__brand { gap: var(--s-2); }
+    .hdr__name { font-size: 14px; }
+    .hdr__cta { padding: 8px 12px; font-size: 13px; min-height: 36px; }
+  }
   @media (min-width: 700px) { .hdr__tel { display: inline; } }
   /* 1040, not 900: at 900 the nav, the number and the CTA were all present and
-     all wrapping. The nav is the item that can wait — the phone number and the
-     quote button are what the bar is for. */
+     all wrapping. The nav is the item that can wait. */
   @media (min-width: 1040px) { .hdr__nav { display: flex; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__brand:hover .hdr__mark { transform: none; }
+  }
 </style>

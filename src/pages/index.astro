@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import IrisReveal from '../components/IrisReveal.astro';
 import LotusBloom from '../components/LotusBloom.astro';
+import Check from '../components/Check.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
 
@@ -13,31 +14,28 @@ import { services } from '../data/services.ts';
  * /corporate-video-production-bhubaneswar for that page's own keyword.
  */
 /* 58 chars. The brand is always written in full — "Beyond Pixel Studio", never
-   "Beyond Pixel". The preposition is what got dropped to make room, not the
-   name: "Video Production Company Bhubaneswar" still carries the keyword and
-   the location adjacently, which is all the title needs to do. Every service
-   title is built the same way, and all seven stay inside Google's 60. */
+   "Beyond Pixel". The preposition is what got dropped to make room. */
 const title = 'Video Production Company Bhubaneswar | Beyond Pixel Studio';
 const description =
   'Corporate video production, live event streaming, drone and commercial photography in Bhubaneswar. Own crew, own equipment. Request a custom quote.';
 
-const why = [
-  {
-    h: 'Our own crew, our own kit',
-    p: 'Nothing subcontracted out. The people who quote your job are the people who turn up and shoot it.',
-  },
-  {
-    h: 'Multi-camera live streaming',
-    p: 'Conferences, convocations and official functions streamed live, with a crew who have done it before.',
-  },
-  {
-    h: 'Government and institutional work',
-    p: 'Ministerial coverage, PSU and university events — protocol, access and clearances handled without drama.',
-  },
-  {
-    h: `${business.rating.value.toFixed(1)} across ${business.rating.count} reviews`,
-    p: `Rated ${business.rating.value.toFixed(1)} on ${business.rating.source}. Real clients, real projects, publicly verifiable.`,
-  },
+/**
+ * The reference's list pattern: a BOLD claim, then a muted qualifier. It scans
+ * fast because the eye takes the claim and only reads on if it cares — so the
+ * bold half must be the part that is worth something on its own.
+ */
+const crew = [
+  ['Nothing is subcontracted.', 'The people who quote your job are the people who turn up and shoot it.'],
+  ['Our own cameras, lights and grip.', 'No rental gaps, no last-minute substitutions on the day.'],
+  ['Multi-camera as standard.', 'Interviews cut without jumping; events covered from more than one angle.'],
+  ['A call sheet, not a surprise.', 'You know the plan before anyone travels.'],
+];
+
+const proof = [
+  ['Government and institutional work.', 'Ministerial coverage, PSU and university events — protocol and clearances handled.'],
+  [`Rated ${business.rating.value.toFixed(1)} across ${business.rating.count} reviews.`, `Publicly verifiable on ${business.rating.source}.`],
+  ['Named clients, not logos we borrowed.', business.clients.slice(0, 4).join(', ') + ' and more.'],
+  ['Based in Patia, working across Odisha.', 'One crew, one call, no local fixer to coordinate.'],
 ];
 
 const process = [
@@ -52,9 +50,6 @@ const slates = [
   { id: '01', cat: 'Corporate' },
   { id: '02', cat: 'Institutional' },
   { id: '03', cat: 'Government' },
-  { id: '04', cat: 'Corporate' },
-  { id: '05', cat: 'Institutional' },
-  { id: '06', cat: 'Government' },
 ];
 ---
 
@@ -67,7 +62,7 @@ const slates = [
     <span class="flare" aria-hidden="true"></span>
     <div class="wrap hero__in" data-bloom-anchor>
       <p class="eyebrow">{business.tagline}</p>
-      <h1>Video Production Company in <em>Bhubaneswar</em></h1>
+      <h1>Video production company in <em>Bhubaneswar</em></h1>
       <p class="lead hero__lead">
         Corporate films, live event streaming and aerial cinematography for companies,
         institutions and government departments across Odisha — shot by our own crew,
@@ -75,10 +70,10 @@ const slates = [
       </p>
 
       <div class="hero__cta">
-        <a class="btn" href={wa('Hello, I would like a custom quote for a video production.')}>
-          Request a Custom Quote
+        <a class="btn btn--lg" href={wa('Hello, I would like a custom quote for a video production.')}>
+          Request a custom quote
         </a>
-        <a class="btn btn--ghost" href="#work">See our work</a>
+        <a class="btn btn--ghost btn--lg" href="#work">See our work</a>
       </div>
 
       <p class="rating">
@@ -91,68 +86,123 @@ const slates = [
   </section>
 
   {/* --------------------------------------------------------- TRUST BAR */}
-  <section class="section section--band trust" aria-label="Clients">
-    <div class="wrap">
-      <p class="trust__lead mono">Trusted by</p>
+  <section class="trust" aria-label="Clients">
+    <div class="wrap trust__in">
+      <p class="trust__lead">Trusted by teams at</p>
       <ul class="trust__list" data-reveal>
         {business.clients.map((c) => <li>{c}</li>)}
       </ul>
-      <p class="trust__note">Plus government and ministerial event coverage across Odisha.</p>
     </div>
   </section>
 
-  <div class="letterbox"></div>
-
   {/* ----------------------------------------------------------- SERVICES */}
-  <section class="section" id="services">
+  <section class="section glow" id="services" style="--glow: rgb(199 67 30 / .16); --glow-x: 50%; --glow-y: 0%;">
     <div class="wrap">
-      <p class="eyebrow">What we do</p>
-      <h2 data-reveal>Six things, done properly.</h2>
+      <div class="sechead">
+        <p class="eyebrow">What we do</p>
+        <h2>Six things, done properly.</h2>
+        <p>Every one of them shot by the same crew, on the same equipment, to the same standard.</p>
+      </div>
 
       {/* One perspective for the whole grid, so the cards tilt like a single
-          sheet of glass rather than twelve independent objects. */}
+          sheet of glass rather than as six independent objects. */}
       <ul class="svc stage">
         {services.map((s, i) => (
-          <li class="svc__card tilt" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+          <li class="svc__card panel tilt" data-reveal style={`--reveal-delay:${i * 60}ms`}>
             <span class="tilt__sheen" aria-hidden="true"></span>
             {/* NOT `tilt__lift` — see base.css. Its translateZ would make this
                 div the containing block for the stretched `h3 a::after`, which
                 silently shrinks the whole-card click target to this title row. */}
             <div class="svc__top">
               <h3><a href={`/${s.slug}/`}>{s.name}</a></h3>
-              {s.national && <span class="svc__flag mono">Nationwide</span>}
+              {s.national && <span class="badge badge--quiet svc__flag">Nationwide</span>}
             </div>
             <p class="svc__sum">{s.summary}</p>
             <p class="svc__aud">{s.audience}</p>
-            <span class="svc__go mono" aria-hidden="true">→</span>
+            <span class="svc__go" aria-hidden="true">→</span>
           </li>
         ))}
       </ul>
     </div>
   </section>
 
-  {/* --------------------------------------------------------------- WORK */}
-  <section class="section section--band" id="work">
+  {/* ---------------------------------------------------------------- WHY */}
+  <section class="section glow" id="why" style="--glow: rgb(155 47 192 / .15); --glow-x: 30%; --glow-y: 10%;">
     <div class="wrap">
-      <p class="eyebrow">Selected work</p>
-      <h2 data-reveal>The reel goes here.</h2>
-      <p class="lead work__lead">
-        Slots are labelled and empty on purpose. Real project footage drops into these
-        frames — we would rather show you nothing than show you stock.
-      </p>
+      <div class="sechead">
+        <p class="eyebrow">Why Beyond Pixel Studio</p>
+        <h2>Reasons that survive a reference check.</h2>
+        <p>Not adjectives. Things you can hold us to on the day.</p>
+      </div>
+
+      <div class="fstack">
+        <article class="panel panel--lit fcard" data-reveal style="--accent: rgb(199 67 30 / .26);">
+          <div class="fcard__grid fcard__grid--wide">
+            <div class="fcard__body">
+              <span class="badge">Our crew</span>
+              <h3 class="fcard__h">The people who quote it are the people who shoot it.</h3>
+              <ul class="checks">
+                {crew.map(([b, rest]) => (
+                  <li><Check /><span><b>{b}</b> {rest}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div class="fcard__vis">
+              <dl class="stat">
+                <div><dt>Crew</dt><dd>In-house</dd></div>
+                <div><dt>Cameras</dt><dd>Owned</dd></div>
+                <div><dt>Coverage</dt><dd>Multi-cam</dd></div>
+              </dl>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel panel--lit fcard" data-reveal style="--accent: rgb(27 108 168 / .26);">
+          <div class="fcard__grid fcard__grid--wide">
+            <div class="fcard__body">
+              <span class="badge">Track record</span>
+              <h3 class="fcard__h">Work you can check before you commit.</h3>
+              <ul class="checks">
+                {proof.map(([b, rest]) => (
+                  <li><Check /><span><b>{b}</b> {rest}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div class="fcard__vis">
+              <p class="bigstat">{business.rating.value.toFixed(1)}</p>
+              <p class="bigstat__note">
+                across {business.rating.count} reviews<br />on {business.rating.source}
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  {/* --------------------------------------------------------------- WORK */}
+  <section class="section" id="work">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Selected work</p>
+        <h2>The reel goes here.</h2>
+        <p>
+          Slots are labelled and empty on purpose. Real project footage drops into these
+          frames — we would rather show you nothing than show you stock.
+        </p>
+      </div>
 
       <ul class="work stage">
         {slates.map((s, i) => (
-          <li class="slate ar-wide tilt" data-reveal style={`--reveal-delay:${i * 50}ms`}>
+          <li class="slate ar-wide tilt panel" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+            <span class="tilt__sheen" aria-hidden="true"></span>
             <div class="slate__head">
               <span class="mono">SLATE {s.id}</span>
               <span class="mono slate__cat">{s.cat}</span>
             </div>
             <dl class="slate__meta mono">
               <div><dt>CLIENT</dt><dd>—</dd></div>
-              <div><dt>FORMAT</dt><dd>—</dd></div>
               <div><dt>RUNTIME</dt><dd>—:—:—:—</dd></div>
-              <div><dt>YEAR</dt><dd>—</dd></div>
             </dl>
           </li>
         ))}
@@ -160,32 +210,17 @@ const slates = [
     </div>
   </section>
 
-  <div class="letterbox"></div>
-
-  {/* ---------------------------------------------------------------- WHY */}
-  <section class="section" id="why">
-    <div class="wrap">
-      <p class="eyebrow">Why Beyond Pixel Studio</p>
-      <h2 data-reveal>Reasons that survive a reference check.</h2>
-      <ul class="why">
-        {why.map((w, i) => (
-          <li data-reveal style={`--reveal-delay:${i * 60}ms`}>
-            <h3>{w.h}</h3>
-            <p>{w.p}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
   {/* ------------------------------------------------------------ PROCESS */}
-  <section class="section section--band">
+  <section class="section">
     <div class="wrap">
-      <p class="eyebrow">How we work</p>
-      <h2 data-reveal>Four steps, no mystery.</h2>
-      <ol class="proc">
+      <div class="sechead">
+        <p class="eyebrow">How we work</p>
+        <h2>Four steps, no mystery.</h2>
+      </div>
+      <ol class="proc stage">
         {process.map((p, i) => (
-          <li data-reveal style={`--reveal-delay:${i * 60}ms`}>
+          <li class="proc__card panel tilt" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+            <span class="tilt__sheen" aria-hidden="true"></span>
             <span class="proc__n mono">{p.n}</span>
             <h3>{p.h}</h3>
             <p>{p.p}</p>
@@ -195,33 +230,20 @@ const slates = [
     </div>
   </section>
 
-  {/* -------------------------------------------------------------- WHERE */}
-  <section class="section">
-    <div class="wrap where">
-      <div>
-        <p class="eyebrow">Where we work</p>
-        <h2 data-reveal>Based in Patia. Working across Odisha.</h2>
-      </div>
-      <p class="lead" data-reveal>
-        {business.areaServed.join(', ')} and across {business.areaServedBroad} — one crew,
-        one call, no local fixer to coordinate. AI video production is delivered nationwide.
-      </p>
-    </div>
-  </section>
-
   {/* ---------------------------------------------------------- FINAL CTA */}
-  <section class="section cta">
+  <section class="section glow cta" style="--glow: rgb(199 67 30 / .20); --glow-x: 50%; --glow-y: 40%;">
     <div class="wrap cta__in" data-reveal>
       <h2>Tell us what you are planning.</h2>
       <p class="lead cta__lead">
         Send the date, the venue and roughly what you need. You get an itemised quote,
-        not a brochure.
+        not a brochure. {business.areaServed.join(', ')} and across {business.areaServedBroad};
+        AI video production is delivered nationwide.
       </p>
-      <div class="hero__cta">
-        <a class="btn" href={wa('Hello, I am planning a shoot and would like a quote.')}>
+      <div class="hero__cta cta__btns">
+        <a class="btn btn--lg" href={wa('Hello, I am planning a shoot and would like a quote.')}>
           Enquire on WhatsApp
         </a>
-        <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
+        <a class="btn btn--ghost btn--lg" href={business.phone.href}>{business.phone.display}</a>
       </div>
       <p class="cta__alt">
         Prefer email? <a href={`mailto:${business.email}`}>{business.email}</a>
@@ -236,153 +258,133 @@ const slates = [
      gate it. That is what keeps LCP measured at the real paint time. */
   .hero {
     position: relative; z-index: 2;
-    padding-block: clamp(72px, 13vw, 150px) clamp(56px, 9vw, 104px);
-    /* The bloom needs vertical room to be a subject rather than a texture, but
-       the copy must still start above the fold on a laptop — hence a min-height
-       tied to viewport, not a fixed height. `svh` so mobile browser chrome
-       collapsing does not resize the scene mid-scroll. */
-    min-height: min(92svh, 900px);
+    padding-block: clamp(56px, 10vw, 120px) clamp(48px, 8vw, 96px);
+    min-height: min(88svh, 860px);
     display: flex; align-items: center;
     isolation: isolate;
   }
-  /* Copy sits above the canvas, and its own readability layer sits between —
-     the bloom is bright at the centre and 17px body text cannot compete with a
-     magenta petal passing behind it. */
   /* `width: 100%` is load-bearing. `.hero` is a flex container so the copy can
      centre vertically, which makes `.wrap` a flex ITEM — and a flex item is
-     shrink-to-fit, so the container collapsed to the width of its widest child
-     and `margin-inline: auto` then centred the whole copy block in the viewport
-     instead of aligning it left. The copy drifted right and straight into the
-     bloom. Stretching it back to full width restores the container's own
-     centring and gutters. */
-  .hero__in {
-    position: relative; z-index: 2; width: 100%;
-    /* No width of its own — the hero uses --container like every other section.
-       Giving it a wider box did make the composition fill the page, but it also
-       broke the left edge: the brand mark sat on the 1240 container and the H1
-       on the hero's own, and that misalignment reads louder than either width.
-       The page got wider instead, in one place, for everything. */
-  }
-  /* The copy is a COLUMN, not a full-width block. Two reasons, and they happen
-     to want the same number: a 38rem measure keeps the H1 to a readable line
-     length instead of letting it run the full 1240 container, and it leaves the
-     right of the frame genuinely empty for the bloom to occupy. Capping the
-     children rather than `.wrap` itself keeps the container's own centring and
-     gutters intact. No media query — a constrained measure is correct at every
-     width, and below the container width this resolves to 100% anyway.
-
-     46rem, not less: --fs-h1 tops out at 78px, and a narrower column at that
-     size broke the headline into four ragged lines. The measure has to be set
-     against the display size actually in use, not against a body-text ideal. */
-  .hero__in > * { max-width: 46rem; }
+     shrink-to-fit, so the container would collapse to its widest child and
+     `margin-inline: auto` would then centre the copy instead of aligning it. */
+  .hero__in { position: relative; z-index: 2; width: 100%; }
+  /* The copy is a COLUMN, not a full-width block: it keeps the H1 to a readable
+     measure and leaves the right of the frame for the bloom. */
+  .hero__in > * { max-width: 42rem; }
+  /* The bloom is bright at its centre and body copy cannot compete with a
+     magenta petal passing behind it. */
   .hero__in::before {
     content: ''; position: absolute; z-index: -1;
     inset: -10% -14% -14% -20%;
     background: radial-gradient(
       62% 68% at 26% 50%,
-      color-mix(in srgb, var(--void) 88%, transparent) 0 42%,
+      color-mix(in srgb, var(--void) 90%, transparent) 0 42%,
       transparent 78%
     );
   }
   h1 :global(em) { font-style: normal; color: var(--ember-text); }
-  .hero__lead { margin-top: var(--s-3); }
-  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-4); }
+  .hero__lead { margin-top: var(--s-4); }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
 
-  .rating { display: flex; align-items: center; gap: 10px; margin-top: var(--s-3); flex-wrap: wrap; }
+  .rating { display: flex; align-items: center; gap: var(--s-2); margin-top: var(--s-4); flex-wrap: wrap; }
   .rating__stars { color: var(--tungsten); letter-spacing: .12em; font-size: 15px; }
   .rating .mono { font-size: 13px; color: var(--text-muted); }
 
   /* --- Trust bar ---------------------------------------------------------
      Client names as TEXT: indexable (logos are not) and needing no trademark
-     permission. Logo slots go in here if sign-off is ever obtained. */
-  .trust { padding-block: var(--s-5); }
-  .trust__lead { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--s-3); }
-  .trust__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); }
+     permission. */
+  .trust { position: relative; z-index: 2; padding-block: var(--s-5); border-block: 1px solid rgb(255 255 255 / .06); }
+  .trust__in { display: grid; gap: var(--s-3); align-items: center; }
+  .trust__lead { font-size: 13px; color: var(--text-dim); max-width: 16ch; }
+  .trust__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-5); }
   .trust__list li {
     font-family: var(--font-display); font-stretch: var(--display-width);
-    font-weight: 700; font-size: clamp(15px, 1.7vw, 19px);
-    letter-spacing: .01em; color: var(--text);
+    font-weight: 600; font-size: clamp(14px, 1.4vw, 17px);
+    color: var(--text-muted);
   }
-  .trust__note { margin-top: var(--s-3); font-size: var(--fs-sm); color: var(--text-muted); }
+  @media (min-width: 860px) { .trust__in { grid-template-columns: auto 1fr; gap: var(--s-6); } }
 
   /* --- Services ----------------------------------------------------------- */
-  .svc { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+  .svc { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
   .svc__card {
-    position: relative; background: var(--raised);
-    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
-    border-radius: var(--radius); padding: var(--s-3) var(--s-3) var(--s-4);
-    transition: background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+    padding: var(--s-4) var(--s-4) var(--s-5);
+    transition: background var(--t-fast) var(--ease);
   }
   /* NO `transform` here. `.svc__card:hover` outranks `.tilt`, so a hover lift
-     declared on this rule silently replaced the entire 3D rotation with a flat
-     2px nudge — the tilt rig was writing --rx/--ry correctly and nothing was
-     reading them. The lift is the rig's `--lift` instead. */
-  .svc__card:hover { background: var(--overlay); border-color: color-mix(in srgb, var(--ember-text) 40%, transparent); }
-  .svc__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-2); }
+     declared on this rule would silently replace the entire 3D rotation with a
+     flat nudge. The lift is the rig's `--lift` instead. */
+  .svc__card:hover { background: var(--overlay); }
+  .svc__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-3); }
   .svc__card h3 a { color: var(--text); text-decoration: none; }
   /* The whole card is the target; the link keeps the accessible name. */
   .svc__card h3 a::after { content: ''; position: absolute; inset: 0; }
   .svc__card:hover h3 a { color: var(--ember-text); }
-  .svc__flag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--daylight); border: 1px solid currentColor; border-radius: 99px; padding: 3px 9px; white-space: nowrap; }
-  .svc__sum { margin-top: 10px; color: var(--text); font-size: var(--fs-sm); }
-  .svc__aud { margin-top: 6px; color: var(--text-muted); font-size: var(--fs-sm); }
-  .svc__go { position: absolute; right: var(--s-3); bottom: var(--s-2); color: var(--ember-text); opacity: 0; transition: opacity .2s var(--ease), translate .2s var(--ease); }
+  .svc__flag { font-size: 11px; padding: 4px 10px 4px 8px; }
+  .svc__sum { margin-top: var(--s-3); color: var(--text); font-size: var(--fs-sm); }
+  .svc__aud { margin-top: var(--s-1); color: var(--text-muted); font-size: var(--fs-sm); }
+  .svc__go { position: absolute; right: var(--s-4); bottom: var(--s-3); color: var(--ember-text); opacity: 0; transition: opacity var(--t-fast) var(--ease), translate var(--t-fast) var(--ease); }
   .svc__card:hover .svc__go { opacity: 1; translate: 4px 0; }
 
+  /* --- Why: the reference's feature-card stack ---------------------------- */
+  .fstack { display: grid; gap: var(--s-4); }
+  .stat { margin: 0; display: grid; gap: var(--s-3); width: 100%; }
+  .stat > div { display: flex; justify-content: space-between; gap: var(--s-3); padding-bottom: var(--s-3); border-bottom: 1px solid rgb(255 255 255 / .07); }
+  .stat > div:last-child { border-bottom: 0; padding-bottom: 0; }
+  .stat dt { color: var(--text-dim); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+  .stat dd { margin: 0; color: var(--text); font-size: var(--fs-sm); font-weight: 600; }
+
+  .bigstat {
+    font-family: var(--font-display); font-stretch: var(--display-width);
+    font-weight: 500; font-size: clamp(56px, 7vw, 88px); line-height: 1;
+    letter-spacing: -.03em; color: var(--text); text-align: center;
+  }
+  .bigstat__note { margin-top: var(--s-3); text-align: center; color: var(--text-muted); font-size: var(--fs-sm); }
+
   /* --- Work: labelled empty states ---------------------------------------- */
-  .work__lead { margin-top: var(--s-3); }
-  .work { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+  .work { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
   .slate {
-    position: relative;
     display: flex; flex-direction: column; justify-content: space-between;
-    padding: var(--s-3);
-    border: 1px dashed color-mix(in srgb, var(--text) 20%, transparent);
-    border-radius: var(--radius);
-    background: color-mix(in srgb, var(--void) 55%, transparent);
+    padding: var(--s-4);
+    background: color-mix(in srgb, var(--void) 60%, transparent);
   }
   /* Framing marks. The 16:9 box is mostly empty by design, so it needs to read
      as a camera frame waiting for a shot — not as a card someone forgot. */
   .slate::before, .slate::after {
     content: ''; position: absolute; width: 15px; height: 15px;
-    border-color: color-mix(in srgb, var(--text) 26%, transparent);
-    border-style: solid;
+    border-color: rgb(255 255 255 / .18); border-style: solid;
   }
-  .slate::before { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
-  .slate::after { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
-
-  .slate__head { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .18em; color: var(--text-muted); }
+  .slate::before { top: 14px; left: 14px; border-width: 1px 0 0 1px; }
+  .slate::after { bottom: 14px; right: 14px; border-width: 0 1px 1px 0; }
+  .slate__head { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .16em; color: var(--text-muted); }
   .slate__cat { color: var(--daylight); }
-  .slate__meta { margin: 0; display: grid; gap: 4px; font-size: 11px; color: var(--text-dim); }
-  .slate__meta > div { display: flex; gap: 10px; }
-  .slate__meta dt { letter-spacing: .16em; min-width: 68px; }
+  .slate__meta { margin: 0; display: grid; gap: var(--s-1); font-size: 11px; color: var(--text-dim); }
+  .slate__meta > div { display: flex; gap: var(--s-2); }
+  .slate__meta dt { letter-spacing: .14em; min-width: 68px; }
   .slate__meta dd { margin: 0; }
 
-  /* --- Why / process ------------------------------------------------------ */
-  .why, .proc { list-style: none; margin: var(--s-4) 0 0; padding: 0; display: grid; gap: var(--s-4); }
-  .why p, .proc p { margin-top: 8px; color: var(--text-muted); font-size: var(--fs-sm); }
-  .proc__n { display: block; color: var(--ember-text); font-size: 13px; letter-spacing: .12em; margin-bottom: 8px; }
+  /* --- Process ------------------------------------------------------------ */
+  .proc { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); counter-reset: step; }
+  .proc__card { padding: var(--s-4); }
+  .proc__n { display: block; color: var(--ember-text); font-size: 13px; letter-spacing: .12em; margin-bottom: var(--s-3); }
+  .proc p { margin-top: var(--s-2); color: var(--text-muted); font-size: var(--fs-sm); }
 
-  /* --- Where / CTA -------------------------------------------------------- */
-  .where { display: grid; gap: var(--s-3); }
+  /* --- CTA ---------------------------------------------------------------- */
   .cta__in { text-align: center; display: grid; justify-items: center; }
-  .cta__lead { margin-top: var(--s-3); }
-  .cta .hero__cta { justify-content: center; }
-  .cta__alt { margin-top: var(--s-3); font-size: var(--fs-sm); color: var(--text-muted); }
+  .cta__lead { margin-top: var(--s-4); }
+  .cta__btns { justify-content: center; }
+  .cta__alt { margin-top: var(--s-4); font-size: var(--fs-sm); color: var(--text-muted); }
 
   /* --- Breakpoints -------------------------------------------------------- */
-  /* Below 480 the two hero buttons sat at different widths, which reads as
-     accidental. Full-width stacked is also the better thumb target. */
   @media (max-width: 479px) {
     .hero__cta { flex-direction: column; align-items: stretch; }
     .hero__cta .btn { width: 100%; }
   }
   @media (min-width: 620px) {
-    .svc, .work { grid-template-columns: repeat(2, 1fr); }
-    .why, .proc { grid-template-columns: repeat(2, 1fr); }
+    .svc, .work, .proc { grid-template-columns: repeat(2, 1fr); }
   }
   @media (min-width: 980px) {
-    .svc, .work { grid-template-columns: repeat(3, 1fr); }
-    .why, .proc { grid-template-columns: repeat(4, 1fr); gap: var(--s-3); }
-    .where { grid-template-columns: 1fr 1fr; align-items: end; gap: var(--s-5); }
+    .svc { grid-template-columns: repeat(3, 1fr); }
+    .work { grid-template-columns: repeat(3, 1fr); }
+    .proc { grid-template-columns: repeat(4, 1fr); }
   }
 </style>

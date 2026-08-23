@@ -75,6 +75,10 @@ const CHECKS = [
   ['ember-text', 'raised', 4.5, 'Ember as text on card'],
   ['ember-text', 'overlay', 4.5, 'Ember as text on hover surface'],
   ['on-ember', 'ember-hover', 4.5, 'Button label on hover fill'],
+  // The primary button is a gradient. Its bottom stop is verified too, because
+  // "the fill passes" is only true of the colour that was actually measured.
+  ['on-ember', 'ember-deep', 4.5, 'Button label on gradient bottom stop'],
+  ['ember-deep', 'void', 3.0, 'Gradient bottom stop vs ground'],
   ['ember-hover', 'void', 3.0, 'Hover fill vs ground'],
 
   ['magenta-text', 'void', 4.5, 'Magenta as text'],

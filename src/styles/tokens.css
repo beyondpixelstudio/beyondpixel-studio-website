@@ -7,24 +7,40 @@
    computed by hand.
 
    Governing rule: ONE COLOUR PERSUADES (Ember). Everything else informs.
+
+   --------------------------------------------------------------------------
+   2026-08-23 — RETUNED TO THE n8n DESIGN CONCEPT.
+
+   The reference ground is pure black with large soft colour fields bled behind
+   the content, and cards that sit only just above it. The previous ground
+   (#14102A) was too light for that: cards could not separate from it without
+   becoming grey, and a glow laid over it read as haze rather than as light.
+   Every elevation step is therefore pulled down towards black.
+
+   What is NOT taken from the reference is its palette. Those tokens describe a
+   developer tool; this is a lotus mark belonging to a film studio in
+   Bhubaneswar, and the whole 3D scene is built from its colours. Ember,
+   magenta and ocean stay exactly as they were. The ground gets darker, the
+   brand does not change — and the one place the two agree, an orange primary
+   action, was already Ember.
    ========================================================================== */
 
 :root {
   /* --- Elevation ----------------------------------------------------------
-     Four steps. Purple-biased black rather than neutral or blue-black —
-     unusual in this category and tied to the mark. Glass needs these layers
-     to have anything to read against. */
-  --void:          #14102A; /* page ground */
-  --surface:       #1A1536; /* alternating bands */
-  --raised:        #221B44; /* cards, form fields */
-  --overlay:       #2B2255; /* hover / active surface */
+     Four steps, all near-black and all carrying a trace of the mark's violet
+     rather than being neutral grey. The gaps between them are deliberately
+     small: on a black ground a card needs a hairline border and a top-lit
+     gradient to read, not a lighter fill. */
+  --void:          #05040B; /* page ground — effectively black */
+  --surface:       #0A0814; /* alternating bands */
+  --raised:        #16121F; /* cards, form fields */
+  --overlay:       #211B31; /* hover / active surface */
 
   /* --- Text ---------------------------------------------------------------
-     Ink #2B1B4E from the original brief was "primary text / dark base" — that
-     assumed a light background. On dark it becomes an elevation colour, not
-     text, so a light primary is introduced here. */
-  --text:          #FAFAF8; /* primary          17.67:1 on --void  AAA */
-  --text-muted:    #ADA6C8; /* secondary         7.97:1 on --void  AAA */
+     Unchanged. On the darker ground every one of these gains contrast, so the
+     move costs nothing here and buys headroom everywhere. */
+  --text:          #FAFAF8; /* primary */
+  --text-muted:    #ADA6C8; /* secondary */
   --text-dim:      #6E6796; /* RULES AND TICKS ONLY — never body text */
 
   /* --- Ember: the only persuasive colour ----------------------------------
@@ -32,26 +48,28 @@
      and fails AA, so the FILL is darkened until the label passes, the HOVER
      lightens only as far as the white label still clears AA, and Ember as
      TEXT is lifted until it clears AA on all four elevation surfaces — not
-     just the page ground, because cards carry Ember links too.
-
-     This is the same fill/text split the RP Films system uses for crimson
-     (#C8102E fill, #FF4D62 text). It is not a compromise; it is how a single
-     brand colour survives contact with WCAG. */
+     just the page ground, because cards carry Ember links too. */
   --ember:         #C7431E; /* BUTTON FILLS — white label 4.94:1  AA */
-  --ember-hover:   #CC4620; /* button hover — lightened as far as the white label allows */
-  --ember-text:    #F2704A; /* Ember AS TEXT — clears AA on void/surface/raised/overlay */
+  --ember-hover:   #CC4620; /* button hover */
+  --ember-text:    #F2704A; /* Ember AS TEXT — clears AA on all four surfaces */
+
+  /* Bottom stop of the primary button's gradient. The reference button is a
+     gradient, not a flat fill, and the direction matters: it runs DARKER
+     downwards, so the white label's contrast only ever improves from the
+     4.94:1 measured at the top. A lighter stop would have quietly broken it. */
+  --ember-deep:    #A5360F;
 
   /* --- Signature and trust ------------------------------------------------ */
   --magenta:       #9B2FC0; /* signature FILLS only — never body text */
-  --magenta-text:  #C98CE4; /* magenta as text   7.35:1 on --void  AAA */
+  --magenta-text:  #C98CE4; /* magenta as text */
   --ocean:         #1B6CA8; /* trust fills */
-  --ocean-text:    #7FB4E2; /* links, badges     8.38:1 on --void  AAA */
+  --ocean-text:    #7FB4E2; /* links, badges */
 
   /* --- Data colours -------------------------------------------------------
      Colour temperature vocabulary from the client's own world. These encode
      information (format, kit, temperature) and MAY NEVER be used to persuade. */
-  --tungsten:      #F2A65A; /* 3200K             9.12:1 on --void  AAA */
-  --daylight:      #6E9BD1; /* 5600K             6.39:1 on --void  AA  */
+  --tungsten:      #F2A65A; /* 3200K */
+  --daylight:      #6E9BD1; /* 5600K */
 
   /* --- Button label -------------------------------------------------------
      Declared as a token so the checker verifies it against the Ember fills
