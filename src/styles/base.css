@@ -22,7 +22,12 @@
   --s-1: 8px;  --s-2: 16px; --s-3: 24px; --s-4: 40px;
   --s-5: 64px; --s-6: 96px; --s-7: 140px;
 
-  --container: 1240px;
+  /* Widened from 1240 so the page uses the screen rather than sitting in a
+     narrow column with dead margins either side. ONE value for every section —
+     header, hero, body, footer — because the moment the hero has its own width
+     the brand mark and the H1 stop sharing a left edge, and two competing
+     left edges down a page is more visible than either width on its own. */
+  --container: 1600px;
   --gutter: clamp(20px, 5vw, 48px);
   --radius: 12px;
 

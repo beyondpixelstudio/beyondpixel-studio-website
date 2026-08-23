@@ -63,7 +63,7 @@ const slates = [
   <section class="hero">
     <LotusBloom />
     <span class="flare" aria-hidden="true"></span>
-    <div class="wrap hero__in">
+    <div class="wrap hero__in" data-bloom-anchor>
       <p class="eyebrow">{business.tagline}</p>
       <h1>Video Production Company in <em>Bhubaneswar</em></h1>
       <p class="lead hero__lead">
@@ -253,7 +253,14 @@ const slates = [
      instead of aligning it left. The copy drifted right and straight into the
      bloom. Stretching it back to full width restores the container's own
      centring and gutters. */
-  .hero__in { position: relative; z-index: 2; width: 100%; }
+  .hero__in {
+    position: relative; z-index: 2; width: 100%;
+    /* No width of its own — the hero uses --container like every other section.
+       Giving it a wider box did make the composition fill the page, but it also
+       broke the left edge: the brand mark sat on the 1240 container and the H1
+       on the hero's own, and that misalignment reads louder than either width.
+       The page got wider instead, in one place, for everything. */
+  }
   /* The copy is a COLUMN, not a full-width block. Two reasons, and they happen
      to want the same number: a 38rem measure keeps the H1 to a readable line
      length instead of letting it run the full 1240 container, and it leaves the

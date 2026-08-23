@@ -313,11 +313,17 @@
     /* ---- Sizing --------------------------------------------------------
        DPR capped at 1.75. Beyond that the pixels are free of charge to the eye
        and expensive to the GPU. */
-    /* Where the flower sits across the frame, 0 = left edge, 1 = right.
-       0.82 puts it in the right of the composition with its outer petals
-       running off the edge. Measured against the copy, not guessed: at 0.78 the
-       inner petals reached the end of the lead paragraph's longest line. */
+    /* Where the flower sits, as a fraction of the LAYOUT COLUMN — 0 = the left
+       edge of the hero's content box, 1 = its right edge.
+
+       Measured against the content box, never the canvas. The canvas is
+       full-bleed, so on a wide monitor a viewport-relative 0.82 threw the
+       flower out to the screen edge while the copy stayed in its centred
+       container: the two halves of the composition drifted apart and the hero
+       read as pushed right with a dead area on the left. Anchoring to the same
+       box the copy lives in keeps them locked together at every width. */
     const FRAME_X = 0.82;
+    const anchor = document.querySelector('[data-bloom-anchor]');
     let offsetX = 0;
 
     const resize = () => {
@@ -328,12 +334,17 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
       renderer.setSize(r.width, r.height, false);
 
-      // Convert FRAME_X into world units at the flower's depth. Recomputed on
-      // every resize because the visible world width depends on the aspect —
-      // a fixed world offset would drift across the frame as the window
-      // changes shape.
+      // Resolve FRAME_X against the content box, then express that point as a
+      // fraction of the canvas so the camera can be told where to look.
+      const b = anchor?.getBoundingClientRect();
+      const targetX = b && b.width ? b.left + b.width * FRAME_X : r.left + r.width * FRAME_X;
+      const frac = (targetX - r.left) / r.width;
+
+      // Convert to world units at the flower's depth. Recomputed on every
+      // resize because the visible world width depends on the aspect — a fixed
+      // world offset would drift across the frame as the window changes shape.
       const worldH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI) / 360);
-      offsetX = (FRAME_X - 0.5) * worldH * camera.aspect;
+      offsetX = (frac - 0.5) * worldH * camera.aspect;
     };
     resize();
     addEventListener('resize', resize, { passive: true });
