@@ -3,13 +3,15 @@ import { business } from '../data/business.ts';
 import { services } from '../data/services.ts';
 ---
 
-<footer class="ftr" id="contact">
+{/* No id="contact" here. It predates the /contact/ page and the homepage's own
+    enquiry section, and having both meant two elements shared one id on the
+    homepage — invalid, and the anchor resolves to whichever comes first. */}
+<footer class="ftr">
   <div class="wrap ftr__in">
     <div class="ftr__col ftr__col--nap">
       <p class="ftr__name">{business.name}</p>
       <p class="ftr__tag mono">{business.tagline}</p>
 
-      {/* The canonical NAP block. Every value comes from business.ts. */}
       {/* The canonical NAP block. Every value comes from business.ts, and the
           PRIMARY line only — the alternate lives on /contact/ alone, so the
           number repeated site-wide is unambiguous to anyone scraping it. */}

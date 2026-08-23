@@ -15,6 +15,7 @@
  *   4. canonical, lang, viewport, and a description present
  *   5. every wa.me link carries the canonical WhatsApp digits
  *   6. the phone number renders as ONE string across the whole site
+ *   7. no duplicate ids on a page
  *
  * Exits non-zero on failure.
  */
@@ -106,6 +107,15 @@ for (const page of pages) {
     prev = h.level;
   }
 
+  // --- duplicate ids
+  //
+  // Two elements sharing an id is invalid, and an in-page anchor silently
+  // resolves to whichever comes first — which is exactly how #contact ended up
+  // scrolling to the footer instead of the enquiry form.
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  const dupes = [...new Set(ids.filter((v, i) => ids.indexOf(v) !== i))];
+  for (const d of dupes) note(page, `duplicate id="${d}"`);
+
   // --- links
   for (const m of html.matchAll(/href="([^"]+)"/g)) {
     const href = m[1];
@@ -159,6 +169,7 @@ if (problems.length) {
 
 console.log('  ok    every internal link resolves');
 console.log('  ok    one h1 per page, no heading levels skipped');
+console.log('  ok    no duplicate ids');
 console.log('  ok    titles <= 60, descriptions <= 160');
 console.log('  ok    canonical, lang and viewport present on every page');
 console.log(`  ok    every wa.me link points at one of ${WA_DIGITS.join(' / ')}`);

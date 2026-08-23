@@ -19,20 +19,21 @@ const { variant = 'hero' } = Astro.props;
 <ul class:list={['revs', `revs--${variant}`]}>
   {business.reviews.map((r) => (
     <li class="rev">
+      {/* Stars ONLY where there is a verified rating behind them. Drawing five
+          stars beside the Google link would assert a five-star Google rating
+          nobody has checked — the same fabrication as inventing the count, just
+          harder to notice. */}
+      {r.value !== null && <span class="rev__stars" aria-hidden="true">★★★★★</span>}
       {r.value !== null ? (
-        <>
-          <span class="rev__stars" aria-hidden="true">★★★★★</span>
-          <span class="rev__txt">
-            <b>{r.value.toFixed(1)}</b>
-            <span class="rev__sep" aria-hidden="true">·</span>
-            {r.count} reviews on {r.source}
-          </span>
-        </>
+        <span class="rev__txt">
+          <b>{r.value.toFixed(1)}</b>
+          <span class="rev__sep" aria-hidden="true">·</span>
+          <span>{r.count} reviews on {r.source}</span>
+        </span>
       ) : r.url ? (
-        <a class="rev__link" href={r.url} rel="noopener">
-          <span class="rev__g" aria-hidden="true">G</span>
-          <span class="rev__txt">Read our {r.source} reviews</span>
-          <span aria-hidden="true">→</span>
+        <a class="rev__txt rev__txt--link" href={r.url} rel="noopener">
+          Read our {r.source} reviews
+          <span class="rev__go" aria-hidden="true">→</span>
         </a>
       ) : null}
     </li>
@@ -40,31 +41,38 @@ const { variant = 'hero' } = Astro.props;
 </ul>
 
 <style>
-  .revs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); align-items: center; }
+  /* The two sources are SIBLINGS, drawn the same way. The Google entry used to
+     be a filled pill with a gradient monogram while JustDial was bare text, and
+     side by side that read as one advert bolted onto one fact. Same stars, same
+     type, same weight — the only difference is that one carries a number and
+     the other carries a link, which is the only difference that is real. */
+  .revs {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: var(--s-2) var(--s-4);
+  }
   .revs--block { justify-content: center; }
 
-  .rev { display: flex; align-items: center; gap: var(--s-2); font-size: 13px; color: var(--text-muted); }
-  .rev__stars { color: var(--tungsten); letter-spacing: .1em; font-size: 14px; }
+  .rev { display: inline-flex; align-items: center; gap: var(--s-2); font-size: 13px; color: var(--text-muted); }
+  /* A hairline divider between the two, drawn by the second item so it never
+     appears at the start or after a wrap onto its own line. */
+  .rev + .rev { padding-left: var(--s-4); border-left: 1px solid rgb(255 255 255 / .1); }
+
+  .rev__stars { color: var(--tungsten); letter-spacing: .1em; font-size: 13px; }
   .rev__txt { display: inline-flex; align-items: center; gap: 6px; }
   .rev b { color: var(--text); font-weight: 600; }
   .rev__sep { color: var(--text-dim); }
 
-  .rev__link {
-    display: inline-flex; align-items: center; gap: var(--s-2);
-    min-height: 32px; padding: 4px 12px 4px 4px;
-    border-radius: 999px;
-    background: var(--raised); box-shadow: var(--edge);
+  .rev__txt--link {
     color: var(--text-muted); text-decoration: none;
-    transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+    padding-block: 4px;                 /* clears the 24px target floor */
+    transition: color var(--t-fast) var(--ease);
   }
-  .rev__link:hover { background: var(--overlay); color: var(--text); }
-  /* Google's own mark cannot be reproduced without permission, so this is a
-     neutral monogram chip rather than a fake logo. */
-  .rev__g {
-    width: 24px; height: 24px; flex: none;
-    display: grid; place-content: center;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--ember-hover), var(--magenta));
-    color: #fff; font-weight: 700; font-size: 13px; line-height: 1;
+  .rev__txt--link:hover { color: var(--text); }
+  .rev__go { color: var(--ember-text); transition: translate var(--t-fast) var(--ease); }
+  .rev__txt--link:hover .rev__go { translate: 3px 0; }
+
+  @media (max-width: 520px) {
+    .rev + .rev { padding-left: 0; border-left: 0; }
   }
 </style>

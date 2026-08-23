@@ -32,7 +32,15 @@
   --s-1: 4px;  --s-2: 10px; --s-3: 16px; --s-4: 24px;
   --s-5: 40px; --s-6: 64px; --s-7: 96px; --s-8: 140px;
 
-  --container: 1600px;
+  /* BOXED, at Rajesh's call. It was widened to 1600 for a full-width hero and
+     is back at 1240: on a large monitor 1600 stretched the headline measure and
+     the card grids past the width they were designed at.
+
+     Still ONE value for every section — header, hero, body, footer. The moment
+     the hero gets a width of its own, the brand mark and the H1 stop sharing a
+     left edge, and two competing left edges down a page is more visible than
+     either width on its own. */
+  --container: 1240px;
   --gutter: clamp(20px, 5vw, 48px);
 
   /* Radius — 4 / 8 / 16 / 24, straight from the reference. --radius stays as

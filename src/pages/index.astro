@@ -5,6 +5,7 @@ import LotusBloom from '../components/LotusBloom.astro';
 import Check from '../components/Check.astro';
 import ClientWall from '../components/ClientWall.astro';
 import Reviews from '../components/Reviews.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
 import { clients } from '../data/clients.ts';
@@ -225,26 +226,35 @@ const slates = [
     </div>
   </section>
 
-  {/* ---------------------------------------------------------- FINAL CTA */}
-  <section class="section glow cta" style="--glow: rgb(199 67 30 / .20); --glow-x: 50%; --glow-y: 40%;">
-    <div class="wrap cta__in" data-reveal>
-      <h2>Tell us what you are planning.</h2>
-      <p class="lead cta__lead">
-        Send the date, the venue and roughly what you need. You get an itemised quote,
-        not a brochure. {business.areaServed.join(', ')} and across {business.areaServedBroad};
-        AI video production is delivered nationwide.
-      </p>
-      <div class="hero__cta cta__btns">
-        <a class="btn btn--lg" href={wa('Hello, I am planning a shoot and would like a quote.')}>
-          Enquire on WhatsApp
-        </a>
-        <a class="btn btn--ghost btn--lg" href={business.phone.href}>{business.phone.display}</a>
+  {/* ------------------------------------------------------- ENQUIRY FORM */}
+  <section class="section glow cta" id="contact" style="--glow: rgb(199 67 30 / .20); --glow-x: 50%; --glow-y: 18%;">
+    <div class="wrap">
+      <div class="sechead">
+        <h2>Tell us what you are planning.</h2>
+        <p>
+          Send the date, the venue and roughly what you need. You get an itemised
+          quote, not a brochure. {business.areaServed.join(', ')} and across
+          {' ' + business.areaServedBroad}; AI video production is delivered nationwide.
+        </p>
       </div>
-      <p class="cta__alt">
-        Prefer email? <a href={`mailto:${business.email}`}>{business.email}</a>
-      </p>
+
+      <div class="formwrap" data-reveal>
+        <EnquiryForm />
+      </div>
+
+      <div class="cta__alt">
+        <p>Would rather not fill anything in?</p>
+        <div class="cta__btns">
+          <a class="btn" href={wa('Hello, I am planning a shoot and would like a quote.')}>
+            Message us on WhatsApp
+          </a>
+          <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
+          <a class="btn btn--ghost" href={`mailto:${business.email}`}>{business.email}</a>
+        </div>
+      </div>
     </div>
   </section>
+
 </Base>
 
 <style>
@@ -357,11 +367,15 @@ const slates = [
   .proc__n { display: block; color: var(--ember-text); font-size: 13px; letter-spacing: .12em; margin-bottom: var(--s-3); }
   .proc p { margin-top: var(--s-2); color: var(--text-muted); font-size: var(--fs-sm); }
 
-  /* --- CTA ---------------------------------------------------------------- */
-  .cta__in { text-align: center; display: grid; justify-items: center; }
-  .cta__lead { margin-top: var(--s-4); }
-  .cta__btns { justify-content: center; }
-  .cta__alt { margin-top: var(--s-4); font-size: var(--fs-sm); color: var(--text-muted); }
+  /* --- CTA + form ---------------------------------------------------------
+     The form is the primary path and the direct-contact row sits under it as
+     the alternative, rather than the other way round — someone who already
+     knows they want to call does not need to scroll past a form to find the
+     number, and it is in the header on every page anyway. */
+  .formwrap { max-width: 940px; margin-inline: auto; }
+  .cta__alt { margin-top: var(--s-6); text-align: center; }
+  .cta__alt > p { font-size: var(--fs-sm); color: var(--text-dim); margin-bottom: var(--s-3); }
+  .cta__btns { display: flex; flex-wrap: wrap; gap: var(--s-2); justify-content: center; }
 
   /* --- Breakpoints -------------------------------------------------------- */
   @media (max-width: 479px) {
