@@ -94,9 +94,14 @@ const faqSchema = {
   .faq__item[open] .faq__mark::before { transform: rotate(135deg); }
   .faq__item[open] .faq__mark::after { transform: rotate(45deg); }
 
+  /* Fills the panel. The measure was capped at 68ch for readability, but inside
+     a 900px panel that left a third of the box empty and the answer read as
+     misaligned with its own heading. The panel is the measure now — the list is
+     already capped at 900px, so the line length stays reasonable. Size nudged up
+     slightly to compensate for the longer line. */
   .faq__a {
     margin: 0; padding: 0 var(--s-3) var(--s-3);
-    color: var(--text-muted); font-size: var(--fs-sm); max-width: 68ch;
+    color: var(--text-muted); font-size: 15px; line-height: 1.65;
   }
 
   @media (prefers-reduced-motion: reduce) {

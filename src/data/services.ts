@@ -102,6 +102,31 @@ export const generalFaqs: { q: string; a: string }[] = [
       'For a shoot with a fixed date, the earlier the better — event coverage is booked against a calendar and popular dates go. For everything else, a brief usually turns into a quote within a couple of working days. If you are working to a deadline, say so in the first message and we will tell you plainly whether it is achievable.',
   },
   {
+    q: 'Can we see examples of work like ours?',
+    a:
+      'Ask and we will send work from the closest sector we have — a campus film, a convocation stream, a plant shoot — rather than a generic showreel. Recent work also goes up on our Instagram and YouTube. If we have not done something close to your brief we will say so instead of stretching an unrelated example to fit.',
+  },
+  {
+    q: 'Do we get the raw footage as well as the finished film?',
+    a:
+      'On request, and it is worth asking at the quote stage rather than after the shoot. Raw footage from a multi-camera day is large, so we agree the handover method — drive, or a transfer link — in advance. Say so up front and it is written into the quote rather than negotiated later.',
+  },
+  {
+    q: 'How many people turn up on a shoot day?',
+    a:
+      'It depends on the job, and the quote says exactly who is coming rather than leaving you to find out on the day. A single-camera interview can be two people. A multi-camera event with live streaming is a larger crew because someone has to be on each camera, on sound, and on the stream itself. Nobody is billed who is not there.',
+  },
+  {
+    q: 'Can you cover a multi-day or multi-city event?',
+    a:
+      'Yes. Multi-day coverage is planned as one job rather than several bookings, so kit and crew stay consistent across the days and the edit holds together. Travel, accommodation and any additional crew are separate lines in the quote, not folded into a vague day rate.',
+  },
+  {
+    q: 'What do you need from us before the shoot?',
+    a:
+      'A date, a venue, a contact who will be on site, and whatever approvals the location needs — most delays we see come from access and permission, not from production. For events, a running order. For corporate films, whatever brand guidelines and logo files you want us to work to.',
+  },
+  {
     q: 'Do you use your own equipment and crew?',
     a:
       'Yes. Cameras, lighting and grip are ours and the crew are our own people, so the person quoting your job is the person who turns up to shoot it. Nothing is subcontracted out on the day, which is where most last-minute substitutions in this market come from.',
