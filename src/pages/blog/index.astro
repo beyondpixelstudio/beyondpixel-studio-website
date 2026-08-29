@@ -7,7 +7,7 @@ const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.published.valueOf() - a.data.published.valueOf()
 );
 
-const title = 'Notes on video, events and drones | Beyond Pixel';
+const title = 'Blogs on video, events and drones | Beyond Pixel';
 const description =
   'Practical writing on commissioning video, live streaming events and flying drones legally in Odisha — from the crew that does the work.';
 
@@ -18,7 +18,7 @@ const fmt = (d: Date) =>
 <Base title={title} description={description}>
   <section class="section shead">
     <div class="wrap">
-      <p class="eyebrow">Notes</p>
+      <p class="eyebrow">Blogs</p>
       <h1>What we have learned, written down.</h1>
       <p class="lead">
         No news posts and no announcements. These are the things clients ask us in the first

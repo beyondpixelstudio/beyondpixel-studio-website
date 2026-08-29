@@ -266,9 +266,9 @@ const posts = (await getCollection('blog'))
       Highlights, not an index. Three posts and a link out — the point is to
       show there is thinking behind the service pages, not to publish a feed. */}
   {posts.length > 0 && (
-    <section class="section notes" id="notes">
+    <section class="section notes" id="blogs">
       <div class="sechead">
-        <p class="eyebrow">Notes</p>
+        <p class="eyebrow">Blogs</p>
         <h2>Answers we give before anyone signs anything.</h2>
       </div>
       <div class="wrap">
@@ -287,7 +287,7 @@ const posts = (await getCollection('blog'))
           ))}
         </ul>
         <p class="notes__all">
-          <a class="btn btn--ghost" href="/blog/">Read all notes</a>
+          <a class="btn btn--ghost" href="/blog/">Read all blogs</a>
         </p>
       </div>
     </section>

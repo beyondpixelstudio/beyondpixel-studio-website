@@ -39,7 +39,7 @@ const breadcrumb = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: business.url },
-    { '@type': 'ListItem', position: 2, name: 'Notes', item: `${business.url}/blog/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${business.url}/blog/` },
     { '@type': 'ListItem', position: 3, name: post.data.title, item: canonical },
   ],
 };
@@ -58,7 +58,7 @@ const related = (await getCollection('blog'))
     <header class="section post__head">
       <div class="wrap post__wrap">
         <nav class="crumbs mono" aria-label="Breadcrumb">
-          <a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/blog/">Notes</a>
+          <a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/blog/">Blogs</a>
         </nav>
         <p class="eyebrow">{post.data.kicker}</p>
         <h1>{post.data.title}</h1>
