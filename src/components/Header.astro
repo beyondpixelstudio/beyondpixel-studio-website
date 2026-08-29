@@ -65,6 +65,17 @@ import { services } from '../data/services.ts';
       </nav>
 
       <div class="hdr__act">
+        <button
+          type="button"
+          class="btn btn--ghost hdr__brochure-btn"
+          data-open-portfolio
+          aria-label="Download 2026 Portfolio Brochure"
+        >
+          <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
+          </svg>
+          <span class="hdr__brochure-txt">Brochure</span>
+        </button>
         <a class="hdr__tel mono" href={business.phone.href}>{business.phone.display}</a>
         <a class="btn hdr__cta" href="/contact/" aria-label="Request a Quote">
           <span class="hdr__cta-long">Request a </span>Quote
@@ -201,9 +212,29 @@ import { services } from '../data/services.ts';
   }
 
   .hdr__act { display: flex; align-items: center; gap: var(--s-3); }
+  .hdr__brochure-btn {
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: 13.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    border: 1px solid rgb(255 255 255 / .12);
+    cursor: pointer;
+  }
+  .hdr__brochure-btn:hover {
+    color: var(--text);
+    border-color: rgb(255 255 255 / .24);
+  }
   .hdr__tel { display: none; color: var(--text); text-decoration: none; font-size: var(--fs-sm); white-space: nowrap; }
   .hdr__tel:hover { color: var(--ember-text); }
   .hdr__cta { min-height: 38px; padding: 8px 16px; font-size: 14px; }
+
+  @media (max-width: 620px) {
+    .hdr__brochure-btn { display: none; }
+  }
 
   /* Below ~430px the existing 560px reductions still left the bar 27px short:
      `.hdr__name` is `white-space: nowrap`, so flex could not shrink it and the

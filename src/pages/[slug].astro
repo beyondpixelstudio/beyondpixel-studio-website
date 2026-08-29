@@ -100,6 +100,17 @@ const breadcrumb = {
 
       <div class="shead__cta">
         <a class="btn" href={wa(service.whatsapp)}>Enquire on WhatsApp</a>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-open-portfolio
+          data-portfolio-purpose={service.name}
+        >
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
+          </svg>
+          <span>Download Portfolio (PDF)</span>
+        </button>
         <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
       </div>
     </div>
@@ -221,6 +232,17 @@ const breadcrumb = {
       </p>
       <div class="shead__cta cta__btns">
         <a class="btn btn--lg" href={wa(service.whatsapp)}>Enquire on WhatsApp</a>
+        <button
+          type="button"
+          class="btn btn--ghost btn--lg"
+          data-open-portfolio
+          data-portfolio-purpose={service.name}
+        >
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
+          </svg>
+          <span>Download Portfolio (PDF)</span>
+        </button>
         <a class="btn btn--ghost btn--lg" href="/contact/">All contact details</a>
       </div>
     </div>

@@ -7,6 +7,7 @@ import '../styles/base.css';
 
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import PortfolioModal from '../components/PortfolioModal.astro';
 import Tunnel from '../components/Tunnel.astro';
 import Bubbles from '../components/Bubbles.astro';
 import { business, sameAs } from '../data/business.ts';
@@ -161,6 +162,7 @@ const schema = {
     <Header />
     <main id="main"><slot /></main>
     <Footer />
+    <PortfolioModal />
 
     <script is:inline>
       // Rack focus: blur(9px) -> 0. One observer, fires once, then unobserves.

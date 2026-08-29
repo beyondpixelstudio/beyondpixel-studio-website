@@ -81,6 +81,12 @@ const posts = (await getCollection('blog'))
         <a class="btn btn--lg" href={wa('Hello, I would like a custom quote for a video production.')}>
           Request a custom quote
         </a>
+        <button type="button" class="btn btn--ghost btn--lg btn--pdf" data-open-portfolio>
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
+          </svg>
+          <span>Download Portfolio</span>
+        </button>
         <a class="btn btn--ghost btn--lg" href="#work">See our work</a>
       </div>
 
@@ -213,6 +219,25 @@ const posts = (await getCollection('blog'))
           </li>
         ))}
       </ul>
+
+      <div class="work__brochure panel panel--lit" data-reveal style="--accent: rgb(199 67 30 / .26);">
+        <div class="work__brochure-in">
+          <div class="work__brochure-text">
+            <span class="badge">Official 2026 Portfolio</span>
+            <h3>Looking for our complete production deck?</h3>
+            <p>
+              Download our 30-page media brochure containing detailed project case studies,
+              broadcast galleries, government & athletic event coverage, and studio specs.
+            </p>
+          </div>
+          <button type="button" class="btn btn--lg work__brochure-btn" data-open-portfolio>
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
+            </svg>
+            <span>Download Portfolio (PDF)</span>
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -485,6 +510,54 @@ const posts = (await getCollection('blog'))
   .notes__title { font-family: var(--font-display); font-stretch: var(--display-width); font-weight: 600; font-size: 19px; line-height: 1.25; padding: 0 var(--s-3); }
   .notes__desc { color: var(--text-muted); font-size: 14px; padding: 0 var(--s-3) var(--s-4); }
   .notes__all { text-align: center; margin-top: var(--s-4); }
+
+  .btn--pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* --- Work Brochure Banner ----------------------------------------------- */
+  .work__brochure {
+    margin-top: var(--s-6);
+    padding: clamp(var(--s-4), 4vw, var(--s-5));
+    border-radius: var(--r-lg);
+  }
+  .work__brochure-in {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .work__brochure-text h3 {
+    font-size: clamp(20px, 2.4vw, 26px);
+    margin: var(--s-2) 0 var(--s-2);
+    color: var(--text);
+  }
+  .work__brochure-text p {
+    color: var(--text-muted);
+    font-size: 15px;
+    max-width: 58ch;
+    margin: 0;
+  }
+  .work__brochure-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+  @media (min-width: 860px) {
+    .work__brochure-in {
+      flex-direction: row;
+      align-items: center;
+    }
+    .work__brochure-btn {
+      align-self: center;
+      flex-shrink: 0;
+    }
+  }
 
   /* --- Breakpoints -------------------------------------------------------- */
   @media (max-width: 479px) {
