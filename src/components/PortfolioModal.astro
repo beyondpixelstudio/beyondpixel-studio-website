@@ -282,7 +282,42 @@ import { business, wa } from '../data/business.ts';
       link.click();
       document.body.removeChild(link);
 
-      // 3. Show Success UI
+      /* 3. Prefill the WhatsApp follow-up with what was just typed.
+         The button's href is rendered server-side with only a greeting, because
+         at build time there is nothing to put in it. Without this step the
+         message arrives as "Hello, I have just downloaded the Beyond Pixel
+         Studio portfolio." and nothing else — the recipient gets a ping with no
+         idea who sent it, which is the opposite of the point.
+
+         Rebuilt from the ORIGIN + PATH rather than by appending to the existing
+         href, so pressing back and submitting twice cannot stack two ?text=
+         parameters onto one URL. */
+      const waBtn = document.getElementById('pmod-wa') as HTMLAnchorElement | null;
+      if (waBtn) {
+        /* Same normalisation the Telegram alert uses, so one lead does not
+           arrive as "+91 98765 43210" in one channel and "9876543210" in the
+           other. Country code decided by LENGTH — Indian mobiles legitimately
+           begin with 9, so a prefix test would mangle a number like
+           9187654321. */
+        let digits = phoneVal.replace(/\D/g, '');
+        if (digits.length === 13 && digits.slice(0, 3) === '091') digits = digits.slice(3);
+        else if (digits.length === 12 && digits.slice(0, 2) === '91') digits = digits.slice(2);
+        else if (digits.length === 11 && digits.charAt(0) === '0') digits = digits.slice(1);
+        const shownPhone = digits.length === 10 ? digits : phoneVal;
+
+        const lines = [
+          'Hello, I have just downloaded the Beyond Pixel Studio portfolio.',
+          '',
+          'Name: ' + nameVal,
+          'Phone: ' + shownPhone,
+          'Email: ' + emailVal,
+          'Interested in: ' + purposeVal,
+        ];
+        const base = waBtn.href.split('?')[0];
+        waBtn.href = base + '?text=' + encodeURIComponent(lines.join('\n'));
+      }
+
+      // 4. Show Success UI
       form.hidden = true;
       if (successView) successView.hidden = false;
     });
