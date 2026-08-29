@@ -65,7 +65,9 @@ import { services } from '../data/services.ts';
 
       <div class="hdr__act">
         <a class="hdr__tel mono" href={business.phone.href}>{business.phone.display}</a>
-        <a class="btn hdr__cta" href="/contact/">Request a Quote</a>
+        <a class="btn hdr__cta" href="/contact/" aria-label="Request a Quote">
+          <span class="hdr__cta-long">Request a </span>Quote
+        </a>
       </div>
     </div>
   </div>
@@ -201,6 +203,16 @@ import { services } from '../data/services.ts';
   .hdr__tel { display: none; color: var(--text); text-decoration: none; font-size: var(--fs-sm); white-space: nowrap; }
   .hdr__tel:hover { color: var(--ember-text); }
   .hdr__cta { min-height: 38px; padding: 8px 16px; font-size: 14px; }
+
+  /* Below ~430px the existing 560px reductions still left the bar 27px short:
+     `.hdr__name` is `white-space: nowrap`, so flex could not shrink it and the
+     wordmark ran under the CTA instead. Dropping "Request a " frees about 80px,
+     which is far more than the shortfall, and the brand keeps its full name —
+     the identity is worth more here than the verb. `aria-label` holds the full
+     "Request a Quote" so the accessible name never shortens with the visual. */
+  @media (max-width: 430px) {
+    .hdr__cta-long { display: none; }
+  }
 
   /* On a 375px bar the mark, the full wordmark, the tagline and the CTA do not
      fit — at the default sizes the CTA was being pushed off the right edge

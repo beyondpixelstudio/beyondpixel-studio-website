@@ -278,16 +278,18 @@ const slates = [
      centre vertically, which makes `.wrap` a flex ITEM — and a flex item is
      shrink-to-fit, so the container would collapse to its widest child and
      `margin-inline: auto` would then centre the copy instead of aligning it. */
-  /* FULL-BLEED HERO, at Rajesh's request — the rest of the site stays boxed.
-     `.wrap` still supplies the gutters, so the copy never touches the edge; only
-     the 1240 cap is lifted.
+  /* BOXED, like every other section. This was full-bleed for a while and the
+     trade-off noted here at the time is exactly what went wrong: the H1 started
+     at the page gutter while the header and every section below started at the
+     container edge, so the hero's left edge sat outside theirs. On a wide
+     display that also pushed the copy and the bloom to opposite ends of the
+     screen and opened a dead gap down the middle.
 
-     Known trade-off, stated rather than hidden: the H1 now starts at the page
-     gutter while the header and every section below start at the container
-     edge, so the hero's left edge sits outside theirs. That is the same
-     misalignment that made me widen the whole page last time; here it is
-     deliberate and limited to one section. */
-  .hero__in { position: relative; z-index: 2; width: 100%; max-width: none; }
+     Dropping `max-width: none` lets `.wrap`'s 1240 cap apply again, so the hero
+     aligns with the header and the sections. The bloom needs no change — it
+     resolves its position from `[data-bloom-anchor]`'s content box, so it moves
+     in with the copy. */
+  .hero__in { position: relative; z-index: 2; width: 100%; }
   /* The copy is a COLUMN, not a full-width block: it keeps the H1 to a readable
      measure and leaves the right of the frame for the bloom. */
   .hero__in > * { max-width: 42rem; }

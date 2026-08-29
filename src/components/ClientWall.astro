@@ -58,7 +58,7 @@ const COPIES = [0, 1, 2, 3];
           {row.items.map((c) => (
             <li class="wall__item">
               <img
-                src={`/clients/${c.logo}.webp`}
+                src={`/clients/mark/${c.logo}.webp`}
                 alt={copy === 0 ? c.name : ''}
                 width="240"
                 height="120"
@@ -92,6 +92,11 @@ const COPIES = [0, 1, 2, 3];
   .wall__row { display: flex; width: max-content; }
   .wall__row--l { animation: runL var(--dur) linear infinite; }
   .wall__row--r { animation: runR var(--dur) linear infinite; }
+
+  /* Three elements, each running a transform that never stops. Without this the
+     rows were left on `will-change: auto` and the compositor was promoting and
+     demoting them, re-rasterising ~31 tiles each time. */
+  .wall__row { will-change: transform; }
 
   .wall:hover .wall__row,
   .wall:focus-within .wall__row { animation-play-state: paused; }
@@ -218,14 +223,23 @@ const COPIES = [0, 1, 2, 3];
      standard dark-site treatment and it is why the wall can now be dark.
 
      Colour returns on hover, so the real brand is still one pointer away. */
+  /* The marks are served ALREADY WHITE — scripts/make-logo-marks.mjs masks solid
+     white through each logo's alpha at build time.
+
+     They were briefly white via `filter: brightness(0) invert(1)` instead, and
+     that measured 25fps with a 167ms worst frame: a filter is a rasterisation
+     boundary, and there are 92 of these inside three rows whose transform never
+     stops animating. Baking it means the browser is back to drawing an image.
+
+     Hover is opacity only, for the same reason — no filter, nothing to
+     re-rasterise mid-marquee. */
   .wall__item img {
     position: relative; z-index: 1;
     width: 100%; height: 100%; object-fit: contain;
-    filter: brightness(0) invert(1);
     opacity: .68;
-    transition: opacity var(--t-slow) var(--ease), filter var(--t-slow) var(--ease);
+    transition: opacity var(--t-slow) var(--ease);
   }
-  .wall__item:hover img { filter: none; opacity: 1; }
+  .wall__item:hover img { opacity: 1; }
 
   @media (min-width: 700px) {
     .wall { gap: 8px; }

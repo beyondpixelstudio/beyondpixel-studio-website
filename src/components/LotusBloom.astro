@@ -570,6 +570,15 @@
     z-index: 0;
   }
 
+  /* On a phone the hero copy runs the full width of the frame, so the bloom is
+     no longer beside the text — it is directly behind it, and at full strength
+     the bright petals were passing under the paragraph and taking the lead copy
+     with them. There is no room to move it, so it drops to ambient instead.
+     Wide screens keep it at full strength, where it sits clear of the column. */
+  @media (max-width: 760px) {
+    .bloom { opacity: 0.32; }
+  }
+
   /* --- Static fallback ----------------------------------------------------
      What most phone visitors see, and it has to be finished in its own right.
      Three concentric conic rings, masked to thin bands: an aperture read from
