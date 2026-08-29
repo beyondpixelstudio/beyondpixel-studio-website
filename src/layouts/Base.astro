@@ -95,12 +95,51 @@ const schema = {
       //      a JS failure can never leave the page blank.
       //   2. the session stamp suppresses the iris on repeat visits, before the
       //      overlay has a chance to paint.
+      //   3. a refresh starts at the top of the page.
       (function () {
         var d = document.documentElement;
         d.classList.add('js');
         try {
           if (sessionStorage.getItem('bps-iris')) d.dataset.iris = 'seen';
           else sessionStorage.setItem('bps-iris', '1');
+        } catch (e) {}
+
+        /* SCROLL RESTORATION ON RELOAD.
+           Measured: park the page at scrollY 600, hit reload, and Chrome puts
+           it back at 781 — immediately, and it stays there. Not a layout shift
+           (CLS is 0 and the document height is identical either side), just the
+           restore heuristic landing in the wrong place. Refresh again and it
+           creeps further each time: 614 -> 779 -> 914. That is the page
+           appearing to climb upward on every refresh.
+
+           A landing page should open at the top when it is refreshed anyway, so
+           restoration is switched off for RELOADS only. Back and forward
+           navigation still restore normally — losing your place when you press
+           Back is a genuine annoyance, and that path was never broken. */
+        try {
+          var nav = performance.getEntriesByType('navigation')[0];
+          var isReload = nav && nav.type === 'reload';
+
+          if ('scrollRestoration' in history) {
+            history.scrollRestoration = isReload ? 'manual' : 'auto';
+          }
+
+          /* Setting `manual` alone was not enough: measured, Chrome had already
+             applied its restore before this script ran, and the page still came
+             back at 747 instead of 0. So the restore is also actively undone.
+
+             Three passes, because Chrome can restore again after layout and
+             after load — one call only wins the race some of the time. A hash
+             link is left alone; that scroll is deliberate. */
+          if (isReload && !location.hash) {
+            var top = function () { window.scrollTo(0, 0); };
+            top();
+            requestAnimationFrame(function () {
+              top();
+              requestAnimationFrame(top);
+            });
+            addEventListener('load', top, { once: true });
+          }
         } catch (e) {}
       })();
     </script>
