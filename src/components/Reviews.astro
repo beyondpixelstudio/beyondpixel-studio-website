@@ -52,6 +52,9 @@ const { variant = 'hero' } = Astro.props;
     gap: var(--s-2) var(--s-4);
   }
   .revs--block { justify-content: center; }
+  /* Space off the buttons above. Sitting tight under the CTA row it read as
+     part of the button group rather than as its own line of proof. */
+  .revs--hero { margin-top: var(--s-4); }
 
   .rev { display: inline-flex; align-items: center; gap: var(--s-2); font-size: 13px; color: var(--text-muted); }
   /* A hairline divider between the two, drawn by the second item so it never

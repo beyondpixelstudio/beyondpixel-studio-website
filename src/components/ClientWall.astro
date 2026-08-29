@@ -122,38 +122,55 @@ const COPIES = [0, 1, 2, 3];
     padding: 8px;
     position: relative;
     border-radius: 13px;
+    /* DARK glass, not white. A white pane is the Apple-on-light treatment; on a
+       near-black cinematic ground ninety of them become the brightest thing on
+       the page and the section stops belonging to the site. The pane is now a
+       low-alpha white *tint* over the dark ground — the page shows through, and
+       the glass reads from the lit edge and specular instead of from a white
+       fill. */
     background: linear-gradient(
       160deg,
-      rgb(255 255 255 / .82) 0%,
-      rgb(252 250 255 / .68) 45%,
-      rgb(244 240 252 / .60) 100%
+      rgb(255 255 255 / .085) 0%,
+      rgb(255 255 255 / .05) 45%,
+      rgb(255 255 255 / .03) 100%
     );
-    /* Standard property only — see base.css .glass. Hand-writing the
-       -webkit- prefix makes the minifier drop the unprefixed one, and that is
-       the only one modern Chrome supports. */
-    backdrop-filter: blur(14px) saturate(180%);
+    /* NO backdrop-filter here, and that is a performance decision rather than a
+       stylistic one. There are ninety-odd tiles, and behind them the tunnel is
+       rotating and the bubbles are drifting — so every one of those blur regions
+       would be invalidated on every frame of a continuously animating backdrop.
+       Ninety live blurs is a frame budget, not an effect.
+
+       It costs almost nothing visually: the backdrop here is a soft, near-uniform
+       gradient, and blurring a gradient looks like the gradient. The glass still
+       reads, from the translucent body, the specular and the lit edge — which is
+       where most of it was coming from anyway. The header pill keeps its blur:
+       that is ONE element, and it genuinely blurs sharp content scrolling under
+       it, which is a case where the effect is visible and worth paying for. */
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / .95),
-      inset 0 0 0 1px rgb(255 255 255 / .5),
-      0 2px 10px rgb(0 0 0 / .3);
+      inset 0 1px 0 0 rgb(255 255 255 / .22),
+      inset 0 0 0 1px rgb(255 255 255 / .09),
+      0 2px 12px rgb(0 0 0 / .45);
     transition: transform var(--t-slow) var(--ease), box-shadow var(--t-slow) var(--ease),
                 background var(--t-slow) var(--ease);
   }
 
-  /* The specular. It leans with the pointer using the --mx/--my the rig in
-     Base.astro already publishes, so the highlight slides across the wall as
-     the cursor moves — the "liquid" half of liquid glass. */
+  /* The specular is STATIC — it must not read --mx/--my.
+     It did, and that was the flicker: every pointer move changed a custom
+     property that this gradient depends on, which invalidated all ninety-odd
+     tiles at once, and each of those carries a backdrop-filter. Ninety blur
+     regions recomputed per mouse move is not something a compositor can hide.
+     A fixed highlight costs nothing and reads the same while the row moves. */
   .wall__item::before {
     content: '';
     position: absolute; inset: 0;
     border-radius: inherit;
     pointer-events: none;
     background: radial-gradient(
-      60% 100% at calc(50% + var(--mx, 0) * 34%) calc(12% + var(--my, 0) * 22%),
-      rgb(255 255 255 / .8),
+      60% 100% at 42% 10%,
+      rgb(255 255 255 / .16),
       rgb(255 255 255 / 0) 68%
     );
-    opacity: .55;
+    opacity: .9;
     transition: opacity var(--t-slow) var(--ease);
   }
 
@@ -163,7 +180,7 @@ const COPIES = [0, 1, 2, 3];
     position: absolute; inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    background: linear-gradient(105deg, transparent 36%, rgb(255 255 255 / .8) 50%, transparent 64%);
+    background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / .28) 50%, transparent 62%);
     z-index: 2; /* the sweep crosses over the logo, as a reflection would */
     translate: -130% 0;
     opacity: 0;
@@ -172,13 +189,13 @@ const COPIES = [0, 1, 2, 3];
 
   .wall__item:hover {
     transform: translateY(-4px) scale(1.07);
-    background: linear-gradient(160deg, rgb(255 255 255 / .92), rgb(250 247 255 / .8));
+    background: linear-gradient(160deg, rgb(255 255 255 / .16), rgb(255 255 255 / .07));
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 1),
-      inset 0 0 0 1px rgb(255 255 255 / .65),
-      0 10px 26px rgb(0 0 0 / .5),
-      0 0 0 1px rgb(199 67 30 / .4),
-      0 6px 26px rgb(199 67 30 / .32);
+      inset 0 1px 0 0 rgb(255 255 255 / .38),
+      inset 0 0 0 1px rgb(255 255 255 / .16),
+      0 10px 28px rgb(0 0 0 / .55),
+      0 0 0 1px rgb(199 67 30 / .45),
+      0 6px 26px rgb(199 67 30 / .30);
   }
   .wall__item:hover::before { opacity: 1; }
   .wall__item:hover::after { translate: 130% 0; opacity: 1; }
@@ -191,10 +208,24 @@ const COPIES = [0, 1, 2, 3];
      child — so it was sitting on top of every logo and washing them out.
      Giving the image its own stacking position puts it back in front of the
      specular and behind the hover sweep. */
+  /* The marks are full-colour logos drawn for white paper. On a dark pane they
+     either vanish or drag their own white boxes in with them, which is what
+     forced the tiles white in the first place.
+
+     `brightness(0)` crushes each mark to solid black regardless of its original
+     colours, and `invert(1)` flips that to solid white — so twenty-three
+     unrelated logos become one consistent set of light marks. This is the
+     standard dark-site treatment and it is why the wall can now be dark.
+
+     Colour returns on hover, so the real brand is still one pointer away. */
   .wall__item img {
     position: relative; z-index: 1;
     width: 100%; height: 100%; object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: .68;
+    transition: opacity var(--t-slow) var(--ease), filter var(--t-slow) var(--ease);
   }
+  .wall__item:hover img { filter: none; opacity: 1; }
 
   @media (min-width: 700px) {
     .wall { gap: 8px; }
@@ -207,6 +238,6 @@ const COPIES = [0, 1, 2, 3];
     .wall__set[aria-hidden='true'] { display: none; }
     .wall__item:hover { transform: none; }
     .wall__item::after { display: none; }
-    .wall__item::before { background: radial-gradient(60% 100% at 50% 12%, rgb(255 255 255 / .85), rgb(255 255 255 / 0) 68%); }
+    .wall__item::before { background: radial-gradient(60% 100% at 50% 12%, rgb(255 255 255 / .16), rgb(255 255 255 / 0) 68%); }
   }
 </style>

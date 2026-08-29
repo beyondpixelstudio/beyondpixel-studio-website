@@ -120,7 +120,9 @@
     // and the flower stops reading as symmetrical — the same reason a portrait
     // is not shot on 24mm.
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-    camera.position.set(0, 0.15, 11.4);
+    // Pulled back from 11.4. The bloom was filling most of the right half of
+    // the hero and competing with the headline rather than sitting beside it.
+    camera.position.set(0, 0.15, 14.6);
 
     const renderer = new THREE.WebGLRenderer({
       canvas: gl,

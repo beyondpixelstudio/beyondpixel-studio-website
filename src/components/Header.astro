@@ -1,5 +1,6 @@
 ---
 import { business } from '../data/business.ts';
+import { services } from '../data/services.ts';
 ---
 
 <header class="hdr">
@@ -30,7 +31,33 @@ import { business } from '../data/business.ts';
       </a>
 
       <nav class="hdr__nav" aria-label="Primary">
-        <a href="/#services">Services</a>
+        {/* A disclosure, not a hover menu. `aria-expanded` on a real <button>
+            is what tells assistive tech the state, and click-to-open works for
+            keyboard, touch and mouse identically — a hover-only submenu is
+            unreachable on touch and awkward with a keyboard. */}
+        <div class="hdr__menu" data-menu>
+          <button class="hdr__trigger" type="button" aria-expanded="false" aria-controls="hdr-services">
+            Services
+            <svg class="hdr__chev" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+              <path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <div class="hdr__panel" id="hdr-services" hidden>
+            <ul>
+              {services.map((s) => (
+                <li>
+                  <a href={`/${s.slug}/`}>
+                    <span class="hdr__pname">{s.name}</span>
+                    <span class="hdr__psum">{s.summary}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
         <a href="/#work">Work</a>
         <a href="/#why">Why us</a>
         <a href="/contact/">Contact</a>
@@ -43,6 +70,42 @@ import { business } from '../data/business.ts';
     </div>
   </div>
 </header>
+
+<script is:inline>
+  // Services disclosure. Closes on Escape, on a click outside, and on choosing
+  // a link — a menu that stays open after navigation is a menu you have to
+  // dismiss twice.
+  (function () {
+    var root = document.querySelector('[data-menu]');
+    if (!root) return;
+    var btn = root.querySelector('button');
+    var panel = root.querySelector('.hdr__panel');
+
+    function set(open) {
+      btn.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+    }
+
+    btn.addEventListener('click', function () {
+      set(btn.getAttribute('aria-expanded') !== 'true');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!root.contains(e.target)) set(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (btn.getAttribute('aria-expanded') !== 'true') return;
+      set(false);
+      btn.focus(); // focus must not be left stranded inside a hidden panel
+    });
+
+    panel.addEventListener('click', function (e) {
+      if (e.target.closest('a')) set(false);
+    });
+  })();
+</script>
 
 <style>
   .hdr {
@@ -88,12 +151,51 @@ import { business } from '../data/business.ts';
     color: var(--text-dim); font-weight: 500;
   }
 
-  .hdr__nav { display: none; gap: var(--s-4); white-space: nowrap; }
-  .hdr__nav a {
+  .hdr__nav { display: none; align-items: center; gap: var(--s-4); white-space: nowrap; }
+  .hdr__nav > a {
     color: var(--text-muted); text-decoration: none; font-size: 15px;
     padding: 8px 2px; transition: color var(--t-fast) var(--ease);
   }
-  .hdr__nav a:hover { color: var(--text); }
+  .hdr__nav > a:hover { color: var(--text); }
+
+  /* --- Services disclosure ------------------------------------------------ */
+  .hdr__menu { position: relative; }
+  .hdr__trigger {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 2px; border: 0; background: none; cursor: pointer;
+    font: inherit; font-size: 15px; color: var(--text-muted);
+    transition: color var(--t-fast) var(--ease);
+  }
+  .hdr__trigger:hover,
+  .hdr__trigger[aria-expanded='true'] { color: var(--text); }
+  .hdr__chev { width: 12px; height: 12px; transition: rotate var(--t-fast) var(--ease); }
+  .hdr__trigger[aria-expanded='true'] .hdr__chev { rotate: 180deg; }
+
+  .hdr__panel {
+    position: absolute; top: calc(100% + 14px); left: 50%;
+    translate: -50% 0;
+    width: min(560px, 78vw);
+    padding: var(--s-2);
+    border-radius: var(--r-md);
+    background: var(--raised);
+    box-shadow: var(--edge), 0 18px 44px rgb(0 0 0 / .55);
+    z-index: 10;
+  }
+  .hdr__panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .hdr__panel a {
+    display: grid; gap: 2px;
+    padding: 10px var(--s-3);
+    border-radius: var(--r-sm);
+    text-decoration: none;
+    transition: background var(--t-fast) var(--ease);
+  }
+  .hdr__panel a:hover { background: var(--overlay); }
+  .hdr__pname { color: var(--text); font-size: 14px; font-weight: 600; white-space: normal; }
+  .hdr__psum { color: var(--text-dim); font-size: 12.5px; white-space: normal; }
+
+  @media (min-width: 900px) {
+    .hdr__panel ul { grid-template-columns: 1fr 1fr; }
+  }
 
   .hdr__act { display: flex; align-items: center; gap: var(--s-3); }
   .hdr__tel { display: none; color: var(--text); text-decoration: none; font-size: var(--fs-sm); white-space: nowrap; }

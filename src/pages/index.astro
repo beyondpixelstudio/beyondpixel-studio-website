@@ -278,7 +278,16 @@ const slates = [
      centre vertically, which makes `.wrap` a flex ITEM — and a flex item is
      shrink-to-fit, so the container would collapse to its widest child and
      `margin-inline: auto` would then centre the copy instead of aligning it. */
-  .hero__in { position: relative; z-index: 2; width: 100%; }
+  /* FULL-BLEED HERO, at Rajesh's request — the rest of the site stays boxed.
+     `.wrap` still supplies the gutters, so the copy never touches the edge; only
+     the 1240 cap is lifted.
+
+     Known trade-off, stated rather than hidden: the H1 now starts at the page
+     gutter while the header and every section below start at the container
+     edge, so the hero's left edge sits outside theirs. That is the same
+     misalignment that made me widen the whole page last time; here it is
+     deliberate and limited to one section. */
+  .hero__in { position: relative; z-index: 2; width: 100%; max-width: none; }
   /* The copy is a COLUMN, not a full-width block: it keeps the H1 to a readable
      measure and leaves the right of the frame for the bloom. */
   .hero__in > * { max-width: 42rem; }
@@ -309,11 +318,18 @@ const slates = [
     font-size: 13px; letter-spacing: .04em; color: var(--text-dim);
     text-align: center; margin-bottom: var(--s-4);
   }
+  /* NO FILL. It carried a flat --surface slab, and against the --void page that
+     is a five-value difference — too subtle to read as a designed surface, and
+     just visible enough to read as a seam. Its straight left edge was a hard
+     vertical line drawn across empty background.
+
+     Removing it costs nothing: the tiles are glass with their own lit edges, the
+     rows are already clipped by the rounded box, and the mask on `.wall` fades
+     them out at both ends. It also finally gives the tiles something worth
+     blurring — a fill of near-black is not a backdrop, the page is. */
   .trust__frame {
     border-radius: var(--r-lg);
-    background: linear-gradient(180deg, rgb(255 255 255 / .04), transparent 60%), var(--surface);
-    box-shadow: var(--edge);
-    padding-block: var(--s-4);
+    padding-block: var(--s-3);
     overflow: hidden;
   }
 

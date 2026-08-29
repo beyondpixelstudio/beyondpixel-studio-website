@@ -52,8 +52,10 @@ import Social from './Social.astro';
 <style>
   .ftr {
     position: relative; z-index: 2;
-    background: var(--surface);
-    border-top: 1px solid rgb(255 255 255 / .06);
+    /* Faded in from transparent rather than a flat --surface slab. A hard edge
+       between two near-blacks reads as a seam across the page instead of as a
+       change of surface — the same fault the client frame had. */
+    background: linear-gradient(180deg, transparent, var(--surface) 140px);
     padding-block: var(--s-7) var(--s-5);
   }
   .ftr__in { display: grid; gap: var(--s-6); grid-template-columns: 1fr; }
