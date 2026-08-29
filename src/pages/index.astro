@@ -7,7 +7,8 @@ import ClientWall from '../components/ClientWall.astro';
 import Reviews from '../components/Reviews.astro';
 import EnquiryForm from '../components/EnquiryForm.astro';
 import { business, wa } from '../data/business.ts';
-import { services } from '../data/services.ts';
+import { services, generalFaqs } from '../data/services.ts';
+import Faq from '../components/Faq.astro';
 import { clients } from '../data/clients.ts';
 
 /**
@@ -233,6 +234,16 @@ const slates = [
   </section>
 
   {/* ------------------------------------------------------- ENQUIRY FORM */}
+  {/* ----------------------------------------------------------------- FAQ
+      Last thing before the form. Someone who has scrolled this far is close to
+      enquiring, and these are the questions that would otherwise stop them. */}
+  <Faq
+    items={generalFaqs}
+    eyebrow="Before you ask"
+    heading="Questions we get before the first call."
+    schema={false}
+  />
+
   <section class="section glow cta" id="contact" style="--glow: rgb(199 67 30 / .20); --glow-x: 50%; --glow-y: 18%;">
     <div class="wrap">
       <div class="sechead">

@@ -156,6 +156,58 @@ for (const page of pages) {
   }
 }
 
+/* -- FAQ schema must match the visible answers ----------------------------
+   Google drops the FAQ rich result when the marked-up answer and the on-page
+   answer disagree, and that failure is silent — the page looks fine, the
+   snippet just never appears. Both are rendered from one array in services.ts,
+   so this asserts the thing that array exists to guarantee. */
+
+const norm = (t) =>
+  t
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+let faqPages = 0;
+let faqQuestions = 0;
+
+for (const page of pages) {
+  const html = readFileSync(page, 'utf8');
+  const blocks = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)]
+    .map((m) => {
+      try {
+        return JSON.parse(m[1]);
+      } catch {
+        return null;
+      }
+    })
+    .filter((j) => j && j['@type'] === 'FAQPage');
+
+  if (!blocks.length) continue;
+  faqPages++;
+
+  // `class="faq__a"` carries an Astro scope attribute after it, so match the
+  // opening tag loosely rather than exactly.
+  const visible = [...html.matchAll(/<p class="faq__a"[^>]*>(.*?)<\/p>/gs)].map((m) => norm(m[1]));
+
+  for (const block of blocks) {
+    for (const entry of block.mainEntity) {
+      faqQuestions++;
+      const answer = norm(entry.acceptedAnswer.text);
+      if (!visible.includes(answer)) {
+        note(page, `FAQ schema answer not found on the page: "${entry.name.slice(0, 60)}"`);
+      }
+      if (!norm(html).includes(norm(entry.name))) {
+        note(page, `FAQ schema question not found on the page: "${entry.name.slice(0, 60)}"`);
+      }
+    }
+  }
+}
+
 /* -- Report -------------------------------------------------------------- */
 
 const line = '-'.repeat(78);
@@ -174,4 +226,7 @@ console.log('  ok    titles <= 60, descriptions <= 160');
 console.log('  ok    canonical, lang and viewport present on every page');
 console.log(`  ok    every wa.me link points at one of ${WA_DIGITS.join(' / ')}`);
 console.log(`  ok    phone renders as "${PHONE_DISPLAY}" everywhere`);
+console.log(
+  `  ok    ${faqQuestions} FAQ answers across ${faqPages} pages match their schema verbatim`
+);
 console.log(`  ${line}\n  Clean.\n`);
