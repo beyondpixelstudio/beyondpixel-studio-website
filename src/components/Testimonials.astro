@@ -1,17 +1,27 @@
 ---
 /**
- * Video testimonials, as click-to-play Instagram embeds.
+ * Video testimonials — poster cards that open the reel in a lightbox.
  *
- * FACADE, NOT A LIVE EMBED. Instagram's embed weighs a few hundred KB of
- * third-party JavaScript and sets cookies. Loading four of those on every page
- * view would cost the mobile Lighthouse target the brief treats as a ranking
- * requirement, on a section most visitors scroll past. So the card is a local
- * poster and a play button, and the iframe is created only when someone asks
- * for it.
+ * WHY THESE OPEN ON INSTAGRAM RATHER THAN PLAYING HERE.
  *
- * The iframe is Instagram's own /embed/ URL rather than the oEmbed blockquote,
- * because the blockquote needs embed.js to upgrade it — which is the script
- * this design exists to avoid loading.
+ * Two versions were tried and measured. Swapping the poster for the iframe in
+ * place put the video in a letterboxed strip with dead space under it. Moving
+ * it into a lightbox sized for the embed did not help either, and that is the
+ * finding: Instagram's /embed/ renders a 9:16 reel inside a landscape media box
+ * and pads the remainder white. It is their layout, in a cross-origin iframe,
+ * so no CSS on this side can reach it — verified by leaving it six seconds and
+ * watching it not change.
+ *
+ * So the card links out instead. The poster, the play affordance and the name
+ * are ours and look right; the video plays where it was published. This also
+ * means the page loads NO Instagram JavaScript and sets no Instagram cookies
+ * at all, which the embed did.
+ *
+ * REPLACE THIS WITH SELF-HOSTED VIDEO when the original files are to hand. The
+ * studio shot them, so the files exist; served as MP4 they play inline at the
+ * right shape, with no third party involved and no white box. The embed HTML
+ * does not expose a video URL, so they have to come from Rajesh.
+ *
  */
 import { testimonials } from '../data/testimonials.ts';
 if (testimonials.length === 0) return null;
@@ -20,11 +30,11 @@ if (testimonials.length === 0) return null;
 <section class="section tst" id="testimonials">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">In their words</p>
-      <h2>Clients on camera.</h2>
+      <p class="eyebrow">On camera</p>
+      <h2>Clients, in their own words.</h2>
       <p>
-        Recorded on the day, published to our Instagram, and playable here. Press
-        play and the video loads from Instagram — nothing is fetched until you do.
+        Filmed on the day and published to our Instagram. Tap any of them to watch
+        the full clip.
       </p>
     </div>
 
@@ -32,18 +42,25 @@ if (testimonials.length === 0) return null;
       {
         testimonials.map((t, i) => (
           <li class="tst__item" data-reveal style={`--reveal-delay:${i * 70}ms`}>
-            <div class="tst__frame" data-reel={t.code}>
-              <img src={t.poster} alt={t.alt} width="600" height="1066" loading="lazy" decoding="async" />
-              <button type="button" class="tst__play" aria-label={`Play video review from ${t.name}, ${t.role}`}>
-                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" focusable="false">
+            <a
+              class="tst__card"
+              href={`https://www.instagram.com/reel/${t.code}/`}
+              target="_blank"
+              rel="noopener"
+              aria-label={`Watch video on Instagram: ${t.name}, ${t.role}`}
+            >
+              <img src={t.poster} alt={t.alt} width="760" height="1352" loading="lazy" decoding="async" />
+              <span class="tst__veil" aria-hidden="true" />
+              <span class="tst__play" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" focusable="false">
                   <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
                 </svg>
-              </button>
-            </div>
-            <p class="tst__who">
-              <span class="tst__name">{t.name}</span>
-              <span class="tst__role">{t.role}</span>
-            </p>
+              </span>
+              <span class="tst__who">
+                <span class="tst__name">{t.name}</span>
+                <span class="tst__role">{t.role}</span>
+              </span>
+            </a>
           </li>
         ))
       }
@@ -51,65 +68,47 @@ if (testimonials.length === 0) return null;
   </div>
 </section>
 
-<script is:inline>
-  (function () {
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest('.tst__play');
-      if (!btn) return;
-      var frame = btn.closest('.tst__frame');
-      var code = frame && frame.dataset.reel;
-      if (!code) return;
-
-      var f = document.createElement('iframe');
-      f.src = 'https://www.instagram.com/reel/' + code + '/embed/';
-      f.title = btn.getAttribute('aria-label') || 'Video review';
-      f.loading = 'lazy';
-      f.setAttribute('allowtransparency', 'true');
-      f.setAttribute('allowfullscreen', 'true');
-      f.setAttribute('scrolling', 'no');
-      // Instagram needs no more than this, and granting less than it asks for
-      // is the point of listing it explicitly.
-      f.setAttribute('allow', 'encrypted-media; picture-in-picture; web-share');
-      f.className = 'tst__iframe';
-      frame.innerHTML = '';
-      frame.appendChild(f);
-    });
-  })();
-</script>
-
 <style>
   .tst__list {
     list-style: none; margin: 0; padding: 0;
-    display: grid; gap: var(--s-4);
-    grid-template-columns: repeat(auto-fit, minmax(240px, 300px));
-    justify-content: center;
+    display: grid; gap: var(--s-3);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
-  .tst__frame {
-    position: relative; aspect-ratio: 9 / 16; overflow: clip;
+  .tst__card {
+    position: relative; display: block; width: 100%; padding: 0;
+    aspect-ratio: 9 / 16; overflow: clip; cursor: pointer;
     border-radius: var(--radius); background: var(--void);
     border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    transition: transform var(--t-slow) var(--ease), border-color var(--t-slow) var(--ease);
   }
-  .tst__frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .tst__iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+  .tst__card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--ember-text) 40%, transparent); }
+  .tst__card:focus-visible { outline: 2px solid var(--ember-text); outline-offset: 3px; }
+  .tst__card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+  .tst__veil {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to top, rgb(5 4 11 / .88) 0%, rgb(5 4 11 / .35) 38%, transparent 68%);
+  }
   .tst__play {
-    position: absolute; inset: 0; margin: auto;
-    width: 62px; height: 62px; border-radius: 50%;
-    display: grid; place-items: center; cursor: pointer;
+    position: absolute; left: 50%; top: 44%; translate: -50% -50%;
+    width: 54px; height: 54px; border-radius: 50%;
+    display: grid; place-items: center;
     color: var(--on-ember); background: var(--ember);
-    border: 1px solid rgb(255 255 255 / .2);
-    box-shadow: 0 10px 30px rgb(0 0 0 / .5);
-    transition: transform var(--t-slow) var(--ease), background var(--t-slow) var(--ease);
+    border: 1px solid rgb(255 255 255 / .22);
+    box-shadow: 0 10px 30px rgb(0 0 0 / .55);
+    transition: transform var(--t-slow) var(--ease);
   }
   .tst__play svg { margin-left: 3px; } /* optical centring of a triangle */
-  .tst__play:hover { background: var(--ember-hover); transform: scale(1.06); }
-  .tst__play:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+  .tst__card:hover .tst__play { transform: translate(-50%, -50%) scale(1.08); }
 
-  .tst__who { margin: var(--s-2) 0 0; display: grid; gap: 2px; }
-  .tst__name { font-weight: 600; color: var(--text); font-size: 15px; }
-  .tst__role { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-dim); }
+  .tst__who {
+    position: absolute; inset: auto 0 0 0; display: grid; gap: 2px;
+    padding: var(--s-3); text-align: left;
+  }
+  .tst__name { font-weight: 600; font-size: 14px; color: var(--text); line-height: 1.25; }
+  .tst__role { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
 
   @media (prefers-reduced-motion: reduce) {
-    .tst__play:hover { transform: none; }
+    .tst__card:hover, .tst__card:hover .tst__play { transform: none; }
   }
 </style>
