@@ -9,6 +9,7 @@ import EnquiryForm from '../components/EnquiryForm.astro';
 import { business, wa } from '../data/business.ts';
 import { getCollection } from 'astro:content';
 import { services, generalFaqs } from '../data/services.ts';
+import { featuredWork } from '../data/work.ts';
 import Faq from '../components/Faq.astro';
 import { clients } from '../data/clients.ts';
 
@@ -52,11 +53,6 @@ const process = [
 ];
 
 /** Labelled empty states — honest, and never mistakable for real work. */
-const slates = [
-  { id: '01', cat: 'Corporate' },
-  { id: '02', cat: 'Institutional' },
-  { id: '03', cat: 'Government' },
-];
 
 /** Newest featured notes. Three, because the strip is a highlight, not an index. */
 const posts = (await getCollection('blog'))
@@ -195,25 +191,25 @@ const posts = (await getCollection('blog'))
     <div class="wrap">
       <div class="sechead">
         <p class="eyebrow">Selected work</p>
-        <h2>The reel goes here.</h2>
+        <h2>Named clients, named events.</h2>
         <p>
-          Slots are labelled and empty on purpose. Real project footage drops into these
-          frames — we would rather show you nothing than show you stock.
+          Every photograph here is ours, from the job it is captioned with. Nothing on this
+          page is stock and nothing is a mock-up.
         </p>
       </div>
 
       <ul class="work stage">
-        {slates.map((s, i) => (
-          <li class="slate ar-wide tilt panel" data-reveal style={`--reveal-delay:${i * 60}ms`}>
+        {featuredWork.map((w, i) => (
+          <li class="wcard tilt panel" data-reveal style={`--reveal-delay:${i * 60}ms`}>
             <span class="tilt__sheen" aria-hidden="true"></span>
-            <div class="slate__head">
-              <span class="mono">SLATE {s.id}</span>
-              <span class="mono slate__cat">{s.cat}</span>
-            </div>
-            <dl class="slate__meta mono">
-              <div><dt>CLIENT</dt><dd>—</dd></div>
-              <div><dt>RUNTIME</dt><dd>—:—:—:—</dd></div>
-            </dl>
+            <span class="wcard__media ar-wide">
+              <img src={w.image} alt={w.alt} width="1400" height="788" loading="lazy" decoding="async" />
+            </span>
+            <span class="wcard__body">
+              <span class="wcard__client mono">{w.client}{w.year ? ` \u00b7 ${w.year}` : ''}</span>
+              <span class="wcard__title">{w.title}</span>
+              <span class="wcard__service mono">{w.service}</span>
+            </span>
           </li>
         ))}
       </ul>
@@ -460,6 +456,18 @@ const posts = (await getCollection('blog'))
   .cta__alt { margin-top: var(--s-6); text-align: center; }
   .cta__alt > p { font-size: var(--fs-sm); color: var(--text-dim); margin-bottom: var(--s-3); }
   .cta__btns { display: flex; flex-wrap: wrap; gap: var(--s-2); justify-content: center; }
+
+  /* --- Work cards --------------------------------------------------------- */
+  .wcard {
+    display: grid; grid-template-rows: auto 1fr; overflow: clip;
+    border-radius: var(--radius); padding: 0;
+  }
+  .wcard__media { display: block; background: var(--void); }
+  .wcard__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wcard__body { display: grid; gap: 6px; padding: var(--s-3); }
+  .wcard__client { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember-text); }
+  .wcard__title { font-family: var(--font-display); font-stretch: var(--display-width); font-weight: 600; font-size: 18px; line-height: 1.25; color: var(--text); }
+  .wcard__service { font-size: 12px; color: var(--text-dim); }
 
   /* --- Notes -------------------------------------------------------------- */
   .notes__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
