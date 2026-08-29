@@ -269,6 +269,9 @@ const slates = [
      gate it. That is what keeps LCP measured at the real paint time. */
   .hero {
     position: relative; z-index: 2;
+    /* `.flare` is 135% wide and the bloom rings wider still — decorative, and
+       both were extending past the right edge and widening the document. */
+    overflow: clip;
     padding-block: clamp(56px, 10vw, 120px) clamp(48px, 8vw, 96px);
     min-height: min(88svh, 860px);
     display: flex; align-items: center;

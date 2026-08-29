@@ -84,6 +84,11 @@ const COPIES = [0, 1, 2, 3];
     position: relative;
     display: grid;
     gap: 7px;
+    /* The mask below fades the tiles at the edges, but a mask only hides PIXELS
+       — the rows are ~3300px wide and were still contributing every one of them
+       to layout, which is what pushed the document wider than the viewport.
+       The mask makes it look right; this makes it measure right. */
+    overflow: clip;
     /* Tiles arrive and leave rather than being chopped off by a hard edge. */
     -webkit-mask: linear-gradient(90deg, transparent, #000 13%, #000 87%, transparent);
     mask: linear-gradient(90deg, transparent, #000 13%, #000 87%, transparent);
