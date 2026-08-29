@@ -152,8 +152,30 @@ function sendTelegramNotification(lead) {
     return;
   }
   try {
-    const cleanDigits = (lead.phone || '').replace(/\D/g, '');
-    const waLink = cleanDigits ? `https://wa.me/${cleanDigits.startsWith('91') ? cleanDigits : '91' + cleanDigits}` : '';
+    /* Phone normalisation.
+       Visitors type the same number a dozen ways: "9876543210",
+       "+91 98765 43210", "091-98765-43210". Two things come out of this:
+       a clean 10-digit number to SHOW, and a full international number for
+       the wa.me link.
+
+       The country code is decided by LENGTH, not by prefix. Testing
+       startsWith('91') is wrong, because Indian mobiles legitimately begin
+       with 9 and a subscriber number like 9187654321 is ten digits starting
+       "91" — that would have been sent to wa.me without a country code at all
+       and quietly failed to open a chat. */
+    var digits = (lead.phone || '').replace(/\D/g, '');
+    if (digits.length === 13 && digits.slice(0, 3) === '091') digits = digits.slice(3);
+    else if (digits.length === 12 && digits.slice(0, 2) === '91') digits = digits.slice(2);
+    else if (digits.length === 11 && digits.charAt(0) === '0') digits = digits.slice(1);
+
+    // Indian mobile numbers start 6-9. A ten-digit number outside that range is
+    // a landline, and sending it to wa.me produces a link that opens nothing.
+    const isMobile = digits.length === 10 && /^[6-9]/.test(digits);
+
+    // Ten digits is a normal Indian mobile; show it bare. Anything else is
+    // shown exactly as typed rather than mangled to fit an assumption.
+    const displayPhone = digits.length === 10 ? digits : (lead.phone || '');
+    const waLink = isMobile ? `https://wa.me/91${digits}` : '';
 
     /* EMOJI AND BOX-DRAWING ARE \u{...} ESCAPES, NOT LITERAL CHARACTERS.
        They were literal, and alerts arrived reading "\u{FC}\u{E9}\u{A8} NEW LEAD"
@@ -169,7 +191,7 @@ function sendTelegramNotification(lead) {
     text += `\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\n`;
     text += `\u{1F4CB} <b>Type:</b> ${escapeHtml(lead.formType)}\n`;
     text += `\u{1F464} <b>Name:</b> ${escapeHtml(lead.name)}\n`;
-    text += `\u{1F4DE} <b>Phone:</b> <code>${escapeHtml(lead.phone)}</code>\n`;
+    text += `\u{1F4DE} <b>Phone:</b> <code>${escapeHtml(displayPhone)}</code>\n`;
     text += `\u{1F4E7} <b>Email:</b> ${escapeHtml(lead.email)}\n`;
     text += `\u{1F3AF} <b>Service:</b> ${escapeHtml(lead.service)}\n`;
     
