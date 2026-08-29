@@ -70,6 +70,17 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+
+  /* Tells the browser this page is dark, so it draws its OWN widgets to match.
+     Without it the native controls are rendered for a light page: the date
+     input's calendar button is a dark grey glyph, invisible on a near-black
+     field, so the picker looks absent when it is only unreadable. It also fixes
+     the date picker panel itself, select dropdowns, scrollbars, spinners and
+     autofill backgrounds, all of which were being drawn light.
+
+     This is the mechanism for it — there is no way to restyle those parts from
+     CSS, because they live in browser shadow DOM we cannot reach. */
+  color-scheme: dark;
   /* `clip`, and on HTML as well as body. Only body was clipping, and a document
      can still grow wider than a clipping body — this page measured 437px of
      scroll width inside a 372px viewport. Any nudge to the right then shifted
