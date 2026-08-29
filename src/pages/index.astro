@@ -241,6 +241,49 @@ const posts = (await getCollection('blog'))
     </div>
   </section>
 
+  {/* -------------------------------------------------------- RECOGNITION
+      Placed straight after the work, because that is the order the claim needs
+      to be read in: here is what we shot, and here is other people saying it
+      was done well. Ahead of the work it would be an assertion; after it, it is
+      corroboration.
+
+      Copy is taken from the studio's own 2026 brochure. No award names or
+      awarding bodies are stated, because the brochure does not name them and
+      inventing an institution would be the exact trust problem the brief exists
+      to prevent. The photographs carry the specificity instead. */}
+  <section class="section glow recog" id="recognition" style="--glow: rgb(155 47 192 / .13); --glow-x: 70%; --glow-y: 20%;">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Recognised &middot; Trusted &middot; Celebrated</p>
+        <h2>Milestones that inspired us.</h2>
+      </div>
+
+      <div class="recog__grid">
+        <ul class="recog__shots">
+          {[
+            { src: '/recognition/felicitation-01.webp', alt: 'Rajesh Kumar Gouda being presented with a framed certificate on stage at a felicitation ceremony' },
+            { src: '/recognition/felicitation-02.webp', alt: 'The Beyond Pixel Studio team receiving a framed commemoration from organisers at a Rajat Jayanti ceremony' },
+            { src: '/recognition/felicitation-03.webp', alt: 'A framed certificate being presented to the studio by a group of organisers on stage' },
+          ].map((shot, i) => (
+            <li data-reveal style={`--reveal-delay:${i * 70}ms`}>
+              <img src={shot.src} alt={shot.alt} width="1000" height="750" loading="lazy" decoding="async" />
+            </li>
+          ))}
+        </ul>
+
+        <div class="recog__body" data-reveal>
+          <p class="recog__award">
+            Honoured for <em>outstanding media coverage</em> and event broadcasting.
+          </p>
+          <p class="recog__note">
+            Grateful for the trust and recognition from esteemed organisations and leaders.
+            This inspires us to keep creating impact.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   {/* ------------------------------------------------------------ PROCESS */}
   <section class="section">
     <div class="wrap">
@@ -493,6 +536,32 @@ const posts = (await getCollection('blog'))
   .wcard__client { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember-text); }
   .wcard__title { font-family: var(--font-display); font-stretch: var(--display-width); font-weight: 600; font-size: 18px; line-height: 1.25; color: var(--text); }
   .wcard__service { font-size: 12px; color: var(--text-dim); }
+
+  /* --- Recognition -------------------------------------------------------- */
+  .recog__grid { display: grid; gap: var(--s-4); align-items: center; }
+  .recog__shots { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-2); }
+  .recog__shots img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    border-radius: var(--radius);
+    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+  }
+  .recog__shots li { overflow: clip; border-radius: var(--radius); aspect-ratio: 4 / 3; }
+  .recog__award {
+    font-family: var(--font-display); font-stretch: var(--display-width);
+    font-weight: 600; font-size: clamp(20px, 2.4vw, 27px); line-height: 1.25;
+    color: var(--text); margin: 0 0 var(--s-3);
+  }
+  .recog__award em { font-style: normal; color: var(--ember-text); }
+  .recog__note { color: var(--text-muted); font-size: 15px; max-width: 46ch; margin: 0; }
+
+  @media (min-width: 720px) {
+    .recog__shots { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .recog__grid { grid-template-columns: 1.55fr 1fr; gap: var(--s-5); }
+    .recog__shots { grid-template-columns: 1fr 1fr; }
+    .recog__shots li:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+  }
 
   /* --- Notes -------------------------------------------------------------- */
   .notes__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
