@@ -155,32 +155,32 @@ function sendTelegramNotification(lead) {
     const cleanDigits = (lead.phone || '').replace(/\D/g, '');
     const waLink = cleanDigits ? `https://wa.me/${cleanDigits.startsWith('91') ? cleanDigits : '91' + cleanDigits}` : '';
 
-    let text = `🎬 *NEW LEAD — BEYOND PIXEL STUDIO*\n`;
+    let text = `🎬 <b>NEW LEAD — BEYOND PIXEL STUDIO</b>\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `📋 *Type:* ${escapeMarkdown(lead.formType)}\n`;
-    text += `👤 *Name:* ${escapeMarkdown(lead.name)}\n`;
-    text += `📞 *Phone:* \`${escapeMarkdown(lead.phone)}\`\n`;
-    text += `📧 *Email:* ${escapeMarkdown(lead.email)}\n`;
-    text += `🎯 *Service:* ${escapeMarkdown(lead.service)}\n`;
+    text += `📋 <b>Type:</b> ${escapeHtml(lead.formType)}\n`;
+    text += `👤 <b>Name:</b> ${escapeHtml(lead.name)}\n`;
+    text += `📞 <b>Phone:</b> <code>${escapeHtml(lead.phone)}</code>\n`;
+    text += `📧 <b>Email:</b> ${escapeHtml(lead.email)}\n`;
+    text += `🎯 <b>Service:</b> ${escapeHtml(lead.service)}\n`;
     
     if (lead.shootDate && lead.shootDate !== 'N/A') {
-      text += `📅 *Date of Shoot:* ${escapeMarkdown(lead.shootDate)}\n`;
+      text += `📅 <b>Date of Shoot:</b> ${escapeHtml(lead.shootDate)}\n`;
     }
     if (lead.venue && lead.venue !== 'N/A') {
-      text += `📍 *Venue:* ${escapeMarkdown(lead.venue)}\n`;
+      text += `📍 <b>Venue:</b> ${escapeHtml(lead.venue)}\n`;
     }
     if (lead.message && lead.message !== 'N/A') {
-      text += `💬 *Message:* _${escapeMarkdown(lead.message)}_\n`;
+      text += `💬 <b>Message:</b> <i>${escapeHtml(lead.message)}</i>\n`;
     }
     
-    text += `🔗 *Page:* ${escapeMarkdown(lead.pageUrl)}\n`;
-    text += `⏰ *Time:* ${escapeMarkdown(lead.timestamp)}\n`;
+    text += `🔗 <b>Page:</b> ${escapeHtml(lead.pageUrl)}\n`;
+    text += `⏰ <b>Time:</b> ${escapeHtml(lead.timestamp)}\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━━`;
 
     const payload = {
       chat_id: TELEGRAM_CHAT_ID,
       text: text,
-      parse_mode: 'Markdown',
+      parse_mode: 'HTML',
       disable_web_page_preview: true
     };
 
@@ -205,8 +205,14 @@ function sendTelegramNotification(lead) {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     const res = UrlFetchApp.fetch(url, {
       method: 'post',
-      contentType: 'application/json',
-      payload: JSON.stringify(payload),
+      /* charset AND a byte payload, both deliberately.
+         UrlFetchApp handed the JSON string over without declaring an encoding,
+         so Telegram decoded the UTF-8 emoji as single-byte characters and the
+         alerts arrived reading "üé¨ NEW LEAD" instead of "🎬 NEW LEAD".
+         newBlob().getBytes() produces UTF-8 bytes, and the charset in the
+         content type tells the far end how to read them. */
+      contentType: 'application/json; charset=utf-8',
+      payload: Utilities.newBlob(JSON.stringify(payload), 'application/json').getBytes(),
       muteHttpExceptions: true
     });
 
@@ -233,7 +239,25 @@ function sendTelegramNotification(lead) {
   }
 }
 
-function escapeMarkdown(text) {
-  if (!text) return '';
-  return String(text).replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
+/**
+ * HTML escaping for Telegram's parse_mode: 'HTML'.
+ *
+ * THREE characters, not eighteen. The previous version escaped the MarkdownV2
+ * set (_ * [ ] ( ) ~ ` > # + - = | { } . !) and then sent the message with
+ * parse_mode 'Markdown' — legacy Markdown, which does not recognise those
+ * escapes. The backslashes were therefore printed literally, which is why leads
+ * arrived reading "\+917608924893" and "admin@beyondpixel\.online".
+ *
+ * HTML mode is used instead because lead data is arbitrary user input: names,
+ * emails, URLs and free-text messages routinely contain dots, hyphens, plus
+ * signs and underscores. Under HTML only &, < and > are special, so a client
+ * typing "multi-camera" cannot break the formatting or the send.
+ */
+function escapeHtml(text) {
+  if (!text && text !== 0) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
+
