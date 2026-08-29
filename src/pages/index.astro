@@ -242,45 +242,48 @@ const posts = (await getCollection('blog'))
   </section>
 
   {/* -------------------------------------------------------- RECOGNITION
-      Placed straight after the work, because that is the order the claim needs
-      to be read in: here is what we shot, and here is other people saying it
-      was done well. Ahead of the work it would be an assertion; after it, it is
-      corroboration.
+      Straight after Selected work, because that is the order the claim has to
+      be read in: here is what we shot, then here is other people saying it was
+      done well. Before the work it is an assertion; after it, corroboration.
 
-      Copy is taken from the studio's own 2026 brochure. No award names or
-      awarding bodies are stated, because the brochure does not name them and
-      inventing an institution would be the exact trust problem the brief exists
-      to prevent. The photographs carry the specificity instead. */}
-  <section class="section glow recog" id="recognition" style="--glow: rgb(155 47 192 / .13); --glow-x: 70%; --glow-y: 20%;">
+      LAID OUT AS A FILMSTRIP because the photographs turned out to be 2.04:1 —
+      all three, once the black padding the PDF had composited around them was
+      trimmed off. That is within a hair of the anamorphic ratio the hero and
+      the work cards already use, so three frames in a row reads as a strip of
+      film rather than as a gallery. Their natural ratio is kept and no
+      aspect-ratio is imposed, which is also why nothing can letterbox again.
+
+      NO AWARD OR AWARDING BODY IS NAMED. The brochure does not name them, and
+      inventing a plausible institution on a page read by government and PSU
+      buyers is the exact trust problem the brief exists to prevent. The
+      photographs carry the specificity; the alt text describes what is visible
+      rather than asserting what the award was. */}
+  <section class="section glow recog" id="recognition" style="--glow: rgb(155 47 192 / .14); --glow-x: 50%; --glow-y: 8%;">
     <div class="wrap">
       <div class="sechead">
         <p class="eyebrow">Recognised &middot; Trusted &middot; Celebrated</p>
         <h2>Milestones that inspired us.</h2>
+        <p class="recog__award">
+          Honoured for <em>outstanding media coverage</em> and event broadcasting.
+        </p>
       </div>
 
-      <div class="recog__grid">
-        <ul class="recog__shots">
-          {[
-            { src: '/recognition/felicitation-01.webp', alt: 'Rajesh Kumar Gouda being presented with a framed certificate on stage at a felicitation ceremony' },
-            { src: '/recognition/felicitation-02.webp', alt: 'The Beyond Pixel Studio team receiving a framed commemoration from organisers at a Rajat Jayanti ceremony' },
-            { src: '/recognition/felicitation-03.webp', alt: 'A framed certificate being presented to the studio by a group of organisers on stage' },
-          ].map((shot, i) => (
-            <li data-reveal style={`--reveal-delay:${i * 70}ms`}>
-              <img src={shot.src} alt={shot.alt} width="1000" height="750" loading="lazy" decoding="async" />
-            </li>
-          ))}
-        </ul>
+      <ul class="recog__strip">
+        {[
+          { src: '/recognition/felicitation-01.webp', alt: 'Rajesh Kumar Gouda receiving a framed certificate on stage at a felicitation ceremony' },
+          { src: '/recognition/felicitation-02.webp', alt: 'The Beyond Pixel Studio team being presented with a framed commemoration at a Rajat Jayanti ceremony' },
+          { src: '/recognition/felicitation-03.webp', alt: 'A framed certificate presented to the studio by organisers on stage, garlanded' },
+        ].map((shot, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 80}ms`}>
+            <img src={shot.src} alt={shot.alt} width="1200" height="589" loading="lazy" decoding="async" />
+          </li>
+        ))}
+      </ul>
 
-        <div class="recog__body" data-reveal>
-          <p class="recog__award">
-            Honoured for <em>outstanding media coverage</em> and event broadcasting.
-          </p>
-          <p class="recog__note">
-            Grateful for the trust and recognition from esteemed organisations and leaders.
-            This inspires us to keep creating impact.
-          </p>
-        </div>
-      </div>
+      <p class="recog__note" data-reveal>
+        Grateful for the trust and recognition from esteemed organisations and leaders.
+        This inspires us to keep creating impact.
+      </p>
     </div>
   </section>
 
@@ -538,30 +541,41 @@ const posts = (await getCollection('blog'))
   .wcard__service { font-size: 12px; color: var(--text-dim); }
 
   /* --- Recognition -------------------------------------------------------- */
-  .recog__grid { display: grid; gap: var(--s-4); align-items: center; }
-  .recog__shots { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-2); }
-  .recog__shots img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    border-radius: var(--radius);
-    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
-  }
-  .recog__shots li { overflow: clip; border-radius: var(--radius); aspect-ratio: 4 / 3; }
   .recog__award {
     font-family: var(--font-display); font-stretch: var(--display-width);
-    font-weight: 600; font-size: clamp(20px, 2.4vw, 27px); line-height: 1.25;
-    color: var(--text); margin: 0 0 var(--s-3);
+    font-weight: 600; font-size: clamp(19px, 2.1vw, 25px); line-height: 1.3;
+    color: var(--text); margin-top: var(--s-3);
   }
   .recog__award em { font-style: normal; color: var(--ember-text); }
-  .recog__note { color: var(--text-muted); font-size: 15px; max-width: 46ch; margin: 0; }
 
-  @media (min-width: 720px) {
-    .recog__shots { grid-template-columns: repeat(3, 1fr); }
+  .recog__strip { list-style: none; margin: var(--s-5) 0 0; padding: 0; display: grid; gap: var(--s-3); }
+  .recog__strip li {
+    position: relative; border-radius: var(--radius); overflow: clip;
+    border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    background: var(--void);
+    transition: transform var(--t-slow) var(--ease), border-color var(--t-slow) var(--ease);
   }
-  @media (min-width: 1000px) {
-    .recog__grid { grid-template-columns: 1.55fr 1fr; gap: var(--s-5); }
-    .recog__shots { grid-template-columns: 1fr 1fr; }
-    .recog__shots li:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+  .recog__strip li:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--ember-text) 34%, transparent);
   }
+  /* No aspect-ratio and no object-fit: the three files share a ratio, so
+     letting them size naturally guarantees the frames can never letterbox. */
+  .recog__strip img { width: 100%; height: auto; display: block; }
+
+  /* A lit top edge, so a flat photograph still reads as a framed object. */
+  .recog__strip li::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .14);
+  }
+
+  .recog__note {
+    margin: var(--s-4) auto 0; max-width: 56ch; text-align: center;
+    color: var(--text-muted); font-size: 15px;
+  }
+
+  @media (min-width: 700px) { .recog__strip { grid-template-columns: repeat(3, 1fr); } }
 
   /* --- Notes -------------------------------------------------------------- */
   .notes__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
