@@ -155,27 +155,37 @@ function sendTelegramNotification(lead) {
     const cleanDigits = (lead.phone || '').replace(/\D/g, '');
     const waLink = cleanDigits ? `https://wa.me/${cleanDigits.startsWith('91') ? cleanDigits : '91' + cleanDigits}` : '';
 
-    let text = `🎬 <b>NEW LEAD — BEYOND PIXEL STUDIO</b>\n`;
-    text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `📋 <b>Type:</b> ${escapeHtml(lead.formType)}\n`;
-    text += `👤 <b>Name:</b> ${escapeHtml(lead.name)}\n`;
-    text += `📞 <b>Phone:</b> <code>${escapeHtml(lead.phone)}</code>\n`;
-    text += `📧 <b>Email:</b> ${escapeHtml(lead.email)}\n`;
-    text += `🎯 <b>Service:</b> ${escapeHtml(lead.service)}\n`;
+    /* EMOJI AND BOX-DRAWING ARE \u{...} ESCAPES, NOT LITERAL CHARACTERS.
+       They were literal, and alerts arrived reading "\u{FC}\u{E9}\u{A8} NEW LEAD"
+       instead of a clapperboard. Decoding the UTF-8 bytes of the emoji as
+       MacRoman reproduces that exactly, so something between this file and
+       Telegram was re-reading the bytes in a single-byte encoding. Declaring
+       charset=utf-8 and sending Utilities.newBlob().getBytes() did not stop it.
+
+       Escapes sidestep the question entirely: the file is now pure ASCII on the
+       wire, and V8 builds the character at runtime. Nothing in the transport,
+       the clipboard or the editor can corrupt an ASCII backslash-u sequence. */
+    let text = `\u{1F3AC} <b>NEW LEAD \u{2014} BEYOND PIXEL STUDIO</b>\n`;
+    text += `\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\n`;
+    text += `\u{1F4CB} <b>Type:</b> ${escapeHtml(lead.formType)}\n`;
+    text += `\u{1F464} <b>Name:</b> ${escapeHtml(lead.name)}\n`;
+    text += `\u{1F4DE} <b>Phone:</b> <code>${escapeHtml(lead.phone)}</code>\n`;
+    text += `\u{1F4E7} <b>Email:</b> ${escapeHtml(lead.email)}\n`;
+    text += `\u{1F3AF} <b>Service:</b> ${escapeHtml(lead.service)}\n`;
     
     if (lead.shootDate && lead.shootDate !== 'N/A') {
-      text += `📅 <b>Date of Shoot:</b> ${escapeHtml(lead.shootDate)}\n`;
+      text += `\u{1F4C5} <b>Date of Shoot:</b> ${escapeHtml(lead.shootDate)}\n`;
     }
     if (lead.venue && lead.venue !== 'N/A') {
-      text += `📍 <b>Venue:</b> ${escapeHtml(lead.venue)}\n`;
+      text += `\u{1F4CD} <b>Venue:</b> ${escapeHtml(lead.venue)}\n`;
     }
     if (lead.message && lead.message !== 'N/A') {
-      text += `💬 <b>Message:</b> <i>${escapeHtml(lead.message)}</i>\n`;
+      text += `\u{1F4AC} <b>Message:</b> <i>${escapeHtml(lead.message)}</i>\n`;
     }
     
-    text += `🔗 <b>Page:</b> ${escapeHtml(lead.pageUrl)}\n`;
-    text += `⏰ <b>Time:</b> ${escapeHtml(lead.timestamp)}\n`;
-    text += `━━━━━━━━━━━━━━━━━━━━━━`;
+    text += `\u{1F517} <b>Page:</b> ${escapeHtml(lead.pageUrl)}\n`;
+    text += `\u{23F0} <b>Time:</b> ${escapeHtml(lead.timestamp)}\n`;
+    text += `\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}\u{2501}`;
 
     const payload = {
       chat_id: TELEGRAM_CHAT_ID,
@@ -188,7 +198,7 @@ function sendTelegramNotification(lead) {
       payload.reply_markup = JSON.stringify({
         inline_keyboard: [
           [
-            { text: '💬 Chat on WhatsApp', url: waLink },
+            { text: '\u{1F4AC} Chat on WhatsApp', url: waLink },
             /* No "Call" button here, and it is not an oversight.
             Telegram rejects tel: in an inline keyboard — it only accepts http,
             https and tg schemes, and a tel: URL comes back as
