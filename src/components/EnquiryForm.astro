@@ -34,6 +34,12 @@ const fallback = wa('Hello, I would like to enquire about a shoot.');
     </p>
 
     <p class="enq__field">
+      <label for="enq-email">Email <span class="enq__opt">(optional)</span></label>
+      <input id="enq-email" name="email" type="email" autocomplete="email"
+             placeholder="your@email.com" />
+    </p>
+
+    <p class="enq__field">
       <label for="enq-phone">Phone <span class="enq__opt">(optional)</span></label>
       <input id="enq-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
              placeholder="So we can call you back" />
@@ -84,6 +90,8 @@ const fallback = wa('Hello, I would like to enquire about a shoot.');
 </form>
 
 <script>
+  import { dispatchLead } from '../scripts/lead-dispatcher.ts';
+
   const form = document.querySelector<HTMLFormElement>('[data-enquiry]');
 
   if (form) {
@@ -133,6 +141,22 @@ const fallback = wa('Hello, I would like to enquire about a shoot.');
       const val = (n: string) =>
         (form.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? '';
 
+      // ── Dispatch lead to Google Sheets, Telegram & Meta Pixel ──
+      // This fires BEFORE the WhatsApp redirect so the lead is never lost,
+      // even if the user doesn't complete the WhatsApp step.
+      dispatchLead({
+        formType: 'general_enquiry',
+        name: val('name'),
+        email: val('email'),
+        phone: val('phone'),
+        service: val('service'),
+        date: val('date'),
+        venue: val('venue'),
+        message: val('message'),
+        pageUrl: window.location.href,
+        timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      });
+
       // Built as labelled lines so it is readable in the WhatsApp thread as-is,
       // and so a reply can quote one line of it.
       const lines = [
@@ -141,6 +165,7 @@ const fallback = wa('Hello, I would like to enquire about a shoot.');
         `Name: ${val('name')}`,
         `Service: ${val('service')}`,
       ];
+      if (val('email')) lines.push(`Email: ${val('email')}`);
       if (val('phone')) lines.push(`Phone: ${val('phone')}`);
       if (val('date')) lines.push(`Date: ${val('date')}`);
       if (val('venue')) lines.push(`Venue: ${val('venue')}`);

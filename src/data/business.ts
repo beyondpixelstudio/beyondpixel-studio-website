@@ -92,6 +92,30 @@ export const business = {
   },
 
   /**
+   * INTEGRATIONS & AUTOMATION
+   * -------------------------------------------------------------------------
+   * - Meta Pixel ID for tracking PageViews & Lead Custom Audiences
+   * - Google Apps Script Webhook URL for Google Sheets logging & Telegram bot
+   */
+  metaPixelId: '1058011239388287',
+  /**
+   * Apps Script Web App endpoint. Receives every lead, appends a row to the
+   * "Beyond Pixel Studio Leads" sheet, and sends the Telegram alert server-side.
+   *
+   * The deployment must be set to "Who has access: ANYONE" — not "Anyone with a
+   * Google account". Website visitors are not signed in, so anything stricter
+   * returns 403 Access denied. Tested 2026-08-29 and it did exactly that.
+   *
+   * That failure is INVISIBLE from the browser: the client posts with
+   * mode:'no-cors', which makes the response opaque, so a 403 looks identical
+   * to success from the page's side. If leads stop arriving in the sheet, curl
+   * this URL directly rather than trusting the form.
+   */
+  googleScriptUrl:
+    'https://script.google.com/macros/s/AKfycbyVTuMtsgkVo3kzX6eKp7cTjiyVttA0ambKHsc57Z5-L67gDLCxzryYn-R-eE4H_8qmdA/exec',
+  telegramBot: '@beyondpixelstudio_bot',
+
+  /**
    * REVIEW SOURCES.
    *
    * Displayed on the site, but deliberately NOT emitted as schema.org

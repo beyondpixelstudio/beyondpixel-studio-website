@@ -135,185 +135,158 @@ import { business, wa } from '../data/business.ts';
   </div>
 </dialog>
 
-<script is:inline>
-  (function () {
-    var modal = document.getElementById('portfolio-modal');
+<script>
+  import { dispatchLead } from '../scripts/lead-dispatcher.ts';
+
+  const modal = document.getElementById('portfolio-modal') as HTMLDialogElement | null;
+  const form = document.getElementById('portfolio-form') as HTMLFormElement | null;
+  const successView = document.getElementById('pmod-success');
+
+  function openModal(defaultPurpose?: string) {
     if (!modal) return;
+    if (typeof modal.showModal === 'function') {
+      modal.showModal();
+    } else {
+      modal.setAttribute('open', '');
+    }
 
-    var form = document.getElementById('portfolio-form');
-    var successView = document.getElementById('pmod-success');
+    // Pre-fill previously stored values if available
+    try {
+      const saved = localStorage.getItem('bps_portfolio_lead') || localStorage.getItem('bps_last_lead');
+      if (saved && form) {
+        const data = JSON.parse(saved);
+        if (data.name && form.name) (form.elements.namedItem('name') as HTMLInputElement).value = data.name;
+        if (data.email && form.email) (form.elements.namedItem('email') as HTMLInputElement).value = data.email;
+        if (data.phone && form.phone) (form.elements.namedItem('phone') as HTMLInputElement).value = data.phone;
+      }
+    } catch (e) {}
 
-    function openModal(defaultPurpose) {
-      if (typeof modal.showModal === 'function') {
-        modal.showModal();
+    if (defaultPurpose && form) {
+      const purposeEl = form.elements.namedItem('purpose') as HTMLSelectElement | null;
+      if (purposeEl) purposeEl.value = defaultPurpose;
+    }
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    if (typeof modal.close === 'function') {
+      modal.close();
+    } else {
+      modal.removeAttribute('open');
+    }
+  }
+
+  // Attach to all elements with [data-open-portfolio]
+  document.addEventListener('click', (e) => {
+    const trigger = (e.target as HTMLElement | null)?.closest('[data-open-portfolio]');
+    if (trigger) {
+      e.preventDefault();
+      const purpose = trigger.getAttribute('data-portfolio-purpose') || '';
+      openModal(purpose);
+    }
+
+    if ((e.target as HTMLElement | null)?.closest('[data-close-portfolio]')) {
+      e.preventDefault();
+      closeModal();
+    }
+  });
+
+  // Close on backdrop click
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Validation & Submit handling
+  if (form) {
+    function setErr(fieldId: string, msg: string | null) {
+      const err = document.getElementById(fieldId + '-err');
+      const input = document.getElementById(fieldId);
+      if (el(fieldId + '-err')) {
+        err!.textContent = msg || '';
+        err!.hidden = !msg;
+      }
+      if (input) {
+        if (msg) input.setAttribute('aria-invalid', 'true');
+        else input.removeAttribute('aria-invalid');
+      }
+    }
+
+    function el(id: string) {
+      return document.getElementById(id);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let valid = true;
+
+      const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+      const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+      const phoneInput = form.elements.namedItem('phone') as HTMLInputElement;
+      const purposeInput = form.elements.namedItem('purpose') as HTMLSelectElement;
+
+      const nameVal = nameInput.value.trim();
+      const emailVal = emailInput.value.trim();
+      const phoneVal = phoneInput.value.trim();
+      const purposeVal = purposeInput.value;
+
+      if (!nameVal) {
+        setErr('pmod-name', 'Please enter your name.');
+        valid = false;
       } else {
-        modal.setAttribute('open', '');
+        setErr('pmod-name', null);
       }
 
-      // Pre-fill previously stored values if available
-      try {
-        var saved = localStorage.getItem('bps_portfolio_lead');
-        if (saved && form) {
-          var data = JSON.parse(saved);
-          if (data.name && form.name) form.name.value = data.name;
-          if (data.email && form.email) form.email.value = data.email;
-          if (data.phone && form.phone) form.phone.value = data.phone;
-        }
-      } catch (e) {}
-
-      if (defaultPurpose && form && form.purpose) {
-        form.purpose.value = defaultPurpose;
-      }
-    }
-
-    function closeModal() {
-      if (typeof modal.close === 'function') {
-        modal.close();
+      if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        setErr('pmod-email', 'Please enter a valid email address.');
+        valid = false;
       } else {
-        modal.removeAttribute('open');
-      }
-    }
-
-    // Attach to all elements with [data-open-portfolio]
-    document.addEventListener('click', function (e) {
-      var trigger = e.target.closest('[data-open-portfolio]');
-      if (trigger) {
-        e.preventDefault();
-        var purpose = trigger.getAttribute('data-portfolio-purpose') || '';
-        openModal(purpose);
+        setErr('pmod-email', null);
       }
 
-      if (e.target.closest('[data-close-portfolio]')) {
-        e.preventDefault();
-        closeModal();
+      if (!phoneVal || phoneVal.replace(/\D/g, '').length < 8) {
+        setErr('pmod-phone', 'Please enter a valid phone number (at least 8 digits).');
+        valid = false;
+      } else {
+        setErr('pmod-phone', null);
       }
+
+      if (!purposeVal) {
+        setErr('pmod-purpose', 'Please select a requirement or purpose.');
+        valid = false;
+      } else {
+        setErr('pmod-purpose', null);
+      }
+
+      if (!valid) return;
+
+      const leadData = {
+        formType: 'portfolio_download' as const,
+        name: nameVal,
+        email: emailVal,
+        phone: phoneVal,
+        purpose: purposeVal,
+        pageUrl: window.location.href,
+        timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+      };
+
+      // 1. Dispatch lead to Google Sheets, Telegram, Meta Pixel
+      dispatchLead(leadData);
+
+      // 2. Trigger PDF Download
+      const link = document.createElement('a');
+      link.href = '/beyond-pixel-studio-portfolio-2026.pdf';
+      link.download = 'Beyond-Pixel-Studio-Portfolio-2026.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // 3. Show Success UI
+      form.hidden = true;
+      if (successView) successView.hidden = false;
     });
-
-    // Close on backdrop click
-    modal.addEventListener('click', function (e) {
-      if (e.target === modal) {
-        closeModal();
-      }
-    });
-
-    // Validation & Submit handling
-    if (form) {
-      function setErr(fieldId, msg) {
-        var el = document.getElementById(fieldId + '-err');
-        var input = document.getElementById(fieldId);
-        if (el) {
-          el.textContent = msg || '';
-          el.hidden = !msg;
-        }
-        if (input) {
-          if (msg) input.setAttribute('aria-invalid', 'true');
-          else input.removeAttribute('aria-invalid');
-        }
-      }
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var valid = true;
-
-        var nameVal = form.name.value.trim();
-        var emailVal = form.email.value.trim();
-        var phoneVal = form.phone.value.trim();
-        var purposeVal = form.purpose.value;
-
-        if (!nameVal) {
-          setErr('pmod-name', 'Please enter your name.');
-          valid = false;
-        } else {
-          setErr('pmod-name', null);
-        }
-
-        if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-          setErr('pmod-email', 'Please enter a valid email address.');
-          valid = false;
-        } else {
-          setErr('pmod-email', null);
-        }
-
-        if (!phoneVal || phoneVal.replace(/\D/g, '').length < 8) {
-          setErr('pmod-phone', 'Please enter a valid phone number (at least 8 digits).');
-          valid = false;
-        } else {
-          setErr('pmod-phone', null);
-        }
-
-        if (!purposeVal) {
-          setErr('pmod-purpose', 'Please select a requirement or purpose.');
-          valid = false;
-        } else {
-          setErr('pmod-purpose', null);
-        }
-
-        if (!valid) return;
-
-        // Honeypot tripped — stop silently rather than telling a bot why.
-        var potField = form.elements['website'];
-        if (potField && potField.value) return;
-
-        var leadData = {
-          kind: 'portfolio-download',
-          name: nameVal,
-          email: emailVal,
-          phone: phoneVal,
-          purpose: purposeVal,
-          timestamp: new Date().toISOString()
-        };
-
-        /* WHERE THE LEAD ACTUALLY GOES.
-           This used to write to localStorage and stop, which meant the lead sat
-           in the visitor's own browser and never reached anybody — a form that
-           gates a download and then discards the answer is worse than no form,
-           because it looks like it is working.
-
-           Two routes now, because the site has no backend yet:
-           1. POST to /enquiry.php. Fire-and-forget, starts working the moment
-              that endpoint exists on Hostinger. Failure is ignored on purpose.
-           2. The success view offers a one-tap WhatsApp send, prefilled with
-              what was typed. That is the route that works TODAY, and it matches
-              how the rest of the site hands off enquiries.
-
-           The download never waits on either. */
-        try {
-          fetch('/enquiry.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(leadData),
-            keepalive: true
-          }).catch(function () {});
-        } catch (err) {}
-
-        try { localStorage.setItem('bps_portfolio_lead', JSON.stringify(leadData)); } catch (err) {}
-
-        // Prefill the WhatsApp follow-up with the details already given.
-        var waLink = document.getElementById('pmod-wa');
-        if (waLink) {
-          var msg =
-            'Hello, I have just downloaded the Beyond Pixel Studio portfolio.\n\n' +
-            'Name: ' + nameVal + '\n' +
-            'Email: ' + emailVal + '\n' +
-            'Phone: ' + phoneVal + '\n' +
-            'Interested in: ' + purposeVal;
-          waLink.href = waLink.href.split('?')[0] + '?text=' + encodeURIComponent(msg);
-        }
-
-        // Trigger PDF Download
-        var link = document.createElement('a');
-        link.href = '/beyond-pixel-studio-portfolio-2026.pdf';
-        link.download = 'Beyond-Pixel-Studio-Portfolio-2026.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Show Success UI
-        form.hidden = true;
-        if (successView) successView.hidden = false;
-      });
-    }
-  })();
+  }
 </script>
 
 <style>

@@ -208,6 +208,39 @@ for (const page of pages) {
   }
 }
 
+/* -- No credentials in the shipped bundle --------------------------------
+   A Telegram bot token was once a module constant in src/scripts/lead-dispatcher.ts,
+   which is imported from a bundled <script> — so it compiled straight into
+   dist/_astro/lead-dispatcher.*.js and was served to every visitor. Nothing
+   failed, nothing warned; the site worked perfectly while publishing the token.
+
+   That class of mistake is invisible by nature, so it gets a test rather than a
+   promise. Patterns below match the shapes of real credentials, not any specific
+   value, so the check keeps working after the token is rotated. */
+
+const SECRET_PATTERNS = [
+  [/\b\d{8,10}:AA[\w-]{30,}/, 'Telegram bot token'],
+  [/\bsk-[A-Za-z0-9]{20,}/, 'OpenAI-style API key'],
+  [/\bAIza[0-9A-Za-z_-]{30,}/, 'Google API key'],
+  [/\bghp_[A-Za-z0-9]{20,}/, 'GitHub token'],
+  [/\bxox[baprs]-[A-Za-z0-9-]{10,}/, 'Slack token'],
+  [/-----BEGIN [A-Z ]*PRIVATE KEY-----/, 'private key'],
+];
+
+let scanned = 0;
+(function walkAssets(dir) {
+  for (const e of readdirSync(dir)) {
+    const f = join(dir, e);
+    if (statSync(f).isDirectory()) { walkAssets(f); continue; }
+    if (!/\.(js|mjs|css|html|json|xml|txt)$/i.test(e)) continue;
+    scanned++;
+    const body = readFileSync(f, 'utf8');
+    for (const [re, label] of SECRET_PATTERNS) {
+      if (re.test(body)) note(f, `${label} is present in the SHIPPED bundle — it is public`);
+    }
+  }
+})(DIST);
+
 /* -- Report -------------------------------------------------------------- */
 
 const line = '-'.repeat(78);
@@ -229,4 +262,5 @@ console.log(`  ok    phone renders as "${PHONE_DISPLAY}" everywhere`);
 console.log(
   `  ok    ${faqQuestions} FAQ answers across ${faqPages} pages match their schema verbatim`
 );
+console.log(`  ok    no credentials in ${scanned} shipped files`);
 console.log(`  ${line}\n  Clean.\n`);
