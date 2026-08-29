@@ -7,6 +7,7 @@ import ClientWall from '../components/ClientWall.astro';
 import Reviews from '../components/Reviews.astro';
 import EnquiryForm from '../components/EnquiryForm.astro';
 import { business, wa } from '../data/business.ts';
+import { getCollection } from 'astro:content';
 import { services, generalFaqs } from '../data/services.ts';
 import Faq from '../components/Faq.astro';
 import { clients } from '../data/clients.ts';
@@ -56,6 +57,12 @@ const slates = [
   { id: '02', cat: 'Institutional' },
   { id: '03', cat: 'Government' },
 ];
+
+/** Newest featured notes. Three, because the strip is a highlight, not an index. */
+const posts = (await getCollection('blog'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 3);
 ---
 
 <Base title={title} description={description} reveal>
@@ -234,6 +241,37 @@ const slates = [
   </section>
 
   {/* ------------------------------------------------------- ENQUIRY FORM */}
+  {/* --------------------------------------------------------------- NOTES
+      Highlights, not an index. Three posts and a link out — the point is to
+      show there is thinking behind the service pages, not to publish a feed. */}
+  {posts.length > 0 && (
+    <section class="section notes" id="notes">
+      <div class="sechead">
+        <p class="eyebrow">Notes</p>
+        <h2>Answers we give before anyone signs anything.</h2>
+      </div>
+      <div class="wrap">
+        <ul class="notes__list">
+          {posts.map((post, i) => (
+            <li data-reveal style={`--reveal-delay:${i * 60}ms`}>
+              <a class="notes__card" href={`/blog/${post.id}/`}>
+                <span class="notes__media ar-wide">
+                  <img src={post.data.hero} alt={post.data.heroAlt} width="1200" height="675" loading="lazy" decoding="async" />
+                </span>
+                <span class="notes__kicker mono">{post.data.kicker}</span>
+                <span class="notes__title">{post.data.title}</span>
+                <span class="notes__desc">{post.data.description}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="notes__all">
+          <a class="btn btn--ghost" href="/blog/">Read all notes</a>
+        </p>
+      </div>
+    </section>
+  )}
+
   {/* ----------------------------------------------------------------- FAQ
       Last thing before the form. Someone who has scrolled this far is close to
       enquiring, and these are the questions that would otherwise stop them. */}
@@ -423,6 +461,23 @@ const slates = [
   .cta__alt > p { font-size: var(--fs-sm); color: var(--text-dim); margin-bottom: var(--s-3); }
   .cta__btns { display: flex; flex-wrap: wrap; gap: var(--s-2); justify-content: center; }
 
+  /* --- Notes -------------------------------------------------------------- */
+  .notes__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  .notes__card {
+    display: grid; gap: 10px; text-decoration: none; color: inherit;
+    background: color-mix(in srgb, var(--raised) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    border-radius: var(--radius); overflow: clip; height: 100%;
+    transition: border-color var(--t-slow) var(--ease), transform var(--t-slow) var(--ease);
+  }
+  .notes__card:hover { border-color: color-mix(in srgb, var(--ember-text) 34%, transparent); transform: translateY(-3px); }
+  .notes__media { display: block; background: var(--void); }
+  .notes__media img { width: 100%; height: 100%; object-fit: cover; }
+  .notes__kicker { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ember-text); padding: 0 var(--s-3); }
+  .notes__title { font-family: var(--font-display); font-stretch: var(--display-width); font-weight: 600; font-size: 19px; line-height: 1.25; padding: 0 var(--s-3); }
+  .notes__desc { color: var(--text-muted); font-size: 14px; padding: 0 var(--s-3) var(--s-4); }
+  .notes__all { text-align: center; margin-top: var(--s-4); }
+
   /* --- Breakpoints -------------------------------------------------------- */
   @media (max-width: 479px) {
     .hero__cta { flex-direction: column; align-items: stretch; }
@@ -430,10 +485,12 @@ const slates = [
   }
   @media (min-width: 620px) {
     .svc, .work, .proc { grid-template-columns: repeat(2, 1fr); }
+    .notes__list { grid-template-columns: repeat(2, 1fr); }
   }
   @media (min-width: 980px) {
     .svc { grid-template-columns: repeat(3, 1fr); }
     .work { grid-template-columns: repeat(3, 1fr); }
+    .notes__list { grid-template-columns: repeat(3, 1fr); }
     .proc { grid-template-columns: repeat(4, 1fr); }
   }
 </style>

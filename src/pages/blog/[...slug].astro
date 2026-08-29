@@ -1,0 +1,197 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { business } from '../../data/business.ts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const canonical = new URL(`/blog/${post.id}/`, Astro.site).href;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+
+/**
+ * Article schema. Publisher is resolved by @id to the LocalBusiness that
+ * Base.astro already emits, rather than restating the NAP here — one copy of
+ * the business, referenced, not duplicated.
+ */
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.published.toISOString(),
+  ...(post.data.updated ? { dateModified: post.data.updated.toISOString() } : {}),
+  image: new URL(post.data.hero, Astro.site).href,
+  author: { '@type': 'Organization', name: business.name, url: business.url },
+  publisher: { '@id': `${business.url}/#organization` },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  keywords: post.data.tags.join(', '),
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: business.url },
+    { '@type': 'ListItem', position: 2, name: 'Notes', item: `${business.url}/blog/` },
+    { '@type': 'ListItem', position: 3, name: post.data.title, item: canonical },
+  ],
+};
+
+const related = (await getCollection('blog'))
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 2);
+---
+
+<Base title={post.data.seoTitle ?? post.data.title} description={post.data.description}>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumb)} />
+
+  <article class="post">
+    <header class="section post__head">
+      <div class="wrap post__wrap">
+        <nav class="crumbs mono" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/blog/">Notes</a>
+        </nav>
+        <p class="eyebrow">{post.data.kicker}</p>
+        <h1>{post.data.title}</h1>
+        <p class="lead post__standfirst">{post.data.description}</p>
+        <p class="post__date mono">
+          <time datetime={post.data.published.toISOString()}>{fmt(post.data.published)}</time>
+          <span aria-hidden="true">&middot;</span>
+          {business.name}
+        </p>
+      </div>
+    </header>
+
+    <figure class="post__hero">
+      <div class="wrap post__wrap">
+        <img src={post.data.hero} alt={post.data.heroAlt} width="1200" height="675" fetchpriority="high" decoding="async" />
+        <figcaption>{post.data.heroAlt}</figcaption>
+      </div>
+    </figure>
+
+    <div class="section post__bodywrap">
+      <div class="wrap post__wrap">
+        <div class="prose"><Content /></div>
+
+        <ul class="tags mono">
+          {post.data.tags.map((t) => <li>{t}</li>)}
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="section section--band">
+        <div class="wrap">
+          <p class="eyebrow">Also here</p>
+          <ul class="more">
+            {related.map((p) => (
+              <li>
+                <a href={`/blog/${p.id}/`}>
+                  <span class="mono more__kicker">{p.data.kicker}</span>
+                  <span class="more__title">{p.data.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section glow cta" style="--glow: rgb(199 67 30 / .18); --glow-x: 50%; --glow-y: 40%;">
+    <div class="wrap cta__in" data-reveal>
+      <h2>Want this applied to your project?</h2>
+      <p class="lead cta__lead">
+        Tell us the date, the venue and what you need. You get an itemised quote back, not a
+        brochure.
+      </p>
+      <div class="cta__btns">
+        <a class="btn btn--lg" href="/contact/">Request a custom quote</a>
+        <a class="btn btn--ghost btn--lg" href={business.phone.href}>{business.phone.display}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* A single reading column. Long-form is the one place on this site where a
+     narrow measure beats filling the width. */
+  .post__wrap { max-width: 760px; }
+
+  .post__head { padding-block: clamp(56px, 7vw, 96px) var(--s-4); }
+  .crumbs { font-size: 12px; margin-bottom: var(--s-4); color: var(--text-dim); }
+  .crumbs a { color: var(--text-muted); text-decoration: none; }
+  .crumbs a:hover { color: var(--ember-text); }
+  .post__standfirst { margin-top: var(--s-3); }
+  .post__date { margin-top: var(--s-3); font-size: 12px; color: var(--text-dim); display: flex; gap: 8px; }
+
+  .post__hero { margin: 0; position: relative; z-index: 2; }
+  .post__hero img {
+    width: 100%; height: auto; border-radius: var(--radius);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    background: var(--void);
+  }
+  .post__hero figcaption { margin-top: var(--s-2); font-size: 12px; color: var(--text-dim); }
+
+  .post__bodywrap { padding-block: var(--s-5) var(--s-6); }
+
+  .prose { color: var(--text-muted); font-size: 17px; line-height: 1.75; }
+  .prose :global(h2) {
+    color: var(--text); font-size: clamp(22px, 2.6vw, 30px);
+    margin: var(--s-5) 0 var(--s-2);
+  }
+  .prose :global(h3) { color: var(--text); margin: var(--s-4) 0 var(--s-1); }
+  .prose :global(p) { margin: 0 0 var(--s-3); }
+  .prose :global(strong) { color: var(--text); font-weight: 600; }
+  .prose :global(a) { color: var(--ocean-text); }
+  .prose :global(ul), .prose :global(ol) { margin: 0 0 var(--s-3); padding-left: 1.2em; }
+  .prose :global(li) { margin-bottom: var(--s-1); }
+  .prose :global(li::marker) { color: var(--ember-text); }
+  .prose :global(hr) {
+    border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    margin: var(--s-5) 0;
+  }
+  .prose :global(blockquote) {
+    margin: var(--s-4) 0; padding: var(--s-3);
+    border-left: 2px solid var(--ember-text);
+    background: color-mix(in srgb, var(--raised) 60%, transparent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 15px;
+  }
+  .prose :global(blockquote p:last-child) { margin: 0; }
+  .prose :global(code) {
+    font-family: var(--font-mono); font-size: .9em;
+    background: var(--raised); padding: 2px 6px; border-radius: 4px; color: var(--text);
+  }
+
+  .tags { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s-1); margin: var(--s-5) 0 0; padding: 0; }
+  .tags li {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-dim); border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    border-radius: 99px; padding: 5px 12px;
+  }
+
+  .more { list-style: none; margin: var(--s-3) 0 0; padding: 0; display: grid; gap: var(--s-2); }
+  .more a {
+    display: grid; gap: 4px; text-decoration: none; padding: var(--s-3);
+    background: color-mix(in srgb, var(--raised) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    border-radius: var(--radius);
+    transition: border-color var(--t-slow) var(--ease);
+  }
+  .more a:hover { border-color: color-mix(in srgb, var(--ember-text) 34%, transparent); }
+  .more__kicker { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember-text); }
+  .more__title { color: var(--text); font-weight: 500; }
+  @media (min-width: 760px) { .more { grid-template-columns: 1fr 1fr; } }
+</style>

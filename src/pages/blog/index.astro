@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { business } from '../../data/business.ts';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.published.valueOf() - a.data.published.valueOf()
+);
+
+const title = 'Notes on video, events and drones | Beyond Pixel';
+const description =
+  'Practical writing on commissioning video, live streaming events and flying drones legally in Odisha — from the crew that does the work.';
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+
+<Base title={title} description={description}>
+  <section class="section shead">
+    <div class="wrap">
+      <p class="eyebrow">Notes</p>
+      <h1>What we have learned, written down.</h1>
+      <p class="lead">
+        No news posts and no announcements. These are the things clients ask us in the first
+        meeting, answered properly enough to be useful before you call anyone — including us.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <ul class="posts">
+        {
+          posts.map((p) => (
+            <li class="post" data-reveal>
+              <a class="post__link" href={`/blog/${p.id}/`}>
+                <span class="post__media ar-wide">
+                  <img src={p.data.hero} alt={p.data.heroAlt} width="1200" height="675" loading="lazy" decoding="async" />
+                </span>
+                <span class="post__body">
+                  <span class="post__meta mono">
+                    {p.data.kicker} &middot; {fmt(p.data.published)}
+                  </span>
+                  <h2 class="post__title">{p.data.title}</h2>
+                  <span class="post__desc">{p.data.description}</span>
+                  <span class="post__go mono">Read &rarr;</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section glow cta" style="--glow: rgb(199 67 30 / .18); --glow-x: 50%; --glow-y: 40%;">
+    <div class="wrap cta__in" data-reveal>
+      <h2>Planning something specific?</h2>
+      <p class="lead cta__lead">
+        Send the date, the venue and roughly what you need. You get an itemised quote, not a
+        brochure.
+      </p>
+      <div class="cta__btns">
+        <a class="btn btn--lg" href="/contact/">Request a custom quote</a>
+        <a class="btn btn--ghost btn--lg" href={business.phone.href}>{business.phone.display}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shead { padding-block: clamp(72px, 9vw, 130px) 0; }
+  .shead .lead { margin-top: var(--s-4); }
+
+  .posts { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-4); }
+  .post__link {
+    display: grid; gap: var(--s-3); text-decoration: none; color: inherit;
+    background: color-mix(in srgb, var(--raised) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    border-radius: var(--radius); overflow: clip;
+    transition: border-color var(--t-slow) var(--ease), transform var(--t-slow) var(--ease);
+  }
+  .post__link:hover { border-color: color-mix(in srgb, var(--ember-text) 34%, transparent); transform: translateY(-3px); }
+
+  /* The diagram is the point, not decoration — it gets real space. */
+  .post__media { display: block; background: var(--void); }
+  .post__media img { width: 100%; height: 100%; object-fit: cover; }
+
+  .post__body { display: grid; gap: 10px; padding: 0 var(--s-3) var(--s-4); }
+  .post__meta { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember-text); }
+  .post__title { font-size: clamp(20px, 2.2vw, 26px); }
+  .post__desc { color: var(--text-muted); font-size: 15px; max-width: 60ch; }
+  .post__go { font-size: 13px; color: var(--ocean-text); }
+
+  @media (min-width: 860px) {
+    .posts { grid-template-columns: repeat(3, 1fr); gap: var(--s-3); }
+  }
+</style>

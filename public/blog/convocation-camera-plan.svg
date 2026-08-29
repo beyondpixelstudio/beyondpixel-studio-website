@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Overhead plan of a convocation hall with four camera positions, their coverage, the PA feed and the encoder">
+<defs>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.d{font-family:'DM Mono',ui-monospace,monospace;fill:#6E6796}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.cam{font-family:'DM Mono',ui-monospace,monospace;fill:#FAFAF8;font-size:12px}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="13" font-weight="700">CONVOCATION &#183; TYPICAL FOUR-CAMERA PLAN</text>
+
+<!-- hall -->
+<rect x="240" y="92" width="720" height="470" rx="10" fill="#0A0814" stroke="#FAFAF8" stroke-opacity=".1"/>
+
+<!-- stage -->
+<rect x="300" y="118" width="600" height="96" rx="6" fill="#16121F" stroke="#7FB4E2" stroke-opacity=".35"/>
+<text class="m" x="600" y="158" font-size="13" text-anchor="middle" fill="#7FB4E2">STAGE</text>
+<rect x="556" y="176" width="88" height="22" rx="4" fill="#211B31" stroke="#FAFAF8" stroke-opacity=".14"/>
+<text class="d" x="600" y="191" font-size="10" text-anchor="middle">LECTERN</text>
+
+<!-- crossing path -->
+<path d="M330 214 L870 214" stroke="#F2A65A" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="6 6"/>
+<text class="d" x="330" y="234" font-size="11" fill="#F2A65A">graduates cross here</text>
+
+<!-- audience -->
+<g fill="#16121F" stroke="#FAFAF8" stroke-opacity=".07">
+<rect x="300" y="300" width="270" height="150" rx="6"/>
+<rect x="630" y="300" width="270" height="150" rx="6"/>
+</g>
+<text class="d" x="600" y="382" font-size="12" text-anchor="middle">AUDIENCE</text>
+
+<!-- coverage cones -->
+<path d="M600 520 L330 226 L870 226 Z" fill="#7FB4E2" fill-opacity=".07"/>
+<path d="M420 470 L556 196 L644 196 Z" fill="#F2704A" fill-opacity=".08"/>
+<path d="M790 470 L830 210 L900 240 Z" fill="#F2A65A" fill-opacity=".08"/>
+
+<!-- cameras -->
+<g>
+<circle cx="600" cy="524" r="13" fill="#7FB4E2"/><text class="cam" x="600" y="528" text-anchor="middle" fill="#05040B" font-weight="700">1</text>
+<text class="m" x="600" y="558" font-size="12" text-anchor="middle" fill="#7FB4E2">WIDE &#183; locked off, never stops</text>
+
+<circle cx="420" cy="474" r="13" fill="#F2704A"/><text class="cam" x="420" y="478" text-anchor="middle" fill="#05040B" font-weight="700">2</text>
+<text class="m" x="420" y="504" font-size="12" text-anchor="middle" fill="#F2704A">LECTERN</text>
+
+<circle cx="790" cy="474" r="13" fill="#F2A65A"/><text class="cam" x="790" y="478" text-anchor="middle" fill="#05040B" font-weight="700">3</text>
+<text class="m" x="790" y="504" font-size="12" text-anchor="middle" fill="#F2A65A">NAMES</text>
+
+<circle cx="286" cy="270" r="13" fill="#C98CE4"/><text class="cam" x="286" y="274" text-anchor="middle" fill="#05040B" font-weight="700">4</text>
+<text class="m" x="286" y="252" font-size="12" text-anchor="middle" fill="#C98CE4">ROAMER</text>
+</g>
+
+<!-- audio + encoder chain -->
+<rect x="60" y="430" width="150" height="60" rx="8" fill="#16121F" stroke="#FAFAF8" stroke-opacity=".12"/>
+<text class="m" x="135" y="456" font-size="12" text-anchor="middle">PA DESK</text>
+<text class="d" x="135" y="474" font-size="10" text-anchor="middle">clean mix</text>
+
+<rect x="60" y="530" width="150" height="60" rx="8" fill="#16121F" stroke="#F2704A" stroke-opacity=".35"/>
+<text class="m" x="135" y="556" font-size="12" text-anchor="middle" fill="#F2704A">ENCODER</text>
+<text class="d" x="135" y="574" font-size="10" text-anchor="middle">+ local record</text>
+
+<path d="M135 490 L135 528" stroke="#7FB4E2" stroke-opacity=".6" stroke-width="1.5"/>
+<path d="M129 520 L135 530 L141 520 Z" fill="#7FB4E2" fill-opacity=".8"/>
+<path d="M586 530 L215 560" stroke="#FAFAF8" stroke-opacity=".18" stroke-width="1.5"/>
+
+<text class="d" x="60" y="628" font-size="13">Wired upload, a feed off the desk, and every camera recording locally — the three things that decide it.</text>
+</svg>

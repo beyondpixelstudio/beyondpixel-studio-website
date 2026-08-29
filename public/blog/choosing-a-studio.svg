@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="A lump-sum quote beside an itemised quote, showing the six lines a single figure hides">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#16121F"/><stop offset="1" stop-color="#0A0814"/>
+</linearGradient>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.d{font-family:'DM Mono',ui-monospace,monospace;fill:#6E6796}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+
+<text class="lbl" x="60" y="58" font-size="13" font-weight="700">THE SAME JOB, QUOTED TWO WAYS</text>
+
+<!-- lump sum -->
+<rect x="60" y="90" width="480" height="500" rx="16" fill="url(#g)" stroke="#FAFAF8" stroke-opacity=".08"/>
+<text class="t" x="92" y="140" font-size="22" font-weight="600">Lump sum</text>
+<text class="d" x="92" y="168" font-size="13">One number. Nothing to compare, nothing to remove.</text>
+<line x1="92" y1="192" x2="508" y2="192" stroke="#FAFAF8" stroke-opacity=".08"/>
+<text class="t" x="92" y="290" font-size="46" font-weight="600">Corporate film</text>
+<text class="m" x="92" y="345" font-size="34" fill="#F2704A">&#8377; — — — — —</text>
+<line x1="92" y1="392" x2="508" y2="392" stroke="#FAFAF8" stroke-opacity=".08"/>
+<text class="d" x="92" y="428" font-size="13">You cannot tell whether this includes</text>
+<text class="d" x="92" y="452" font-size="13">two cameras or one, or how many edit days,</text>
+<text class="d" x="92" y="476" font-size="13">or what a second version would cost.</text>
+
+<!-- itemised -->
+<rect x="660" y="90" width="480" height="500" rx="16" fill="url(#g)" stroke="#F2704A" stroke-opacity=".34"/>
+<text class="t" x="692" y="140" font-size="22" font-weight="600">Itemised</text>
+<text class="d" x="692" y="168" font-size="13">Comparable line by line. Reducible.</text>
+<line x1="692" y1="192" x2="1108" y2="192" stroke="#FAFAF8" stroke-opacity=".08"/>
+
+<g font-size="15">
+<text class="m" x="692" y="232">Crew</text>              <text class="m" x="1108" y="232" text-anchor="end">&#8377; —</text>
+<text class="m" x="692" y="272">Equipment</text>         <text class="m" x="1108" y="272" text-anchor="end">&#8377; —</text>
+<text class="m" x="692" y="312">Shoot days</text>        <text class="m" x="1108" y="312" text-anchor="end">&#8377; —</text>
+<text class="m" x="692" y="352">Travel &amp; stay</text>    <text class="m" x="1108" y="352" text-anchor="end">&#8377; —</text>
+<text class="m" x="692" y="392">Edit &amp; grade</text>     <text class="m" x="1108" y="392" text-anchor="end">&#8377; —</text>
+<text class="m" x="692" y="432">Revisions (2 rounds)</text><text class="m" x="1108" y="432" text-anchor="end">&#8377; —</text>
+<text class="m" x="692" y="472">Deliverables</text>      <text class="m" x="1108" y="472" text-anchor="end">&#8377; —</text>
+</g>
+<line x1="692" y1="500" x2="1108" y2="500" stroke="#FAFAF8" stroke-opacity=".14"/>
+<text class="t" x="692" y="536" font-size="15" font-weight="600">Total</text>
+<text class="t" x="1108" y="536" font-size="15" font-weight="600" text-anchor="end">&#8377; —</text>
+
+<!-- connector -->
+<path d="M560 340 L640 340" stroke="#F2704A" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="5 5"/>
+<path d="M632 334 L642 340 L632 346 Z" fill="#F2704A" fill-opacity=".7"/>
+
+<text class="d" x="60" y="628" font-size="13">The totals are usually closer than they look. The difference is what one of them left out.</text>
+</svg>

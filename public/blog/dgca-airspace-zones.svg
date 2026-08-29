@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Side view of Indian drone airspace showing green, yellow and red zones around an airport with the 400 foot ceiling marked">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#0A0814"/><stop offset="1" stop-color="#05040B"/>
+</linearGradient>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.d{font-family:'DM Mono',ui-monospace,monospace;fill:#6E6796}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+</style>
+</defs>
+<rect width="1200" height="675" fill="url(#sky)"/>
+<text class="lbl" x="60" y="58" font-size="13" font-weight="700">AIRSPACE IS MAPPED BY LOCATION, NOT BY CITY</text>
+
+<!-- ground -->
+<line x1="60" y1="520" x2="1140" y2="520" stroke="#FAFAF8" stroke-opacity=".22"/>
+<text class="d" x="60" y="544" font-size="11">GROUND LEVEL</text>
+
+<!-- 400ft ceiling -->
+<line x1="60" y1="250" x2="1140" y2="250" stroke="#F2704A" stroke-opacity=".55" stroke-dasharray="7 6" stroke-width="1.5"/>
+<text class="m" x="60" y="240" font-size="12" fill="#F2704A">400 ft AGL &#183; ceiling in a green zone</text>
+
+<!-- green zone -->
+<rect x="60" y="250" width="470" height="270" fill="#7FB4E2" fill-opacity=".05"/>
+<rect x="60" y="250" width="470" height="270" fill="none" stroke="#7FB4E2" stroke-opacity=".2"/>
+<text class="t" x="92" y="300" font-size="20" font-weight="600">Green</text>
+<text class="m" x="92" y="330" font-size="13">No separate flight permission</text>
+<text class="m" x="92" y="354" font-size="13">below 400 ft.</text>
+<text class="d" x="92" y="390" font-size="12">Most factories, campuses and</text>
+<text class="d" x="92" y="410" font-size="12">sites away from an airport.</text>
+
+<!-- yellow zone -->
+<rect x="530" y="250" width="330" height="270" fill="#F2A65A" fill-opacity=".07"/>
+<rect x="530" y="250" width="330" height="270" fill="none" stroke="#F2A65A" stroke-opacity=".3"/>
+<text class="t" x="562" y="300" font-size="20" font-weight="600">Yellow</text>
+<text class="m" x="562" y="330" font-size="13" fill="#F2A65A">ATC clearance required.</text>
+<text class="d" x="562" y="366" font-size="12">Achievable — but it needs lead</text>
+<text class="d" x="562" y="386" font-size="12">time, so raise it at brief stage.</text>
+
+<!-- red zone -->
+<rect x="860" y="250" width="280" height="270" fill="#F2704A" fill-opacity=".1"/>
+<rect x="860" y="250" width="280" height="270" fill="none" stroke="#F2704A" stroke-opacity=".4"/>
+<text class="t" x="892" y="300" font-size="20" font-weight="600">Red</text>
+<text class="m" x="892" y="330" font-size="13" fill="#F2704A">Prohibited without central</text>
+<text class="m" x="892" y="354" font-size="13" fill="#F2704A">government approval.</text>
+<text class="d" x="892" y="390" font-size="12">In practice: not a commercial</text>
+<text class="d" x="892" y="410" font-size="12">video shoot.</text>
+
+<!-- airport -->
+<g transform="translate(1000,520)">
+<path d="M-46 0 L46 0" stroke="#FAFAF8" stroke-opacity=".35" stroke-width="3"/>
+<path d="M0 -34 L11 -8 L38 -2 L14 8 L8 32 L0 12 L-8 32 L-14 8 L-38 -2 L-11 -8 Z" fill="#F2704A" fill-opacity=".55" transform="translate(0,-26) scale(.62)"/>
+</g>
+<text class="d" x="1000" y="562" font-size="11" text-anchor="middle">AIRPORT</text>
+
+<!-- drone -->
+<g transform="translate(300,300)">
+<line x1="-22" y1="-10" x2="22" y2="10" stroke="#7FB4E2" stroke-opacity=".8" stroke-width="2"/>
+<line x1="-22" y1="10" x2="22" y2="-10" stroke="#7FB4E2" stroke-opacity=".8" stroke-width="2"/>
+<circle cx="-22" cy="-10" r="6" fill="none" stroke="#7FB4E2" stroke-opacity=".55"/>
+<circle cx="22" cy="-10" r="6" fill="none" stroke="#7FB4E2" stroke-opacity=".55"/>
+<circle cx="-22" cy="10" r="6" fill="none" stroke="#7FB4E2" stroke-opacity=".55"/>
+<circle cx="22" cy="10" r="6" fill="none" stroke="#7FB4E2" stroke-opacity=".55"/>
+<rect x="-8" y="-5" width="16" height="10" rx="3" fill="#7FB4E2" fill-opacity=".85"/>
+</g>
+
+<text class="d" x="60" y="628" font-size="13">Zones follow airports and installations, so two sites four kilometres apart can differ completely. Check the coordinates on DigiSky.</text>
+</svg>
