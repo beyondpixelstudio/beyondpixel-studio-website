@@ -551,11 +551,30 @@
     gl.classList.add('is-live');
     start();
 
-    // A lost context must not leave a frozen canvas sitting over the fallback.
+    /* A lost context must not leave a frozen canvas sitting over the fallback.
+       Calling preventDefault() is what ASKS the browser to give the context
+       back — without a matching restore handler it only guarantees the flower
+       never returns, and the page silently falls back to the CSS rings until
+       someone reloads. Chrome drops WebGL contexts routinely once enough tabs
+       want one, so this is an ordinary event on a working machine, not an edge
+       case.
+
+       three.js re-uploads its own GPU resources on the next render after a
+       restore, so recovery is: reset the renderer's cached state, redraw one
+       frame, and only then hand the canvas back to the fallback's replacement. */
     gl.addEventListener('webglcontextlost', (e) => {
       e.preventDefault();
       stop();
       gl.classList.remove('is-live');
+    });
+
+    gl.addEventListener('webglcontextrestored', () => {
+      renderer.resetState();
+      resize();
+      bloom.position.x = offsetX;
+      renderer.render(scene, camera);
+      gl.classList.add('is-live');
+      start();
     });
   }
 </script>
