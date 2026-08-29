@@ -217,7 +217,10 @@ function sendTelegramNotification(lead) {
        last result makes the next failure diagnosable from doGet instead of
        guessable. */
     const code = res.getResponseCode();
-    const body = res.getContentText().slice(0, 300);
+    /* Trimmed, but not mid-escape: slicing a JSON string at a fixed length can
+       cut a \uXXXX sequence in half, and the stored value then fails to parse
+       for whoever reads it back. Drop any dangling partial escape. */
+    const body = res.getContentText().slice(0, 300).replace(/\\u[0-9a-fA-F]{0,3}$/, '');
     PROPS.setProperty('LAST_TELEGRAM_RESULT', JSON.stringify({
       at: new Date().toISOString(), code: code, ok: code === 200, body: body
     }));
