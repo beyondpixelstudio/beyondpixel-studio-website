@@ -27,14 +27,15 @@
  * One-time setup in the Apps Script editor:
  *   Project Settings (gear icon) -> Script properties -> Add script property
  *     TELEGRAM_BOT_TOKEN   <token from @BotFather>
- *     TELEGRAM_CHAT_ID     -1003840712923
+ *
+ * The chat id is not a secret and stays inline below.
  *
  * Script properties are stored against the project, never in the source, and
  * survive re-pasting this file.
  */
 const PROPS = PropertiesService.getScriptProperties();
 const TELEGRAM_BOT_TOKEN = PROPS.getProperty('TELEGRAM_BOT_TOKEN') || '';
-const TELEGRAM_CHAT_ID = PROPS.getProperty('TELEGRAM_CHAT_ID') || '';
+const TELEGRAM_CHAT_ID = '-1003840712923'; // BPS HR/Marketing Team. Not a secret.
 const SHEET_NAME = 'Leads';
 
 function doPost(e) {
@@ -123,9 +124,26 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  return ContentService.createTextOutput(
-    JSON.stringify({ status: 'active', message: 'Beyond Pixel Studio Leads Webhook is Live.' })
-  ).setMimeType(ContentService.MimeType.JSON);
+  /* Health check. Reports whether the pieces are configured and what Telegram
+     said about the most recent attempt. Deliberately returns NO secret values —
+     only whether a token is present and how long it is. */
+  var last = null;
+  try { last = JSON.parse(PROPS.getProperty('LAST_TELEGRAM_RESULT') || 'null'); } catch (err) {}
+
+  var sheetOk = false;
+  try {
+    sheetOk = !!SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  } catch (err) {}
+
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'active',
+    message: 'Beyond Pixel Studio Leads Webhook is Live.',
+    sheetReady: sheetOk,
+    telegramTokenSet: !!TELEGRAM_BOT_TOKEN,
+    telegramTokenLength: TELEGRAM_BOT_TOKEN ? TELEGRAM_BOT_TOKEN.length : 0,
+    telegramChatId: TELEGRAM_CHAT_ID,
+    lastTelegramResult: last
+  })).setMimeType(ContentService.MimeType.JSON);
 }
 
 function sendTelegramNotification(lead) {
@@ -185,13 +203,29 @@ function sendTelegramNotification(lead) {
     }
 
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    UrlFetchApp.fetch(url, {
+    const res = UrlFetchApp.fetch(url, {
       method: 'post',
       contentType: 'application/json',
       payload: JSON.stringify(payload),
       muteHttpExceptions: true
     });
+
+    /* Record the outcome. muteHttpExceptions means a rejected message does NOT
+       throw — Telegram returns 400 with a description and the script carries on
+       as if nothing happened. That is how a wrong chat id and an illegal
+       tel: button both produced total silence rather than an error. Storing the
+       last result makes the next failure diagnosable from doGet instead of
+       guessable. */
+    const code = res.getResponseCode();
+    const body = res.getContentText().slice(0, 300);
+    PROPS.setProperty('LAST_TELEGRAM_RESULT', JSON.stringify({
+      at: new Date().toISOString(), code: code, ok: code === 200, body: body
+    }));
+    if (code !== 200) Logger.log('Telegram rejected the message: ' + body);
   } catch (err) {
+    PROPS.setProperty('LAST_TELEGRAM_RESULT', JSON.stringify({
+      at: new Date().toISOString(), code: 0, ok: false, body: String(err)
+    }));
     Logger.log('Telegram sending error: ' + err.toString());
   }
 }
