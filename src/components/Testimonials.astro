@@ -1,0 +1,115 @@
+---
+/**
+ * Video testimonials, as click-to-play Instagram embeds.
+ *
+ * FACADE, NOT A LIVE EMBED. Instagram's embed weighs a few hundred KB of
+ * third-party JavaScript and sets cookies. Loading four of those on every page
+ * view would cost the mobile Lighthouse target the brief treats as a ranking
+ * requirement, on a section most visitors scroll past. So the card is a local
+ * poster and a play button, and the iframe is created only when someone asks
+ * for it.
+ *
+ * The iframe is Instagram's own /embed/ URL rather than the oEmbed blockquote,
+ * because the blockquote needs embed.js to upgrade it — which is the script
+ * this design exists to avoid loading.
+ */
+import { testimonials } from '../data/testimonials.ts';
+if (testimonials.length === 0) return null;
+---
+
+<section class="section tst" id="testimonials">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">In their words</p>
+      <h2>Clients on camera.</h2>
+      <p>
+        Recorded on the day, published to our Instagram, and playable here. Press
+        play and the video loads from Instagram — nothing is fetched until you do.
+      </p>
+    </div>
+
+    <ul class="tst__list">
+      {
+        testimonials.map((t, i) => (
+          <li class="tst__item" data-reveal style={`--reveal-delay:${i * 70}ms`}>
+            <div class="tst__frame" data-reel={t.code}>
+              <img src={t.poster} alt={t.alt} width="600" height="1066" loading="lazy" decoding="async" />
+              <button type="button" class="tst__play" aria-label={`Play video review from ${t.name}, ${t.role}`}>
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" focusable="false">
+                  <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+                </svg>
+              </button>
+            </div>
+            <p class="tst__who">
+              <span class="tst__name">{t.name}</span>
+              <span class="tst__role">{t.role}</span>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.tst__play');
+      if (!btn) return;
+      var frame = btn.closest('.tst__frame');
+      var code = frame && frame.dataset.reel;
+      if (!code) return;
+
+      var f = document.createElement('iframe');
+      f.src = 'https://www.instagram.com/reel/' + code + '/embed/';
+      f.title = btn.getAttribute('aria-label') || 'Video review';
+      f.loading = 'lazy';
+      f.setAttribute('allowtransparency', 'true');
+      f.setAttribute('allowfullscreen', 'true');
+      f.setAttribute('scrolling', 'no');
+      // Instagram needs no more than this, and granting less than it asks for
+      // is the point of listing it explicitly.
+      f.setAttribute('allow', 'encrypted-media; picture-in-picture; web-share');
+      f.className = 'tst__iframe';
+      frame.innerHTML = '';
+      frame.appendChild(f);
+    });
+  })();
+</script>
+
+<style>
+  .tst__list {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; gap: var(--s-4);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 300px));
+    justify-content: center;
+  }
+  .tst__frame {
+    position: relative; aspect-ratio: 9 / 16; overflow: clip;
+    border-radius: var(--radius); background: var(--void);
+    border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  }
+  .tst__frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tst__iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+
+  .tst__play {
+    position: absolute; inset: 0; margin: auto;
+    width: 62px; height: 62px; border-radius: 50%;
+    display: grid; place-items: center; cursor: pointer;
+    color: var(--on-ember); background: var(--ember);
+    border: 1px solid rgb(255 255 255 / .2);
+    box-shadow: 0 10px 30px rgb(0 0 0 / .5);
+    transition: transform var(--t-slow) var(--ease), background var(--t-slow) var(--ease);
+  }
+  .tst__play svg { margin-left: 3px; } /* optical centring of a triangle */
+  .tst__play:hover { background: var(--ember-hover); transform: scale(1.06); }
+  .tst__play:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+
+  .tst__who { margin: var(--s-2) 0 0; display: grid; gap: 2px; }
+  .tst__name { font-weight: 600; color: var(--text); font-size: 15px; }
+  .tst__role { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-dim); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tst__play:hover { transform: none; }
+  }
+</style>
