@@ -230,7 +230,13 @@ const grouped = categories
               six times over, which reads as missing content rather than as a
               category with one example. A single project gets a wide
               horizontal card instead, so the row is filled on purpose. */}
-          <ul class:list={['work', group.items.length === 1 && 'work--single']}>
+          <ul
+            class:list={[
+              'work',
+              group.items.length === 1 && 'work--single',
+              group.items.length === 4 && 'work--quad',
+            ]}
+          >
             {group.items.map((w, i) => (
               <li class="wcard tilt panel" data-reveal style={`--reveal-delay:${i * 55}ms`}>
                 <span class="tilt__sheen" aria-hidden="true"></span>
@@ -617,6 +623,18 @@ const grouped = categories
      layout the wide card exists to avoid. */
   @media (min-width: 1000px) {
     .work:not(.work--single) { grid-template-columns: repeat(3, 1fr); }
+
+    /* Exactly four projects get four columns rather than three-plus-one.
+       A trailing single card on its own row makes a full category look like it
+       ran out halfway; four across reads as complete. Athletic events and
+       Conferences are both fours. */
+    /* `.work.work--quad`, not `.work--quad`. The three-column rule above is
+       `.work:not(.work--single)`, which is two classes' worth of specificity —
+       a single class loses to it and the quad rows silently stayed three-up.
+       Matching that weight and coming later is what makes this win. */
+    .work.work--quad { grid-template-columns: repeat(4, 1fr); }
+    .work.work--quad .wcard__title { font-size: 16px; }
+    .work.work--quad .wcard__body { padding: var(--s-2) var(--s-3) var(--s-3); }
   }
 
   /* --- Recognition -------------------------------------------------------- */
