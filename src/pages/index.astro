@@ -268,14 +268,41 @@ const posts = (await getCollection('blog'))
         </p>
       </div>
 
+      {/* Named, on Rajesh's confirmation. These were unattributed until he
+          supplied them, and an unattributed award photo is close to worthless
+          to the buyer this page is written for — a procurement officer wants to
+          know WHO conferred it. Two sitting ministers and a named college is a
+          materially stronger claim than "recognised by esteemed organisations",
+          and it is checkable, which is the point. */}
       <ul class="recog__strip">
         {[
-          { src: '/recognition/felicitation-01.webp', alt: 'Rajesh Kumar Gouda receiving a framed certificate on stage at a felicitation ceremony' },
-          { src: '/recognition/felicitation-02.webp', alt: 'The Beyond Pixel Studio team being presented with a framed commemoration at a Rajat Jayanti ceremony' },
-          { src: '/recognition/felicitation-03.webp', alt: 'A framed certificate presented to the studio by organisers on stage, garlanded' },
+          {
+            src: '/recognition/felicitation-01.webp',
+            title: 'Honoured by Suryabanshi Suraj',
+            by: 'Minister of Sports & Youth Services, Government of Odisha',
+            alt: 'Rajesh Kumar Gouda being presented with a framed certificate on stage by Suryabanshi Suraj, Minister of Sports and Youth Services, Government of Odisha',
+          },
+          {
+            src: '/recognition/felicitation-02.webp',
+            title: 'Honoured by Gokula Nanda Mallik',
+            by: 'Minister of State (Independent Charge), Fisheries & Animal Resources Development, Odisha',
+            alt: 'The Beyond Pixel Studio team receiving a framed commemoration from Gokula Nanda Mallik, Minister of State for Fisheries and Animal Resources Development, Odisha',
+          },
+          {
+            src: '/recognition/felicitation-03.webp',
+            title: 'Radiance Sanskruti Puraskar 2025',
+            by: 'Radiance College, Bijepur, Bargarh',
+            alt: 'Rajesh Kumar Gouda, garlanded, receiving the Radiance Sanskruti Puraskar 2025 from Radiance College, Bijepur, Bargarh',
+          },
         ].map((shot, i) => (
           <li data-reveal style={`--reveal-delay:${i * 80}ms`}>
-            <img src={shot.src} alt={shot.alt} width="1200" height="589" loading="lazy" decoding="async" />
+            <figure>
+              <img src={shot.src} alt={shot.alt} width="1200" height="589" loading="lazy" decoding="async" />
+              <figcaption>
+                <span class="recog__title">{shot.title}</span>
+                <span class="recog__by">{shot.by}</span>
+              </figcaption>
+            </figure>
           </li>
         ))}
       </ul>
@@ -552,8 +579,17 @@ const posts = (await getCollection('blog'))
   .recog__strip li {
     position: relative; border-radius: var(--radius); overflow: clip;
     border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-    background: var(--void);
+    background: color-mix(in srgb, var(--raised) 60%, transparent);
     transition: transform var(--t-slow) var(--ease), border-color var(--t-slow) var(--ease);
+  }
+  .recog__strip figure { margin: 0; display: grid; }
+  .recog__strip figcaption { display: grid; gap: 4px; padding: var(--s-3); }
+  .recog__title {
+    font-weight: 600; font-size: 15px; color: var(--text); line-height: 1.3;
+  }
+  .recog__by {
+    font-family: var(--font-mono); font-size: 11.5px; line-height: 1.45;
+    color: var(--text-dim);
   }
   .recog__strip li:hover {
     transform: translateY(-3px);
@@ -569,6 +605,10 @@ const posts = (await getCollection('blog'))
     border-radius: inherit;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / .14);
   }
+  /* Stretch the cards to equal height — the three captions differ in length and
+     a ragged bottom edge on a row of three reads as a mistake. */
+  .recog__strip { align-items: stretch; }
+  .recog__strip li { display: grid; }
 
   .recog__note {
     margin: var(--s-4) auto 0; max-width: 56ch; text-align: center;
