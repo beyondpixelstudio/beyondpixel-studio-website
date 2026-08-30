@@ -12,3 +12,6 @@ dist/
 
 # Local editor/agent config
 .claude/
+
+# Deployment archive, built from dist/ on demand. Generated, never committed.
+beyondpixel-studio-site.zip
