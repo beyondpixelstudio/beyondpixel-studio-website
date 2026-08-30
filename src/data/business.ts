@@ -118,40 +118,22 @@ export const business = {
   /**
    * MEDIA PROXY — a SEPARATE Apps Script deployment from googleScriptUrl above.
    *
-   * Serves the Work page its YouTube playlists and Instagram reels, holding the
-   * YouTube key and the Instagram token on Google's side so neither ships to a
-   * browser. Source: scripts/google-apps-script-media.js.
+   * Serves the Work page its YouTube playlists, holding the API key on Google's
+   * side so it never ships to a browser. Source:
+   * scripts/google-apps-script-media.js.
    *
    * Deliberately not the same project as the leads script. Lead capture is the
-   * only thing here that loses money when it breaks; a media proxy talks to two
-   * third-party APIs that rate-limit, expire tokens and change shape. Sharing a
-   * deployment would mean one bad media fix could take the enquiry form down.
+   * only thing here that loses money when it breaks; a media proxy talks to a
+   * third-party API that rate-limits and goes down. Sharing a deployment would
+   * mean one bad media fix could take the enquiry form down.
    *
-   * EMPTY IS A VALID STATE. Until the script is deployed this stays '' and the
-   * page still works: the YouTube grids are baked into the HTML at build time
-   * and stand on their own. Only the reels section needs this, and it says so
-   * plainly when it is missing.
+   * EMPTY IS A VALID STATE, and it is the current one. The grids are filled at
+   * build time — from the API where the key allows it, otherwise from the
+   * hand-picked seed in works.ts — so nothing on the page depends on this. All
+   * it adds is same-day freshness for a video uploaded since the last deploy.
    */
   mediaScriptUrl: '',
 
-  /**
-   * REVIEW SOURCES.
-   *
-   * Displayed on the site, but deliberately NOT emitted as schema.org
-   * `aggregateRating`. Google's structured-data guidelines disallow marking up
-   * ratings collected on a third-party platform as if they were first-party,
-   * and self-serving aggregateRating is the one schema abuse that draws manual
-   * actions. The ratings are shown visually instead, where they still do their
-   * job.
-   *
-   * `value`/`count` are NULL until someone has read the real figure off the
-   * platform. A review count is a factual claim about other people's opinions;
-   * inventing a plausible-looking one is the single most damaging thing that
-   * could be put on this page, so the UI renders an unnumbered link instead and
-   * the number simply appears when it is known.
-   *
-   * TODO — Rajesh to supply the live Google rating and review count.
-   */
   /**
    * The WRITE-a-review link, which is not the same thing as the read link in
    * `reviews` below and cannot be derived from it.
@@ -173,6 +155,25 @@ export const business = {
    * this is filled in.
    */
   googleReviewUrl: '',
+
+  /**
+   * REVIEW SOURCES.
+   *
+   * Displayed on the site, but deliberately NOT emitted as schema.org
+   * `aggregateRating`. Google's structured-data guidelines disallow marking up
+   * ratings collected on a third-party platform as if they were first-party,
+   * and self-serving aggregateRating is the one schema abuse that draws manual
+   * actions. The ratings are shown visually instead, where they still do their
+   * job.
+   *
+   * `value`/`count` are NULL until someone has read the real figure off the
+   * platform. A review count is a factual claim about other people's opinions;
+   * inventing a plausible-looking one is the single most damaging thing that
+   * could be put on this page, so the UI renders an unnumbered link instead and
+   * the number simply appears when it is known.
+   *
+   * TODO — Rajesh to supply the live Google rating and review count.
+   */
 
   reviews: [
     {

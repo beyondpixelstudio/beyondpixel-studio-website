@@ -1,23 +1,18 @@
 /**
- * Work page — the live half.
+ * Work page — the live half. One job.
  *
- * Two jobs, and they are not the same job:
+ * The playlist grids already have videos in them, baked into the HTML at build
+ * time. This replaces them only when the proxy answers with something
+ * different, so a visitor sees content immediately and a video uploaded an hour
+ * ago still appears without waiting for a rebuild. If the proxy is down or
+ * unconfigured, nothing happens and nobody can tell.
  *
- *   YOUTUBE is a TOP-UP. The grids already have videos in them, baked into the
- *   HTML at build time. This replaces them only when the proxy answers with
- *   something different, so a visitor sees content immediately and a video
- *   uploaded an hour ago still appears without waiting for a rebuild. If the
- *   proxy is down, nothing happens and nobody can tell.
+ * The Instagram half of this file is gone with the section it fed. It fetched
+ * reels live because their playable URLs are signed and expire, so they could
+ * never be baked — none of which mattered once the section itself was cut.
  *
- *   INSTAGRAM is an UPGRADE, not the only source. The page ships four real
- *   reels as poster cards that link out. This replaces them with live <video>
- *   elements that play in place — which is the part that genuinely cannot be
- *   baked, because `media_url` is a signed CDN link that expires long before
- *   anyone loads a page built with it in. If this fails, the posters stay.
- *
- * Both are deferred to idle. Neither is allowed to compete with LCP, and
- * neither is worth a single frame of jank on a page whose first screen is
- * already complete without them.
+ * Deferred to idle: this is not allowed to compete with LCP, and it is not
+ * worth a frame of jank on a page whose first screen is already complete.
  */
 
 import { business } from '../data/business';
@@ -27,14 +22,6 @@ interface Video {
   title: string;
   thumb: string;
 }
-interface Reel {
-  id: string;
-  caption: string;
-  video: string;
-  poster: string;
-  permalink: string;
-}
-
 const idle = (fn: () => void) =>
   'requestIdleCallback' in window
     ? (window as any).requestIdleCallback(fn, { timeout: 3000 })
@@ -129,87 +116,12 @@ async function topUpYouTube(base: string) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Instagram                                                                   */
-/* -------------------------------------------------------------------------- */
-
-function renderReels(wrap: HTMLElement, reels: Reel[]) {
-  const frag = document.createDocumentFragment();
-
-  for (const r of reels) {
-    const fig = el('figure', 'reel');
-
-    const v = el('video');
-    v.src = r.video;
-    if (r.poster) v.poster = r.poster;
-    /* preload="none" is load-bearing. Twelve vertical videos preloading their
-       metadata is twelve extra connections to Meta's CDN before anyone has
-       asked to watch anything. Nothing is fetched until a play. */
-    v.preload = 'none';
-    v.playsInline = true;
-    v.controls = true;
-    v.loop = true;
-    v.muted = false;
-
-    /* One at a time. Twelve reels that can all play at once is twelve
-       soundtracks over each other, and on a phone it is also twelve video
-       decoders. Starting one pauses the rest. */
-    v.addEventListener('play', () => {
-      wrap.querySelectorAll('video').forEach((o) => {
-        if (o !== v) o.pause();
-      });
-    });
-
-    const cap = el('figcaption', 'reel__cap');
-    const link = el('a');
-    link.href = r.permalink;
-    link.target = '_blank';
-    link.rel = 'noopener';
-    // Untrusted, like the video titles — captions are user-authored text.
-    link.textContent = r.caption || 'View on Instagram';
-    cap.appendChild(link);
-
-    fig.append(v, cap);
-    frag.appendChild(fig);
-  }
-
-  wrap.replaceChildren(frag);
-}
-
-async function loadReels(base: string) {
-  const wrap = document.querySelector<HTMLElement>('[data-reels]');
-  if (!wrap) return;
-  const note = document.querySelector<HTMLElement>('[data-reels-note]');
-
-  try {
-    const res = await fetch(`${base}?src=instagram`);
-    const data = res.ok ? await res.json() : { error: 'http ' + res.status };
-
-    if (data.error || !Array.isArray(data.reels) || !data.reels.length) return;
-
-    if (note) note.hidden = true;
-    renderReels(wrap, data.reels);
-  } catch {
-    /* LEAVE THE SEED ALONE.
-
-       This used to call wrap.replaceChildren() and show a failure note, which
-       was right when the section rendered empty and the fetch was its only
-       source. It is now seeded server-side with real posters, so clearing on
-       failure would DELETE working content because a proxy that may not even
-       be configured yet did not answer. Failing quietly leaves the visitor with
-       four real reels instead of an apology. */
-  }
-}
-
-/* -------------------------------------------------------------------------- */
 
 const base = business.mediaScriptUrl;
 
 /* An unconfigured proxy is the normal state before Rajesh deploys the Apps
-   Script, and it must not produce console noise or a broken section. The baked
-   YouTube grids stand on their own; the reels section keeps its static note. */
+   Script, and it must not produce console noise. The baked grids stand on their
+   own — this only ever adds to them. */
 if (base) {
-  idle(() => {
-    void topUpYouTube(base);
-    void loadReels(base);
-  });
+  idle(() => void topUpYouTube(base));
 }

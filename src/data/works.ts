@@ -168,6 +168,3 @@ export const playlists: PlaylistConfig[] = [
 
 /** How many videos each playlist section shows: four across, two rows. */
 export const PER_PLAYLIST = 8;
-
-/** How many reels the Instagram section shows. */
-export const REEL_COUNT = 12;
