@@ -19,8 +19,31 @@ these values in the logs.
 | `FTP_SERVER` | hPanel → Files → FTP Accounts → **FTP hostname**. Usually `ftp.beyondpixel.studio` or an IP. |
 | `FTP_USERNAME` | The FTP account username on that same page. |
 | `FTP_PASSWORD` | The password for that FTP account. If you do not know it, change it there — do not reuse your hPanel login. |
-| `FTP_SERVER_DIR` | Where the site lives on the server, **with a trailing slash**. For a primary domain this is `/public_html/`. |
+| `FTP_SERVER_DIR` | See the warning below. **Trailing slash required.** |
 | `YOUTUBE_API_KEY` | console.cloud.google.com → APIs & Services → Credentials. See the warning below. |
+
+### `FTP_SERVER_DIR` is NOT `/public_html/` — read this
+
+`beyondpixel.studio` is an **addon** domain on the `u830593796` account. Its
+document root is:
+
+    /home/u830593796/domains/beyondpixel.studio/public_html
+
+`/public_html/` is the root of the account's PRIMARY domain, which is a
+different website. Pointing the deploy there would upload this site over the
+top of that one.
+
+Which value to use depends on the FTP account you create:
+
+| FTP account | `FTP_SERVER_DIR` |
+|---|---|
+| A **dedicated** account whose directory is set to this domain (recommended) | `/` |
+| The **main** hosting account login | `/domains/beyondpixel.studio/public_html/` |
+
+Create the dedicated one: hPanel → the website → **Files → FTP Accounts →
+Create FTP account**, and set its directory to
+`domains/beyondpixel.studio/public_html`. That account can then only ever write
+to this site, so a wrong path cannot damage another one.
 
 ### The YouTube key needs one specific setting
 
