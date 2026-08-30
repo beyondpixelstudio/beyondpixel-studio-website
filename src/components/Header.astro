@@ -65,6 +65,25 @@ import { services } from '../data/services.ts';
       </nav>
 
       <div class="hdr__act">
+        {/* THE SITE HAD NO MOBILE NAVIGATION AT ALL. `.hdr__nav` was
+            display:none until 1040px and nothing replaced it, so every visitor
+            on a phone OR a tablet could reach exactly two things from the
+            header: the logo and the quote button. Six service pages, the work,
+            the blog and the contact page were unreachable from the bar on the
+            devices most of this audience actually uses. */}
+        <button
+          type="button"
+          class="hdr__burger"
+          data-burger
+          aria-expanded="false"
+          aria-controls="hdr-mobile"
+          aria-label="Open menu"
+        >
+          <span class="hdr__burger-box" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+
         <button
           type="button"
           class="btn btn--ghost hdr__brochure-btn"
@@ -82,10 +101,87 @@ import { services } from '../data/services.ts';
         </a>
       </div>
     </div>
+
+    {/* One panel, every destination. Rendered from the same `services` array
+        the desktop menu uses, so a seventh service appears in both or neither
+        — two hand-maintained copies of a nav is how a link goes missing on
+        phones only and nobody notices for a month. */}
+    <div class="hdr__mobile glass" id="hdr-mobile" hidden>
+      <nav aria-label="Mobile">
+        <p class="hdr__mgroup">Services</p>
+        <ul class="hdr__mlist">
+          {services.map((s) => (
+            <li><a href={`/${s.slug}/`}>{s.name}</a></li>
+          ))}
+        </ul>
+
+        <p class="hdr__mgroup">Studio</p>
+        <ul class="hdr__mlist">
+          <li><a href="/work/">Work</a></li>
+          <li><a href="/#why">Why us</a></li>
+          <li><a href="/blog/">Blogs</a></li>
+          <li><a href="/contact/">Contact</a></li>
+        </ul>
+
+        <div class="hdr__mfoot">
+          <a class="btn hdr__mcall" href={business.phone.href}>Call {business.phone.display}</a>
+          <button type="button" class="btn btn--ghost hdr__mbrochure" data-open-portfolio>
+            Download brochure (PDF)
+          </button>
+        </div>
+      </nav>
+    </div>
   </div>
 </header>
 
 <script is:inline>
+  /* Mobile menu. Inline and dependency-free: this is the only way to navigate
+     below 1040px, so it must work on the first paint rather than after a module
+     graph resolves. */
+  (function () {
+    var btn = document.querySelector('[data-burger]');
+    var panel = document.getElementById('hdr-mobile');
+    if (!btn || !panel) return;
+
+    function setOpen(open) {
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      panel.hidden = !open;
+    }
+
+    btn.addEventListener('click', function () {
+      setOpen(btn.getAttribute('aria-expanded') !== 'true');
+    });
+
+    // Escape closes and returns focus to the control that opened it, so a
+    // keyboard user is not dropped at the top of the document.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        btn.focus();
+      }
+    });
+
+    // Any link inside navigates, so the panel must not still be open on the
+    // next page — and on a same-page hash there is no navigation at all, which
+    // is the case that would otherwise leave it covering the target.
+    panel.addEventListener('click', function (e) {
+      if (e.target.closest('a, button')) setOpen(false);
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!panel.hidden && !panel.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+    });
+
+    /* Crossing into desktop must not leave the panel open behind an inline nav
+       that has just reappeared — the CSS hides it, but `hidden` and
+       `aria-expanded` would still say open to assistive tech. */
+    var wide = window.matchMedia('(min-width: 1040px)');
+    (wide.addEventListener ? wide.addEventListener.bind(wide, 'change') : wide.addListener.bind(wide))(
+      function (e) { if (e.matches) setOpen(false); }
+    );
+  })();
+
   // Services disclosure. Closes on Escape, on a click outside, and on choosing
   // a link — a menu that stays open after navigation is a menu you have to
   // dismiss twice.
@@ -232,6 +328,61 @@ import { services } from '../data/services.ts';
   .hdr__tel:hover { color: var(--ember-text); }
   .hdr__cta { min-height: 38px; padding: 8px 16px; font-size: 14px; }
 
+  /* --- Burger + mobile panel -------------------------------------------- */
+  .hdr__burger {
+    display: inline-grid; place-items: center;
+    width: 40px; height: 40px;              /* clears WCAG 2.2's 24px floor with room */
+    border-radius: var(--r-sm);
+    background: transparent;
+    border: 1px solid rgb(255 255 255 / .12);
+    color: var(--text);
+    cursor: pointer;
+    order: 9;                                /* last item in the bar, always */
+  }
+  .hdr__burger:hover { border-color: rgb(255 255 255 / .28); }
+  .hdr__burger-box { display: grid; gap: 4px; width: 17px; }
+  .hdr__burger-box span {
+    height: 1.6px; border-radius: 2px; background: currentColor;
+    transition: transform var(--t-fast, .2s) var(--ease), opacity var(--t-fast, .2s) var(--ease);
+  }
+  /* Into an X, so the same control obviously closes what it opened. */
+  .hdr__burger[aria-expanded='true'] .hdr__burger-box span:nth-child(1) { transform: translateY(5.6px) rotate(45deg); }
+  .hdr__burger[aria-expanded='true'] .hdr__burger-box span:nth-child(2) { opacity: 0; }
+  .hdr__burger[aria-expanded='true'] .hdr__burger-box span:nth-child(3) { transform: translateY(-5.6px) rotate(-45deg); }
+
+  .hdr__mobile {
+    margin-top: var(--s-2);
+    padding: var(--s-4);
+    border-radius: var(--radius);
+    max-height: min(72vh, 640px);
+    overflow-y: auto;                        /* long service lists on short phones */
+    -webkit-overflow-scrolling: touch;
+  }
+  .hdr__mgroup {
+    margin: 0 0 var(--s-2);
+    font-family: var(--font-mono);
+    font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .hdr__mlist { list-style: none; margin: 0 0 var(--s-4); padding: 0; display: grid; gap: 2px; }
+  .hdr__mlist a {
+    display: block;
+    padding: 11px var(--s-3);                /* 44px tall — a thumb target, not a link */
+    border-radius: var(--r-sm);
+    color: var(--text); text-decoration: none; font-size: 15px;
+  }
+  .hdr__mlist a:hover, .hdr__mlist a:focus-visible { background: var(--overlay); color: var(--ember-text); }
+  .hdr__mfoot { display: grid; gap: var(--s-2); }
+  .hdr__mcall, .hdr__mbrochure { width: 100%; justify-content: center; min-height: 44px; }
+
+  /* The burger exists only where the inline nav does not. One threshold, and it
+     is the SAME 1040 the nav uses — split them and there is a band of widths
+     with both or neither. */
+  @media (min-width: 1040px) {
+    .hdr__burger { display: none; }
+    .hdr__mobile { display: none !important; }
+  }
+
   @media (max-width: 620px) {
     .hdr__brochure-btn { display: none; }
   }
@@ -244,16 +395,28 @@ import { services } from '../data/services.ts';
      "Request a Quote" so the accessible name never shortens with the visual. */
   @media (max-width: 430px) {
     .hdr__cta-long { display: none; }
+
+    /* The burger adds ~48px to a bar that was already tight, leaving the
+       wordmark 16px from the CTA — not an overlap, but close enough to read as
+       one. `.hdr__name` is nowrap, so flex cannot shrink it; `min-width: 0` on
+       the brand is what lets the whole group give ground instead of pushing.
+       Nothing is dropped — the mark and the name both survive to 320px. */
+    .hdr__brand { min-width: 0; }
+    .hdr__words { min-width: 0; }
+    .hdr__name { font-size: 13px; }
+    .hdr__mark { height: 24px; }
+    .hdr__act { flex-shrink: 0; gap: var(--s-2); }
   }
 
-  /* On a 375px bar the mark, the full wordmark, the tagline and the CTA do not
-     fit — at the default sizes the CTA was being pushed off the right edge
-     entirely. The tagline goes first because it is decorative and still appears
-     in the hero, the footer and the <title>; everything else is scaled down
-     rather than dropped, so the brand name survives at every width. */
+  /* THE TAGLINE IS BACK ON PHONES. It was dropped here to buy horizontal room
+     for the CTA, and that reasoning was wrong in one specific way: the tagline
+     is STACKED under the wordmark, so it costs width only if it is the wider of
+     the two lines. Shrunk and tightened it is narrower than "Beyond Pixel
+     Studio", which means it costs nothing horizontally — the space was never
+     the tagline's to give back. */
   @media (max-width: 560px) {
     .hdr__bar { padding-inline: var(--s-3); gap: var(--s-3); }
-    .hdr__tag { display: none; }
+    .hdr__tag { font-size: 8px; letter-spacing: .1em; }
     .hdr__mark { height: 26px; }
     .hdr__brand { gap: var(--s-2); }
     .hdr__name { font-size: 14px; }
