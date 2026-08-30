@@ -41,19 +41,47 @@ export interface PlaylistConfig {
 }
 
 /**
- * TODO — RAJESH: paste the playlist ids here, in the order you want the
- * sections to appear.
+ * The five playlists, in the order Rajesh gave them.
  *
- * The page is built to handle this list being empty: with no playlists it
- * renders the Instagram section and an honest note, rather than a broken
- * grid. So the site keeps building and deploying until these arrive.
+ * Every id here was checked against YouTube before being written down, and two
+ * of them are the reason that was worth doing: PLM26VPInUGKY and PLUo81h8uo2Tg
+ * are only 13 characters where the other three are 34, which looks exactly like
+ * a truncated paste. They are not — YouTube has issued short playlist ids as
+ * well as long ones, and both resolve to real public playlists. Guessing they
+ * were broken and "fixing" them would have silently dropped two sections.
+ *
+ * `title` is set on all five because YouTube's own names are internal
+ * shorthand — "Commercial", "Drone", "Live Stream - School Annual Function" —
+ * and this page is read by buyers, not by the person who filed the uploads.
+ * The override is the only difference; the videos still come from YouTube, so
+ * adding one there still adds it here.
  */
 export const playlists: PlaylistConfig[] = [
-  // {
-  //   id: 'PL................................',
-  //   title: 'Chief Minister Events',
-  //   blurb: 'Multi-camera coverage where the running order is fixed and there is no second take.',
-  // },
+  {
+    id: 'PLM26VPInUGKY',
+    title: 'Commercial Photography & Videography',
+    blurb: 'Brand and product work, shot so the footage still holds up cropped to a banner or blown up on a stall wall.',
+  },
+  {
+    id: 'PLVV9ojp8fN9sgBr_eYzVmmHXF14slDlo1',
+    title: 'Documentary',
+    blurb: 'Longer pieces carried by people talking, where the edit has to hold attention without music doing the work.',
+  },
+  {
+    id: 'PLUo81h8uo2Tg',
+    title: 'Drone & Aerial',
+    blurb: 'Aerial coverage of sites, campuses and events. Whether a location can legally be flown is settled before anything is promised.',
+  },
+  {
+    id: 'PLVV9ojp8fN9slxtrji32qug7l3E65BK3c',
+    title: 'Live Streams',
+    blurb: 'Multi-camera streams as they went out. This is the one job that cannot be done again if it goes wrong.',
+  },
+  {
+    id: 'PLVV9ojp8fN9sFzDm7qkgHkGSjQECrwGyr',
+    title: 'Annual Functions',
+    blurb: 'School and college annual days, streamed live and cut afterwards. Fixed running order, no second take.',
+  },
 ];
 
 /** How many videos each playlist section shows: four across, two rows. */
