@@ -72,7 +72,17 @@ if (testimonials.length === 0) return null;
   .tst__list {
     list-style: none; margin: 0; padding: 0;
     display: grid; gap: var(--s-3);
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    /* A MAXIMUM, not `1fr`, and that is the whole fix.
+
+       `minmax(180px, 1fr)` lets every column stretch to fill whatever width is
+       going, so on a desktop the four reels spread across the full container
+       and a 9:16 card became roughly 480px tall — three of them filled the
+       screen and the section read as a video wall rather than as testimonials.
+       Capping the track stops the stretch, and `justify-content: center` puts
+       the row back in the middle of the space it no longer fills. Still
+       auto-fit, so narrow screens drop to fewer columns exactly as before. */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 188px));
+    justify-content: center;
   }
   .tst__card {
     position: relative; display: block; width: 100%; padding: 0;
