@@ -510,3 +510,94 @@ a { color: var(--ocean-text); }
   padding-block: 5px;
   color: var(--text-muted);
 }
+
+/* --- YouTube video card ----------------------------------------------------
+   Lives here, not in a page, because it is on the Work page AND on every
+   service page that has footage. Moved BEFORE the second copy was written
+   rather than after one drifted — which is the mistake the breadcrumb made. */
+/* --- Video grid --------------------------------------------------------
+   Four across and two rows, which is what was asked for and also what the
+   16:9 thumbnail wants: at four columns a card is wide enough that the
+   thumbnail is legible and the title fits on two lines. Three columns makes
+   the rows uneven against eight items; five makes the text too small to
+   scan. */
+.vgrid {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 620px) {
+  .vgrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1040px) {
+  /* Four by default. A service page with fewer than three films sets --vcols
+     so its row fills instead of leaving gaps that read as missing content. */
+  .vgrid { grid-template-columns: repeat(var(--vcols, 4), 1fr); }
+}
+
+.vcard {
+  display: grid;
+  /* The title row takes what it needs and the thumbnails stay aligned across
+     the row regardless of how long a video's name is. */
+  grid-template-rows: auto 1fr;
+  gap: var(--s-3);
+  text-decoration: none;
+  color: inherit;
+}
+
+.vcard__shot {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-2, 10px);
+  background: var(--raised);
+  border: 1px solid rgb(255 255 255 / .06);
+}
+
+.vcard__shot img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .5s var(--ease), opacity .3s var(--ease);
+}
+
+/* A play badge, because a 16:9 still with no affordance reads as a photo and
+   nobody clicks it. */
+.vcard__play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: rgb(199 67 30 / .92);
+  box-shadow: 0 6px 24px rgb(0 0 0 / .45);
+  transition: transform .3s var(--ease), background .3s var(--ease);
+}
+.vcard__play::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0; height: 0;
+  border-left: 13px solid #fff;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  translate: 2px 0;
+}
+
+.vcard:hover .vcard__shot img { transform: scale(1.05); }
+.vcard:hover .vcard__play { background: var(--ember-hover); transform: scale(1.08); }
+.vcard:focus-visible { outline: 2px solid var(--ember-text); outline-offset: 4px; }
+
+.vcard__t {
+  font-size: .95rem;
+  line-height: 1.4;
+  color: var(--text);
+  /* Two lines, then ellipsis. YouTube titles run long and a ragged grid of
+     three- and one-line captions makes the rows look broken. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

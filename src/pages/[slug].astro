@@ -55,6 +55,33 @@ const schema = {
   },
 };
 
+/* Video schema for the films on THIS page. It overlaps the Work page's list,
+   and that is correct rather than duplication to be avoided: each page marks up
+   what it actually shows, and these are the pages targeting the service
+   keywords, so this is where a video result earns its click. Null when a
+   service has no footage — an empty ItemList is a claim that there is nothing,
+   which is different from making no claim. */
+const videoSchema = service.videos?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: `${service.name} — selected work by ${business.name}`,
+      itemListElement: service.videos.map((v, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'VideoObject',
+          name: v.title,
+          description: `${service.name} in ${business.address.locality}, produced by ${business.name}.`,
+          thumbnailUrl: `https://i.ytimg.com/vi/${v.id}/${v.thumb}.jpg`,
+          contentUrl: `https://www.youtube.com/watch?v=${v.id}`,
+          embedUrl: `https://www.youtube.com/embed/${v.id}`,
+          publisher: { '@id': `${business.url}/#organization` },
+        },
+      })),
+    }
+  : null;
+
 const breadcrumb = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -83,6 +110,14 @@ const breadcrumb = {
     slot="head"
     set:html={JSON.stringify(breadcrumb)}
   />
+  {videoSchema && (
+    <script
+      type="application/ld+json"
+      is:inline
+      slot="head"
+      set:html={JSON.stringify(videoSchema)}
+    />
+  )}
 
   {/* ------------------------------------------------------------- HEADER */}
   <section class="shead">
@@ -174,29 +209,87 @@ const breadcrumb = {
   {/* --------------------------------------------------------------- WORK */}
   <section class="section section--band">
     <div class="wrap">
-      <div class="sechead">
-        <p class="eyebrow">Selected work</p>
-        <h2>Frames reserved for this service.</h2>
-        <p>
-          Empty and labelled on purpose. Footage from real {service.name.toLowerCase()} jobs
-          drops into these slots — we would rather show you nothing than show you stock.
-        </p>
-      </div>
-      <ul class="slates stage">
-        {[1, 2, 3].map((n) => (
-          <li class="slate ar-wide tilt panel" data-reveal style={`--reveal-delay:${n * 60}ms`}>
-            <span class="tilt__sheen" aria-hidden="true"></span>
-            <div class="slate__head">
-              <span class="mono">SLATE 0{n}</span>
-              <span class="mono slate__cat">{service.portfolio.replace('-', ' / ')}</span>
-            </div>
-            <dl class="slate__meta mono">
-              <div><dt>CLIENT</dt><dd>—</dd></div>
-              <div><dt>RUNTIME</dt><dd>—:—:—:—</dd></div>
-            </dl>
-          </li>
-        ))}
-      </ul>
+      {service.videos?.length ? (
+        <>
+          <div class="sechead">
+            <p class="eyebrow">Selected work</p>
+            <h2>{service.name}, as delivered.</h2>
+            <p>
+              Full pieces on our channel, not a cut-down reel. Every one of these was
+              shot and finished by our own crew.
+            </p>
+          </div>
+
+          {/* The grid sizes itself to what exists. AI Video has one film on the
+              channel and Drone has three — dropping either into a fixed
+              three-column grid leaves gaps that read as missing content rather
+              than as a short list. */}
+          <div
+            class="vgrid"
+            style={
+              service.videos.length < 3
+                ? `--vcols: ${service.videos.length}`
+                : undefined
+            }
+          >
+            {service.videos.map((v) => (
+              <a
+                class="vcard"
+                href={`https://www.youtube.com/watch?v=${v.id}`}
+                target="_blank"
+                rel="noopener"
+              >
+                <span class="vcard__shot">
+                  <img
+                    src={`https://i.ytimg.com/vi/${v.id}/${v.thumb}.jpg`}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="480"
+                    height="270"
+                  />
+                  <span class="vcard__play" aria-hidden="true"></span>
+                </span>
+                <span class="vcard__t">{v.title}</span>
+              </a>
+            ))}
+          </div>
+
+          <p class="vmore">
+            <a href="/work/">See the full body of work →</a>
+          </p>
+        </>
+      ) : (
+        <>
+          {/* KEPT, for the one service with no footage on the channel. The
+              slates promise "we would rather show you nothing than show you
+              stock", and filling them with an unrelated job to avoid an empty
+              row would break exactly that promise. */}
+          <div class="sechead">
+            <p class="eyebrow">Selected work</p>
+            <h2>Frames reserved for this service.</h2>
+            <p>
+              Empty and labelled on purpose. Footage from real {service.name.toLowerCase()} jobs
+              drops into these slots — we would rather show you nothing than show you stock.
+            </p>
+          </div>
+          <ul class="slates stage">
+            {[1, 2, 3].map((n) => (
+              <li class="slate ar-wide tilt panel" data-reveal style={`--reveal-delay:${n * 60}ms`}>
+                <span class="tilt__sheen" aria-hidden="true"></span>
+                <div class="slate__head">
+                  <span class="mono">SLATE 0{n}</span>
+                  <span class="mono slate__cat">{service.portfolio.replace('-', ' / ')}</span>
+                </div>
+                <dl class="slate__meta mono">
+                  <div><dt>CLIENT</dt><dd>—</dd></div>
+                  <div><dt>RUNTIME</dt><dd>—:—:—:—</dd></div>
+                </dl>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   </section>
 

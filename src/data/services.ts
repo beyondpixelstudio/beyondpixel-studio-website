@@ -77,6 +77,23 @@ export interface Service {
    * would hide that.
    */
   rig?: 'gimbal' | 'broadcast' | 'aperture' | 'drone' | 'studio' | 'neural';
+
+  /**
+   * Real work for this service, on YouTube.
+   *
+   * These replace the numbered SLATE placeholders that stood on every service
+   * page. The slates were honest — "we would rather show you nothing than show
+   * you stock" — and were the right thing to ship when there was nothing to put
+   * there. There is now, so they go.
+   *
+   * A service with no matching footage KEEPS ITS SLATES. Studio Rental has none
+   * on the channel, and padding it with a school annual day to fill three boxes
+   * would break the exact promise the slates were making.
+   *
+   * `thumb` names the file that actually exists — maxresdefault only where the
+   * upload was high enough resolution, checked per video with a live request.
+   */
+  videos?: { id: string; thumb: 'maxresdefault' | 'hq720' | 'hqdefault'; title: string }[];
   /** AI video has national reach, so its slug carries no location. */
   national?: boolean;
 }
@@ -194,6 +211,14 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for corporate video production.',
     rig: 'gimbal',
     portfolio: 'corporate-institutional',
+    videos: [
+      { id: 'oaXWhSasxh4', thumb: 'maxresdefault', title: 'Audi — brand film' },
+      { id: '3GWlQ35kLVM', thumb: 'maxresdefault', title: 'Aditya Ashray — full documentary' },
+      { id: '6nQC1ylPrSw', thumb: 'maxresdefault', title: 'Jaleswar Motors — documentary' },
+      { id: '2ahe6EOvGbg', thumb: 'maxresdefault', title: 'Aryan Public School — institutional film' },
+      { id: 'xcl9sl0HL8Y', thumb: 'maxresdefault', title: 'Millennium Academy of Higher Education, Nayagarh' },
+      { id: 'NrN7hkByhuk', thumb: 'maxresdefault', title: 'KC Public School' },
+    ],
   },
   {
     slug: 'live-event-streaming-bhubaneswar',
@@ -245,6 +270,14 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for event coverage and live streaming.',
     rig: 'broadcast',
     portfolio: 'government-events',
+    videos: [
+      { id: 'OmUSt1bdov4', thumb: 'maxresdefault', title: 'KIMS Laboratory Professional Week, Bhubaneswar' },
+      { id: '1AsAeci0j1E', thumb: 'maxresdefault', title: 'Sankalp — Sagar Business Ventures Limited' },
+      { id: '0HpTkjnyi04', thumb: 'maxresdefault', title: 'Veerodaya 2026 — Sri Sri University' },
+      { id: 'IcTkxE3KcC0', thumb: 'maxresdefault', title: 'Aryan Public School — 27th Annual Day, Aska' },
+      { id: 'Cr5NCGhq1OQ', thumb: 'maxresdefault', title: 'Silver Jubilee 2025 — SSVM Sridham' },
+      { id: '2Zkj_Xjr9H8', thumb: 'maxresdefault', title: 'Euphoria 2026 — Radiance Group of Institutes' },
+    ],
   },
   {
     slug: 'commercial-photography-videography-bhubaneswar',
@@ -296,6 +329,14 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for commercial photography and videography.',
     rig: 'aperture',
     portfolio: 'corporate-institutional',
+    videos: [
+      { id: 'ePu-PXoIg5U', thumb: 'maxresdefault', title: 'Heartspace Property, Bhubaneswar' },
+      { id: 'XIHhydeuwng', thumb: 'hqdefault', title: 'PBI Interiors' },
+      { id: 'bcN3yVXVx0s', thumb: 'hqdefault', title: 'SPI Interiors' },
+      { id: 'TS_IALlaLFw', thumb: 'maxresdefault', title: 'Commercial property shoot' },
+      { id: 'Epkvgzk_aN4', thumb: 'maxresdefault', title: 'Heartspace Property' },
+      { id: 'NIw72-G_CT0', thumb: 'maxresdefault', title: 'SSI — product shoot' },
+    ],
   },
   {
     slug: 'drone-aerial-videography-bhubaneswar',
@@ -356,6 +397,11 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for drone and aerial videography.',
     rig: 'drone',
     portfolio: 'corporate-institutional',
+    videos: [
+      { id: 'ZCV0WhJPVKg', thumb: 'maxresdefault', title: 'Drone portfolio' },
+      { id: '3SKW4GwPV20', thumb: 'maxresdefault', title: 'Live streaming from height — drone rental' },
+      { id: 'gOj4y_jh1UE', thumb: 'maxresdefault', title: 'MSME Bhubaneswar — drone shoot' },
+    ],
   },
   {
     slug: 'studio-rental-bhubaneswar',
@@ -468,6 +514,9 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for AI video production.',
     rig: 'neural',
     portfolio: 'corporate-institutional',
+    videos: [
+      { id: 'o8wH0lEVCcM', thumb: 'maxresdefault', title: 'Empty room to luxury interior, generated' },
+    ],
     national: true,
   },
 ];
