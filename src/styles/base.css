@@ -445,19 +445,68 @@ a { color: var(--ocean-text); }
 }
 
 /* --- Breadcrumb ------------------------------------------------------------
-   Global because it is now on four pages and was, until this was written,
-   copied verbatim into two of them and about to be copied into a third. A rule
-   duplicated per page drifts silently: one copy gets a fix and the others do
-   not, and nobody notices because each page looks right on its own.
+   Global because it is on five pages. It was copied per-page before, and the
+   blog had drifted into a SECOND implementation — different class, different
+   markup, no list, 12px against 13px — which is precisely what per-page copies
+   do when nobody is comparing them side by side.
 
-   The padding is not decoration. WCAG 2.2 sets a 24px minimum target size, and
-   a breadcrumb is navigation — a list of discrete controls — so the "inline in
-   a sentence" exception that covers links in prose does not apply here. */
+   Set in the mono face rather than the body sans. This is metadata about where
+   you are, not prose, and the site already speaks that register in mono
+   everywhere else it says something about itself. At body-sans 13px it read as
+   an unstyled fragment left at the top of the page.
+
+   THE TWO HALVES ARE NOT THE SAME COLOUR, deliberately. Links sit at --text-dim
+   and recede; the current page sits at --text-muted and comes forward. Rendered
+   in one colour — which is how this started — "Home / Work" reads as two links,
+   one of which mysteriously does nothing.
+
+   The padding is not decoration: WCAG 2.2 sets a 24px minimum target, and a
+   breadcrumb is navigation — a row of discrete controls — so the "inline in a
+   sentence" exception that covers links in prose does not apply. 11.5px mono at
+   1.2 is ~14px, so 5px top and bottom clears it with a pixel to spare. */
 .crumb ol {
-  list-style: none; margin: 0 0 var(--s-4); padding: 0;
-  display: flex; flex-wrap: wrap; gap: var(--s-2);
-  font-size: 13px; color: var(--text-muted);
+  list-style: none;
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .04em;
 }
-.crumb li + li::before { content: '/'; margin-right: var(--s-2); color: var(--text-dim); }
-.crumb a { display: inline-block; padding-block: 4px; color: var(--text-muted); text-decoration: none; }
+
+.crumb li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+/* Dimmer than either label it sits between, so the eye reads the words and
+   steps over the punctuation instead of bouncing off it. */
+.crumb li + li::before {
+  content: '/';
+  color: var(--text-dim);
+  opacity: .55;
+}
+
+.crumb a {
+  display: inline-block;
+  padding-block: 5px;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color var(--t-fast, .2s) var(--ease);
+}
 .crumb a:hover { color: var(--ember-text); }
+.crumb a:focus-visible {
+  outline: 2px solid var(--ember-text);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Where you are. Never a link, so it must not look like one. */
+.crumb [aria-current='page'] {
+  padding-block: 5px;
+  color: var(--text-muted);
+}

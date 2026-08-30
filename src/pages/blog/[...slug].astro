@@ -39,7 +39,11 @@ const breadcrumb = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: business.url },
-    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${business.url}/blog/` },
+    /* "Blogs", not "Blog" — it must match the visible crumb and the nav label
+       verbatim. Google drops a breadcrumb rich result when the marked-up trail
+       and the on-page one disagree, and a singular/plural slip is exactly the
+       kind that survives review because it reads correctly in both places. */
+    { '@type': 'ListItem', position: 2, name: 'Blogs', item: `${business.url}/blog/` },
     { '@type': 'ListItem', position: 3, name: post.data.title, item: canonical },
   ],
 };
@@ -57,8 +61,18 @@ const related = (await getCollection('blog'))
   <article class="post">
     <header class="section post__head">
       <div class="wrap post__wrap">
-        <nav class="crumbs mono" aria-label="Breadcrumb">
-          <a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/blog/">Blogs</a>
+        {/* An <ol>, like the other four. A breadcrumb is an ordered list of
+            ancestors; as loose anchors and a slash it is a row of links that
+            happens to have punctuation in it, and assistive tech is told
+            nothing about the hierarchy. The trail also ends on the post
+            itself now — it stopped at "Blogs" before, so the one page you
+            were actually on was the one it did not name. */}
+        <nav class="crumb" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog/">Blogs</a></li>
+            <li aria-current="page">{post.data.title}</li>
+          </ol>
         </nav>
         <p class="eyebrow">{post.data.kicker}</p>
         <h1>{post.data.title}</h1>
@@ -136,9 +150,6 @@ const related = (await getCollection('blog'))
   .post__wrap { max-width: 760px; }
 
   .post__head { padding-block: clamp(56px, 7vw, 96px) var(--s-4); }
-  .crumbs { font-size: 12px; margin-bottom: var(--s-4); color: var(--text-dim); }
-  .crumbs a { color: var(--text-muted); text-decoration: none; }
-  .crumbs a:hover { color: var(--ember-text); }
   .post__standfirst { margin-top: var(--s-3); }
   .post__date { margin-top: var(--s-3); font-size: 12px; color: var(--text-dim); display: flex; gap: 8px; }
 

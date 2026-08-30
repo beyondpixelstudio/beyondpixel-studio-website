@@ -78,12 +78,26 @@ const sections = baked.map(({ cfg, data }) => {
 
 const configured = playlists.length > 0;
 
+/* Every other page with a visible breadcrumb emits one of these; this page was
+   the only one that did not, which is the sort of gap that survives forever
+   because nothing on screen looks wrong. */
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: business.url },
+    { '@type': 'ListItem', position: 2, name: 'Work', item: `${business.url}/work/` },
+  ],
+};
+
 const title = 'Our Work | Video Production Portfolio | Beyond Pixel Studio';
 const description =
   'Films, event coverage and live streams shot by Beyond Pixel Studio in Bhubaneswar. Watch the work by category, plus our latest reels.';
 ---
 
 <Base title={title} description={description}>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumb)} />
+
   {/* ------------------------------------------------------------- HEADER */}
   <section class="shead">
     <span class="flare" aria-hidden="true"></span>
