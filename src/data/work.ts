@@ -284,14 +284,32 @@ export const work: Project[] = [
     client: 'Businesses, developers and organisations',
     category: 'drone-services',
     service: 'Drone & aerial videography',
-    /* The only card that was still borrowing its category tile. The source is
-       a stitched 360 panorama from the brochure — a real BPS flight, but the
-       horizon bows, the edges smear and the drone's own body sits in the
-       bottom-left corner. Cropped to the clean centre rather than replaced:
-       every other card in this grid is work we actually did, and a stock
-       aerial here would be the one frame on the page that is somebody else's. */
+    /* THE ONE LICENSED PHOTOGRAPH ON THIS PAGE, AND IT IS FLAGGED HERE SO
+       NOBODY LATER MISTAKES IT FOR OUR OWN FOOTAGE.
+
+       Source: unsplash.com/photos/p_5BnqHfz3Y — Unsplash License, which permits
+       commercial use and requires no attribution. Downloaded and self-hosted
+       rather than hotlinked, so the page owns its own assets.
+
+       I argued against this and Rajesh decided otherwise, which is his call to
+       make. Two things reduce what it costs. It is a picture of AN AIRCRAFT IN
+       FLIGHT, not an aerial view — so it illustrates the service rather than
+       posing as a frame we shot from the air, which is the version that would
+       actually have been a false claim. And this card is the only one in the
+       grid whose `client` names a market rather than a customer, so it already
+       reads as a service card among project cards.
+
+       What it replaces is in git history: a real BPS aerial of a construction
+       site, cropped from a stitched 360 panorama in the brochure. That frame is
+       authentic but 1100px and bowed. A native frame off Rajesh's own drone
+       beats both and should replace this the day one exists.
+
+       The previous entry's own comment described that crop. It is gone because
+       it now describes a file that is no longer here — a comment that outlives
+       the thing it explains is worse than none. */
     image: '/work/drone-aerial-services.webp',
-    alt: 'Aerial view over an active construction site, a tower crane standing above the part-built frame',
+    alt:
+      'A quadcopter hovering at dusk, navigation lights lit, above a city skyline silhouetted against an orange sky',
     blurb:
       'Aerial photography, public festivals, project monitoring, land survey and mapping, 360 virtual tours and real estate.',
   },
