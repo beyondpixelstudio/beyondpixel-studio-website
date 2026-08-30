@@ -284,8 +284,14 @@ export const work: Project[] = [
     client: 'Businesses, developers and organisations',
     category: 'drone-services',
     service: 'Drone & aerial videography',
-    image: '/categories/drone-services.webp',
-    alt: 'Aerial view of a large construction site with a tower crane',
+    /* The only card that was still borrowing its category tile. The source is
+       a stitched 360 panorama from the brochure — a real BPS flight, but the
+       horizon bows, the edges smear and the drone's own body sits in the
+       bottom-left corner. Cropped to the clean centre rather than replaced:
+       every other card in this grid is work we actually did, and a stock
+       aerial here would be the one frame on the page that is somebody else's. */
+    image: '/work/drone-aerial-services.webp',
+    alt: 'Aerial view over an active construction site, a tower crane standing above the part-built frame',
     blurb:
       'Aerial photography, public festivals, project monitoring, land survey and mapping, 360 virtual tours and real estate.',
   },
