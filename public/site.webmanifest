@@ -1,0 +1,14 @@
+{
+  "name": "Beyond Pixel Studio",
+  "short_name": "Beyond Pixel",
+  "description": "Corporate video production, live event streaming, drone and commercial photography in Bhubaneswar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05040B",
+  "theme_color": "#05040B",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

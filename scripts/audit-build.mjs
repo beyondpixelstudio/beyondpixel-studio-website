@@ -122,7 +122,13 @@ for (const page of pages) {
     if (/^(https?:|mailto:|tel:|#|data:)/.test(href)) continue;
     const clean = href.split('#')[0].split('?')[0];
     if (!clean.startsWith('/')) continue;
-    if (/\.[a-z0-9]{2,5}$/i.test(clean)) {
+    /* {2,12}, not {2,5}. The cap was five characters, so `.webmanifest` (11)
+       was not recognised as a file extension and the link was checked as a
+       PAGE — the audit went looking for site.webmanifest/index.html and
+       reported a dead link for a file that was sitting in dist/ the whole time.
+       A heuristic that decides "is this a file?" by extension length has to be
+       generous; the failure mode is a false alarm on every long extension. */
+    if (/\.[a-z0-9]{2,12}$/i.test(clean)) {
       if (!existsSync(join(DIST, clean))) note(page, `dead asset link ${href}`);
     } else {
       const target = join(DIST, clean, 'index.html');

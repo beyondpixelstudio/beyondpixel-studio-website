@@ -149,12 +149,28 @@ const schema = {
     <meta property="og:image:alt" content={`${business.name} — video production in ${business.address.locality}`} />
     <meta name="twitter:image" content={new URL('/og-cover.jpg', Astro.site).href} />
 
-    {/* There were no icons at all, so every browser was requesting /favicon.ico
-       and getting the 404 page. The SVG is for modern browsers, the 128 PNG is
-       the fallback, and apple-touch-icon is what iOS uses when someone adds the
-       site to a home screen — a business people find on a phone. */}
-    <link rel="icon" href="/logo-mark-128.png" sizes="any" />
-    <link rel="apple-touch-icon" href="/logo-mark-512.png" />
+    {/* THE MARK IS 16:9 AND EVERY ICON SLOT IS SQUARE.
+
+       These first pointed at logo-mark-128.png, which is 128x72 — a wide image
+       handed to a browser to squash into a square box, so the lotus rendered
+       visibly stretched. The fix is not a CSS one: the files themselves are now
+       square, generated with the mark scaled to FIT and padded rather than
+       stretched to fill.
+
+       favicon.ico is a real ICO container, not a PNG with the extension
+       changed. Clients that ignore these tags request /favicon.ico blindly, and
+       without it they were being served the 404 page — a full HTML document in
+       answer to an image request. */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    {/* iOS composites this over an opaque ground and applies its own rounded
+        mask, which is why that file alone carries the site's background and a
+        wider margin — transparency would turn black and the outer petals would
+        be shaved off by the corner radius. */}
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <meta name="geo.region" content="IN-OR" />
     <meta name="geo.placename" content={business.address.locality} />
