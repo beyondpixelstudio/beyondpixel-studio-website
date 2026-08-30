@@ -444,3 +444,20 @@ a { color: var(--ocean-text); }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
+/* --- Breadcrumb ------------------------------------------------------------
+   Global because it is now on four pages and was, until this was written,
+   copied verbatim into two of them and about to be copied into a third. A rule
+   duplicated per page drifts silently: one copy gets a fix and the others do
+   not, and nobody notices because each page looks right on its own.
+
+   The padding is not decoration. WCAG 2.2 sets a 24px minimum target size, and
+   a breadcrumb is navigation — a list of discrete controls — so the "inline in
+   a sentence" exception that covers links in prose does not apply here. */
+.crumb ol {
+  list-style: none; margin: 0 0 var(--s-4); padding: 0;
+  display: flex; flex-wrap: wrap; gap: var(--s-2);
+  font-size: 13px; color: var(--text-muted);
+}
+.crumb li + li::before { content: '/'; margin-right: var(--s-2); color: var(--text-dim); }
+.crumb a { display: inline-block; padding-block: 4px; color: var(--text-muted); text-decoration: none; }
+.crumb a:hover { color: var(--ember-text); }

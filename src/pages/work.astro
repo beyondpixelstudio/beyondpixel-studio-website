@@ -1,0 +1,325 @@
+---
+/**
+ * /work/ — the portfolio page.
+ *
+ * One section per YouTube playlist, four across and two rows deep, plus a wall
+ * of the latest Instagram reels.
+ *
+ * -------------------------------------------------------------------------
+ * TWO SOURCES, TWO COMPLETELY DIFFERENT MECHANISMS, AND THE REASON MATTERS
+ *
+ * YouTube is baked here at build time AND topped up in the browser. Baking
+ * means the video titles are real text in the HTML: the page paints instantly,
+ * works with JavaScript off, and Google can index what the studio has actually
+ * shot. The top-up means a video uploaded this morning appears today rather
+ * than at the next deploy. Neither half alone is good enough — baking alone is
+ * stale, fetching alone is invisible to search.
+ *
+ * Instagram cannot be baked at all. `media_url` on a reel is a signed CDN link
+ * that expires, so a URL written into HTML at build time is dead before anyone
+ * loads the page. That section is fetched live, every time, and it is the one
+ * part of this page that genuinely cannot work without JavaScript. It says so
+ * itself rather than rendering an empty grid.
+ *
+ * -------------------------------------------------------------------------
+ * THIS PAGE MUST BUILD WITH NOTHING CONFIGURED
+ *
+ * No API key, no playlists listed, no proxy deployed: it still builds and
+ * still deploys. `npm run verify` runs on a laptop with no secrets. What is
+ * missing is stated on the page instead of crashing the build — a portfolio
+ * page that blocks a deploy because someone else's API is down is worse than
+ * one that is briefly thin.
+ */
+import Base from '../layouts/Base.astro';
+import { business } from '../data/business.ts';
+import { playlists, PER_PLAYLIST, REEL_COUNT } from '../data/works.ts';
+import { fetchPlaylist } from '../lib/youtube.ts';
+
+/* Build-time bake. Runs in Node during `astro build`; never in a browser.
+   fetchPlaylist swallows every failure and returns null, so a missing key or a
+   YouTube outage costs the page its baked content and nothing else. */
+const baked = await Promise.all(
+  playlists.map(async (p) => ({
+    cfg: p,
+    data: await fetchPlaylist(p.id, PER_PLAYLIST),
+  }))
+);
+
+/** Sections are rendered even when the bake returned nothing — the client
+    top-up fills them, and the heading is ours either way. */
+const sections = baked.map(({ cfg, data }) => ({
+  id: cfg.id,
+  title: cfg.title ?? data?.title ?? 'Selected work',
+  blurb: cfg.blurb ?? '',
+  videos: data?.videos ?? [],
+  total: data?.total ?? 0,
+}));
+
+const configured = playlists.length > 0;
+
+const title = 'Our Work | Video Production Portfolio | Beyond Pixel Studio';
+const description =
+  'Films, event coverage and live streams shot by Beyond Pixel Studio in Bhubaneswar. Watch the work by category, plus our latest reels.';
+---
+
+<Base title={title} description={description}>
+  {/* ------------------------------------------------------------- HEADER */}
+  <section class="shead">
+    <span class="flare" aria-hidden="true"></span>
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">Work</li>
+        </ol>
+      </nav>
+
+      <span class="badge shead__badge">Bhubaneswar, Odisha</span>
+      <h1>The work, not the showreel</h1>
+      <p class="lead shead__lead">
+        Full pieces as they were delivered, sorted by the kind of job. A showreel is
+        every good second of a decade cut together; this is what a finished film
+        actually looks like when you sit through it.
+      </p>
+
+      <div class="shead__cta">
+        <a class="btn" href={business.social.youtube} target="_blank" rel="noopener">
+          Our YouTube channel
+        </a>
+        <a class="btn btn--ghost" href="/contact/">Request a quote</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  {/* ---------------------------------------------------------- PLAYLISTS */}
+  {sections.map((s, i) => (
+    <section class:list={['section', i % 2 === 1 && 'section--band']}>
+      <div class="wrap">
+        <div class="sechead">
+          <p class="eyebrow">Playlist</p>
+          <h2>{s.title}</h2>
+          {s.blurb && <p>{s.blurb}</p>}
+        </div>
+
+        {/* `data-playlist` is the hook the live top-up replaces the contents
+            of. The grid is populated server-side; the script only intervenes
+            when YouTube reports something different. */}
+        <div class="vgrid" data-playlist={s.id} data-max={PER_PLAYLIST}>
+          {s.videos.map((v) => (
+            <a
+              class="vcard"
+              href={`https://www.youtube.com/watch?v=${v.id}`}
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="vcard__shot">
+                <img src={v.thumb} alt="" loading="lazy" decoding="async" width="480" height="270" />
+                <span class="vcard__play" aria-hidden="true"></span>
+              </span>
+              <span class="vcard__t">{v.title}</span>
+            </a>
+          ))}
+        </div>
+
+        <p class="vmore">
+          <a href={`https://www.youtube.com/playlist?list=${s.id}`} target="_blank" rel="noopener">
+            {s.total > PER_PLAYLIST ? (
+              <>See all <span data-count={s.id}>{s.total}</span> on YouTube</>
+            ) : (
+              <>Open this playlist on YouTube</>
+            )}
+          </a>
+        </p>
+      </div>
+    </section>
+  ))}
+
+  {!configured && (
+    <section class="section">
+      <div class="wrap">
+        <div class="sechead">
+          <p class="eyebrow">Selected work</p>
+          <h2>Playlists are being added.</h2>
+          <p>
+            The full body of work is on our YouTube channel in the meantime.
+            <a href={business.social.youtube} target="_blank" rel="noopener"> Watch it there</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ------------------------------------------------------------- REELS */}
+  <section class:list={['section', sections.length % 2 === 0 && 'section--band']}>
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Instagram</p>
+        <h2>Latest reels</h2>
+        <p>
+          The last {REEL_COUNT} things we posted, playing here rather than sending you
+          somewhere else.
+        </p>
+      </div>
+
+      {/* Rendered entirely by works-live.ts — see the header for why this one
+          cannot be baked. The note carries the honest fallback until then. */}
+      <div class="reels" data-reels></div>
+
+      <p class="vmore" data-reels-note>
+        Reels load from Instagram.{' '}
+        <a href={business.social.instagram} target="_blank" rel="noopener"
+          >See them all on Instagram</a
+        >.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    import '../scripts/works-live.ts';
+  </script>
+</Base>
+
+<style>
+  .shead {
+    position: relative; z-index: 2;
+    padding-block: clamp(40px, 6vw, 76px) clamp(32px, 5vw, 60px);
+  }
+  .shead__badge { margin-bottom: var(--s-4); }
+  .shead h1 { max-width: 18ch; }
+  .shead__lead { margin-top: var(--s-4); max-width: 60ch; }
+  .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
+
+  /* --- Video grid --------------------------------------------------------
+     Four across and two rows, which is what was asked for and also what the
+     16:9 thumbnail wants: at four columns a card is wide enough that the
+     thumbnail is legible and the title fits on two lines. Three columns makes
+     the rows uneven against eight items; five makes the text too small to
+     scan. */
+  .vgrid {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 620px) {
+    .vgrid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1040px) {
+    .vgrid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .vcard {
+    display: grid;
+    /* The title row takes what it needs and the thumbnails stay aligned across
+       the row regardless of how long a video's name is. */
+    grid-template-rows: auto 1fr;
+    gap: var(--s-3);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .vcard__shot {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--r-2, 10px);
+    background: var(--raised);
+    border: 1px solid rgb(255 255 255 / .06);
+  }
+
+  .vcard__shot img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .5s var(--ease), opacity .3s var(--ease);
+  }
+
+  /* A play badge, because a 16:9 still with no affordance reads as a photo and
+     nobody clicks it. */
+  .vcard__play {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: rgb(199 67 30 / .92);
+    box-shadow: 0 6px 24px rgb(0 0 0 / .45);
+    transition: transform .3s var(--ease), background .3s var(--ease);
+  }
+  .vcard__play::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 0; height: 0;
+    border-left: 13px solid #fff;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    translate: 2px 0;
+  }
+
+  .vcard:hover .vcard__shot img { transform: scale(1.05); }
+  .vcard:hover .vcard__play { background: var(--ember-hover); transform: scale(1.08); }
+  .vcard:focus-visible { outline: 2px solid var(--ember-text); outline-offset: 4px; }
+
+  .vcard__t {
+    font-size: .95rem;
+    line-height: 1.4;
+    color: var(--text);
+    /* Two lines, then ellipsis. YouTube titles run long and a ragged grid of
+       three- and one-line captions makes the rows look broken. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .vmore { margin-top: var(--s-5); }
+  .vmore a { color: var(--ember-text); }
+
+  /* --- Reels -------------------------------------------------------------
+     9:16, because that is what a reel is. The earlier attempt to show these
+     through Instagram's own embed put a vertical video inside a landscape box
+     and padded the rest white; owning the element is what fixes that, and it
+     is the whole reason this section talks to the API instead. */
+  .reels {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 720px) {
+    .reels { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1040px) {
+    .reels { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .reels :global(.reel) { margin: 0; }
+
+  .reels :global(.reel video) {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    display: block;
+    border-radius: var(--r-2, 10px);
+    background: var(--raised);
+    border: 1px solid rgb(255 255 255 / .06);
+    object-fit: cover;
+  }
+
+  .reels :global(.reel__cap) {
+    margin-top: var(--s-3);
+    font-size: .85rem;
+    line-height: 1.4;
+  }
+  .reels :global(.reel__cap a) {
+    color: var(--text-muted);
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .reels :global(.reel__cap a:hover) { color: var(--ember-text); }
+</style>

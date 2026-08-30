@@ -116,6 +116,25 @@ export const business = {
   telegramBot: '@beyondpixelstudio_bot',
 
   /**
+   * MEDIA PROXY — a SEPARATE Apps Script deployment from googleScriptUrl above.
+   *
+   * Serves the Work page its YouTube playlists and Instagram reels, holding the
+   * YouTube key and the Instagram token on Google's side so neither ships to a
+   * browser. Source: scripts/google-apps-script-media.js.
+   *
+   * Deliberately not the same project as the leads script. Lead capture is the
+   * only thing here that loses money when it breaks; a media proxy talks to two
+   * third-party APIs that rate-limit, expire tokens and change shape. Sharing a
+   * deployment would mean one bad media fix could take the enquiry form down.
+   *
+   * EMPTY IS A VALID STATE. Until the script is deployed this stays '' and the
+   * page still works: the YouTube grids are baked into the HTML at build time
+   * and stand on their own. Only the reels section needs this, and it says so
+   * plainly when it is missing.
+   */
+  mediaScriptUrl: '',
+
+  /**
    * REVIEW SOURCES.
    *
    * Displayed on the site, but deliberately NOT emitted as schema.org

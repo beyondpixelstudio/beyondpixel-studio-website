@@ -289,17 +289,6 @@ const breadcrumb = {
   .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
 
   /* --- Breadcrumb --------------------------------------------------------- */
-  .crumb ol {
-    list-style: none; margin: 0 0 var(--s-4); padding: 0;
-    display: flex; flex-wrap: wrap; gap: var(--s-2);
-    font-size: 13px; color: var(--text-muted);
-  }
-  .crumb li + li::before { content: '/'; margin-right: var(--s-2); color: var(--text-dim); }
-  /* Padded to clear WCAG 2.2's 24px target floor. A breadcrumb is navigation —
-     a list of discrete controls — not prose, so the "inline in a sentence"
-     exception does not cover it. */
-  .crumb a { display: inline-block; padding-block: 4px; color: var(--text-muted); text-decoration: none; }
-  .crumb a:hover { color: var(--ember-text); }
 
   /* --- Feature-card stack ------------------------------------------------- */
   .fstack { display: grid; gap: var(--s-4); }
