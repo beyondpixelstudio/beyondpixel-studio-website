@@ -34,6 +34,7 @@ import Base from '../layouts/Base.astro';
 import { business } from '../data/business.ts';
 import { playlists, PER_PLAYLIST, REEL_COUNT } from '../data/works.ts';
 import { fetchPlaylist } from '../lib/youtube.ts';
+import AskTwo from '../components/AskTwo.astro';
 
 /* Build-time bake. Runs in Node during `astro build`; never in a browser.
    fetchPlaylist swallows every failure and returns null, so a missing key or a
@@ -175,6 +176,8 @@ const description =
       </p>
     </div>
   </section>
+
+  <AskTwo band />
 
   <script>
     import '../scripts/works-live.ts';

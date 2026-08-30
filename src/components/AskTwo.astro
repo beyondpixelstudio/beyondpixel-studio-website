@@ -1,0 +1,111 @@
+---
+/**
+ * The two asks: leave a Google review, follow on Instagram.
+ *
+ * TWO CARDS RATHER THAN ONE ROW OF BUTTONS, because they are aimed at two
+ * different people who happen to be on the same page. A review can only come
+ * from someone we have already worked for; a follow is for someone deciding
+ * whether to. Put them in one undifferentiated row and each visitor reads a
+ * request that is half addressed to somebody else, and does neither.
+ *
+ * -------------------------------------------------------------------------
+ * NO REVIEW GATING. THIS IS NOT A STYLE CHOICE.
+ *
+ * The copy asks everyone the same thing. It does not say "if you were happy",
+ * it does not ask how it went first, and it does not route anyone anywhere
+ * based on the answer. Google's review policies prohibit soliciting reviews
+ * selectively from customers you expect to be positive — "review gating" — and
+ * the penalty lands on the Business Profile, which is the asset this section
+ * exists to build. A phrase as ordinary as "if you loved working with us"
+ * is the violation.
+ *
+ * The review link is also NOT the share link used elsewhere on the site. That
+ * one opens the listing, where someone still has to find the review box among
+ * the photos and directions; most people asked for a favour do not go looking.
+ * See business.googleReviewUrl.
+ */
+import { business } from '../data/business.ts';
+
+interface Props {
+  /** `band` gives the section its own alternating background. */
+  band?: boolean;
+}
+const { band = false } = Astro.props;
+
+/* Falls back to the read link until Rajesh supplies the write link, so the
+   section is useful the day it ships rather than waiting on a dependency. */
+const googleRead = business.reviews.find((r) => r.source === 'Google')?.url ?? null;
+const reviewHref = business.googleReviewUrl || googleRead;
+const isDirect = Boolean(business.googleReviewUrl);
+---
+
+{reviewHref && (
+  <section class:list={['section', band && 'section--band']}>
+    <div class="wrap">
+      <div class="ask">
+        <article class="panel panel--lit ask__card" data-reveal style="--accent: rgb(199 67 30 / .22);">
+          <span class="badge">Worked with us</span>
+          <h2 class="ask__h">Tell people what it was like.</h2>
+          <p class="ask__p">
+            A review on Google is the most useful thing a past client can give us, and it
+            takes about a minute. Say what the job was and how it went — that is far more
+            use to the next person reading it than a score on its own.
+          </p>
+          <a class="btn" href={reviewHref} target="_blank" rel="noopener">
+            {isDirect ? 'Write a Google review' : 'Review us on Google'}
+          </a>
+        </article>
+
+        <article class="panel panel--lit ask__card" data-reveal style="--accent: rgb(155 47 192 / .22);">
+          <span class="badge">Not yet</span>
+          <h2 class="ask__h">See the work as it happens.</h2>
+          <p class="ask__p">
+            Shoots, edits and finished pieces go up on Instagram first — usually well
+            before they reach this site. It is the quickest way to judge whether we are
+            right for what you are planning.
+          </p>
+          <a class="btn btn--ghost" href={business.social.instagram} target="_blank" rel="noopener">
+            Follow @beyondpixel.studio
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .ask {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: 1fr;
+  }
+  /* Side by side only where both cards can hold a readable measure. Stacked
+     below that — two narrow columns of body copy is worse than one. */
+  @media (min-width: 860px) {
+    .ask { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .ask__card {
+    padding: clamp(22px, 3vw, 34px);
+    display: grid;
+    /* The button is pushed to the bottom of both cards regardless of how long
+       the paragraph runs, so the two calls to action line up across the row
+       instead of stepping. */
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--s-3);
+    align-content: start;
+  }
+
+  /* These are h2s for the document outline, not display headings — the section
+     has no heading of its own, so they carry the structure. Sized down from the
+     page's h2 so they read as card titles. */
+  .ask__h {
+    font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .ask__p { margin: 0; color: var(--text-muted); }
+
+  .ask__card .btn { justify-self: start; margin-top: var(--s-2); }
+</style>

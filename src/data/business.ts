@@ -152,6 +152,28 @@ export const business = {
    *
    * TODO — Rajesh to supply the live Google rating and review count.
    */
+  /**
+   * The WRITE-a-review link, which is not the same thing as the read link in
+   * `reviews` below and cannot be derived from it.
+   *
+   * Google's own share links point at the listing, where a visitor still has to
+   * find "Write a review" among the photos, hours and directions. Most people
+   * asked for a favour do not go looking, so the ask has to land on the review
+   * box itself. Only two URLs do that:
+   *
+   *   https://g.page/r/CODE/review                         — from the Business
+   *     Profile dashboard: "Ask for reviews" / "Get more reviews"
+   *   https://search.google.com/local/writereview?placeid=PLACE_ID
+   *
+   * Rajesh has to fetch this: it comes from the Google Business Profile he owns
+   * and there is no way to look it up from outside.
+   *
+   * EMPTY IS A VALID STATE. The CTA falls back to the read link rather than
+   * disappearing, so the section is useful the day it ships and better the day
+   * this is filled in.
+   */
+  googleReviewUrl: '',
+
   reviews: [
     {
       source: 'JustDial',
