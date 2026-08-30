@@ -94,6 +94,23 @@ export interface Service {
    * upload was high enough resolution, checked per video with a live request.
    */
   videos?: { id: string; thumb: 'maxresdefault' | 'hq720' | 'hqdefault'; title: string }[];
+
+  /**
+   * Photographs, for a service with real work but nothing on the channel.
+   *
+   * Studio Rental is the only one. It is the room itself that is being let, and
+   * the thing that happens in it most is podcast recording — so what a renter
+   * actually wants to see is the room rigged, which is a photograph, not a
+   * film.
+   *
+   * `alt` is copied from work.ts, where each was written against the picture
+   * after looking at it. `caption` describes THE PHOTOGRAPH and never asserts
+   * where it was taken: two of these are clearly the Patia room, and the third
+   * is a set whose location nobody has confirmed to me. "Two guests on the
+   * podcast set" is true of the image either way; "in our studio" would be a
+   * guess printed under a picture on the page selling that studio.
+   */
+  images?: { src: string; alt: string; caption: string }[];
   /** AI video has national reach, so its slug carries no location. */
   national?: boolean;
 }
@@ -463,6 +480,23 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like to check studio rental availability and rates.',
     rig: 'studio',
     portfolio: 'corporate-institutional',
+    images: [
+      {
+        src: '/work/in-studio-podcast.webp',
+        alt: 'The studio rigged for a podcast — presenter at the desk behind a vision switcher, key light and camera in the foreground, branded backdrop behind',
+        caption: 'The room in Patia, rigged for a podcast',
+      },
+      {
+        src: '/work/reliance-foundation-podcast.webp',
+        alt: 'The podcast set lit and rigged before the guests arrive — armchairs, boom microphones and planting against a glazed wall',
+        caption: 'Lit and rigged before anyone arrives',
+      },
+      {
+        src: '/work/ollywood-podcast.webp',
+        alt: 'Two guests mid-conversation on the podcast set, seated either side of a low glass table',
+        caption: 'Two-guest interview, on set',
+      },
+    ],
   },
   {
     slug: 'ai-video-production',

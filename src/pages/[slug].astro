@@ -259,9 +259,34 @@ const breadcrumb = {
             <a href="/work/">See the full body of work →</a>
           </p>
         </>
+      ) : service.images?.length ? (
+        <>
+          {/* PHOTOGRAPHS, not slates, for the service that has real work but
+              nothing on the channel. What a renter wants to see is the room
+              rigged — which is a still, not a film. */}
+          <div class="sechead">
+            <p class="eyebrow">Selected work</p>
+            <h2>The room, working.</h2>
+            <p>
+              Podcasts are what this space is booked for most. These are frames from
+              real recordings, not a set dressed for a brochure.
+            </p>
+          </div>
+
+          <ul class="pgrid">
+            {service.images.map((im, n) => (
+              <li class="pcard" data-reveal style={`--reveal-delay:${n * 60}ms`}>
+                <span class="pcard__shot">
+                  <img src={im.src} alt={im.alt} loading="lazy" decoding="async" width="1600" height="900" />
+                </span>
+                <span class="pcard__cap">{im.caption}</span>
+              </li>
+            ))}
+          </ul>
+        </>
       ) : (
         <>
-          {/* KEPT, for the one service with no footage on the channel. The
+          {/* KEPT, for a service with neither footage nor photographs. The
               slates promise "we would rather show you nothing than show you
               stock", and filling them with an unrelated job to avoid an empty
               row would break exactly that promise. */}
@@ -380,6 +405,35 @@ const breadcrumb = {
   }
   .shead__lead { margin-top: var(--s-4); }
   .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
+
+  /* --- Photo grid ---------------------------------------------------------
+     Three across, matching the three slates it replaces. Uses the same 16:9
+     frame and hover as the video cards but is NOT a `.vcard`: these are not
+     links, and borrowing a class whose whole behaviour is "this opens
+     something" would promise a click that does nothing. */
+  .pgrid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-4); }
+  @media (min-width: 640px) { .pgrid { grid-template-columns: repeat(3, 1fr); } }
+
+  .pcard { display: grid; gap: var(--s-3); }
+  .pcard__shot {
+    display: block; aspect-ratio: 16 / 9; overflow: clip;
+    border-radius: var(--r-2, 10px);
+    background: var(--raised);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / .07), 0 14px 34px -20px rgb(0 0 0 / .9);
+  }
+  .pcard__shot img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform .6s var(--ease);
+  }
+  .pcard:hover .pcard__shot img { transform: scale(1.04); }
+  .pcard__cap {
+    font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .02em;
+    color: var(--text-muted); line-height: 1.4;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pcard:hover .pcard__shot img { transform: none; }
+  }
 
   /* --- Feature-card stack ------------------------------------------------- */
   .fstack { display: grid; gap: var(--s-4); }
