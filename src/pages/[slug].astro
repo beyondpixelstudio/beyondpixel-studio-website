@@ -15,6 +15,7 @@
 import Base from '../layouts/Base.astro';
 import Check from '../components/Check.astro';
 import Faq from '../components/Faq.astro';
+import ServiceRig from '../components/ServiceRig.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
 
@@ -86,32 +87,35 @@ const breadcrumb = {
   {/* ------------------------------------------------------------- HEADER */}
   <section class="shead">
     <span class="flare" aria-hidden="true"></span>
-    <div class="wrap">
-      <nav class="crumb" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="/">Home</a></li>
-          <li aria-current="page">{service.name}</li>
-        </ol>
-      </nav>
+    {service.rig && <ServiceRig rig={service.rig} />}
+    <div class="wrap" data-rig-anchor>
+      <div class="shead__copy">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li aria-current="page">{service.name}</li>
+          </ol>
+        </nav>
 
-      <span class="badge shead__badge">{service.national ? 'Nationwide' : 'Bhubaneswar, Odisha'}</span>
-      <h1>{service.h1}</h1>
-      <p class="lead shead__lead">{service.intro}</p>
+        <span class="badge shead__badge">{service.national ? 'Nationwide' : 'Bhubaneswar, Odisha'}</span>
+        <h1>{service.h1}</h1>
+        <p class="lead shead__lead">{service.intro}</p>
 
-      <div class="shead__cta">
-        <a class="btn" href={wa(service.whatsapp)}>Enquire on WhatsApp</a>
-        <button
-          type="button"
-          class="btn btn--ghost"
-          data-open-portfolio
-          data-portfolio-purpose={service.name}
-        >
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
-          </svg>
-          <span>Download Portfolio (PDF)</span>
-        </button>
-        <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
+        <div class="shead__cta">
+          <a class="btn" href={wa(service.whatsapp)}>Enquire on WhatsApp</a>
+          <button
+            type="button"
+            class="btn btn--ghost"
+            data-open-portfolio
+            data-portfolio-purpose={service.name}
+          >
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
+            </svg>
+            <span>Download Portfolio (PDF)</span>
+          </button>
+          <a class="btn btn--ghost" href={business.phone.href}>{business.phone.display}</a>
+        </div>
       </div>
     </div>
   </section>
@@ -256,6 +260,31 @@ const breadcrumb = {
   }
   .shead__badge { margin-bottom: var(--s-4); }
   .shead h1 { max-width: 20ch; }
+
+  /* The copy has to sit ABOVE the canvas, which is `inset: 0` on the section.
+     Without a stacking context of its own the rig paints over the headline. */
+  .shead__copy { position: relative; z-index: 2; }
+
+  /* The two-column hero, and it is keyed off `.is-live` rather than a media
+     query on purpose.
+
+     `.is-live` only appears once ServiceRig's gates have all passed — width,
+     reduced-motion, WebGL, memory. So the column narrows exactly when there is
+     something in the right half to narrow FOR, and never on a machine that
+     fell back to the static treatment. The 1100px threshold therefore lives in
+     one file (the component's WIDE) instead of two that can drift apart.
+
+     The media query below is still needed: `.is-live` says the rig is running,
+     not that the viewport is currently wide enough — resizing a live canvas
+     down must put the copy back to full width. */
+  @media (min-width: 1100px) {
+    .shead:has(.rig__gl.is-live) .shead__copy { max-width: 57%; }
+    /* Give the rig room to be seen at full height. Without this the hero is
+       sized entirely by the copy and the object gets cropped top and bottom on
+       the shorter service pages. */
+    .shead:has(.rig__gl.is-live) { min-height: 33rem; display: flex; align-items: center; }
+    .shead:has(.rig__gl.is-live) > .wrap { width: 100%; }
+  }
   .shead__lead { margin-top: var(--s-4); }
   .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
 

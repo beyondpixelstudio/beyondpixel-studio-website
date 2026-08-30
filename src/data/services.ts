@@ -67,6 +67,16 @@ export interface Service {
   /** Prefilled WhatsApp enquiry — this market enquires with a message, not a form. */
   whatsapp: string;
   portfolio: 'corporate-institutional' | 'government-events';
+  /**
+   * The 3D object in the hero, built by ServiceRig.astro. Optional: a service
+   * without one gets the flat hero it has always had, which is why these can
+   * be added one at a time rather than all six at once.
+   *
+   * The value names the OBJECT, not the service — the same rig could serve two
+   * services if their kit is genuinely the same, and naming it 'corporate'
+   * would hide that.
+   */
+  rig?: 'gimbal';
   /** AI video has national reach, so its slug carries no location. */
   national?: boolean;
 }
@@ -182,6 +192,7 @@ export const services: Service[] = [
       },
     ],
     whatsapp: 'Hello, I would like a quote for corporate video production.',
+    rig: 'gimbal',
     portfolio: 'corporate-institutional',
   },
   {
