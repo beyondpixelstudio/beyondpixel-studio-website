@@ -90,6 +90,11 @@ const { rig } = Astro.props;
      so a page downloads exactly one of these modules. */
   const BUILDERS: Record<string, () => Promise<{ default: RigBuilder }>> = {
     gimbal: () => import('../scripts/rigs/gimbal'),
+    broadcast: () => import('../scripts/rigs/broadcast'),
+    aperture: () => import('../scripts/rigs/aperture'),
+    drone: () => import('../scripts/rigs/drone'),
+    studio: () => import('../scripts/rigs/studio'),
+    neural: () => import('../scripts/rigs/neural'),
   };
 
   /* -- Gates ------------------------------------------------------------- */

@@ -76,7 +76,7 @@ export interface Service {
    * services if their kit is genuinely the same, and naming it 'corporate'
    * would hide that.
    */
-  rig?: 'gimbal';
+  rig?: 'gimbal' | 'broadcast' | 'aperture' | 'drone' | 'studio' | 'neural';
   /** AI video has national reach, so its slug carries no location. */
   national?: boolean;
 }
@@ -243,6 +243,7 @@ export const services: Service[] = [
       },
     ],
     whatsapp: 'Hello, I would like a quote for event coverage and live streaming.',
+    rig: 'broadcast',
     portfolio: 'government-events',
   },
   {
@@ -293,6 +294,7 @@ export const services: Service[] = [
       },
     ],
     whatsapp: 'Hello, I would like a quote for commercial photography and videography.',
+    rig: 'aperture',
     portfolio: 'corporate-institutional',
   },
   {
@@ -352,6 +354,7 @@ export const services: Service[] = [
       },
     ],
     whatsapp: 'Hello, I would like a quote for drone and aerial videography.',
+    rig: 'drone',
     portfolio: 'corporate-institutional',
   },
   {
@@ -412,6 +415,7 @@ export const services: Service[] = [
       },
     ],
     whatsapp: 'Hello, I would like to check studio rental availability and rates.',
+    rig: 'studio',
     portfolio: 'corporate-institutional',
   },
   {
@@ -462,6 +466,7 @@ export const services: Service[] = [
       },
     ],
     whatsapp: 'Hello, I would like a quote for AI video production.',
+    rig: 'neural',
     portfolio: 'corporate-institutional',
     national: true,
   },
