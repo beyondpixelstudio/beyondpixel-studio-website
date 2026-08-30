@@ -34,6 +34,7 @@ import Base from '../layouts/Base.astro';
 import { business } from '../data/business.ts';
 import { playlists, PER_PLAYLIST, REEL_COUNT } from '../data/works.ts';
 import { fetchPlaylist } from '../lib/youtube.ts';
+import { testimonials } from '../data/testimonials.ts';
 import AskTwo from '../components/AskTwo.astro';
 
 /* Build-time bake. Runs in Node during `astro build`; never in a browser.
@@ -183,12 +184,40 @@ const description =
         </p>
       </div>
 
-      {/* Rendered entirely by works-live.ts — see the header for why this one
-          cannot be baked. The note carries the honest fallback until then. */}
-      <div class="reels" data-reels></div>
+      {/* SEEDED WITH WHAT WE ALREADY HOLD, replaced live when the proxy answers.
+
+          There is no keyless path to Instagram — that was tested, not assumed.
+          The profile page and the individual reel pages both return the same
+          620KB JavaScript shell with no media and no og:image; oEmbed answers
+          without a token but hands back an empty skeleton with no thumbnail.
+          YouTube ships its playlist contents in the HTML and Instagram does
+          not, so the trick that filled the grids above cannot work here.
+
+          What we do have is four reels whose posters were downloaded to
+          public/testimonials/ long ago. They render as poster cards linking
+          out, exactly as they do on the homepage — four is not twelve, but it
+          is four more than an empty grid, and every one is real. */}
+      <div class="reels" data-reels>
+        {testimonials.map((t) => (
+          <figure class="reel reel--seed">
+            <a
+              href={`https://www.instagram.com/reel/${t.code}/`}
+              target="_blank"
+              rel="noopener"
+              aria-label={`Watch on Instagram: ${t.name}, ${t.role}`}
+            >
+              <img src={t.poster} alt={t.alt} width="760" height="1352" loading="lazy" decoding="async" />
+              <span class="reel__play" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+              </span>
+            </a>
+            <figcaption class="reel__cap">{t.name} — {t.role}</figcaption>
+          </figure>
+        ))}
+      </div>
 
       <p class="vmore" data-reels-note>
-        Reels load from Instagram.{' '}
+        More on Instagram.{' '}
         <a href={business.social.instagram} target="_blank" rel="noopener"
           >See them all on Instagram</a
         >.
@@ -328,6 +357,34 @@ const description =
     background: var(--raised);
     border: 1px solid rgb(255 255 255 / .06);
     object-fit: cover;
+  }
+
+  /* Seeded cards are posters with a link, not <video> — Instagram's playable
+     URLs are signed and expire, so they cannot exist in built HTML. The live
+     path swaps these for real <video> elements. */
+  .reels :global(.reel--seed a) {
+    position: relative; display: block; overflow: clip;
+    border-radius: var(--r-2, 10px);
+    border: 1px solid rgb(255 255 255 / .06);
+  }
+  .reels :global(.reel--seed img) {
+    width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block;
+    transition: transform .5s var(--ease);
+  }
+  .reels :global(.reel--seed a:hover img) { transform: scale(1.04); }
+  .reels :global(.reel__play) {
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: grid; place-items: center; color: #fff;
+    background: rgb(255 255 255 / .14);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / .4), 0 8px 24px -8px rgb(0 0 0 / .8);
+    transition: background var(--t-slow) var(--ease), transform var(--t-slow) var(--ease);
+  }
+  .reels :global(.reel--seed a:hover .reel__play) {
+    background: color-mix(in srgb, var(--ember) 86%, transparent);
+    transform: translate(-50%, -50%) scale(1.08);
   }
 
   .reels :global(.reel__cap) {

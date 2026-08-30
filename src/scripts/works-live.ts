@@ -9,11 +9,11 @@
  *   uploaded an hour ago still appears without waiting for a rebuild. If the
  *   proxy is down, nothing happens and nobody can tell.
  *
- *   INSTAGRAM is the ONLY source. Reels cannot be baked: `media_url` is a
- *   signed CDN link that expires, so a URL written into the HTML at build time
- *   is dead long before anyone loads the page. That section is empty until
- *   this runs, which is why it renders its own skeleton and its own failure
- *   message rather than assuming success.
+ *   INSTAGRAM is an UPGRADE, not the only source. The page ships four real
+ *   reels as poster cards that link out. This replaces them with live <video>
+ *   elements that play in place — which is the part that genuinely cannot be
+ *   baked, because `media_url` is a signed CDN link that expires long before
+ *   anyone loads a page built with it in. If this fails, the posters stay.
  *
  * Both are deferred to idle. Neither is allowed to compete with LCP, and
  * neither is worth a single frame of jank on a page whose first screen is
@@ -184,26 +184,19 @@ async function loadReels(base: string) {
     const res = await fetch(`${base}?src=instagram`);
     const data = res.ok ? await res.json() : { error: 'http ' + res.status };
 
-    if (data.error || !Array.isArray(data.reels) || !data.reels.length) {
-      /* Say something true rather than leaving twelve grey rectangles. This
-         section has no baked fallback, so a failure here IS the whole section
-         — pretending otherwise just looks broken. */
-      wrap.replaceChildren();
-      if (note) {
-        note.hidden = false;
-        note.textContent = 'Reels are not loading right now. They are all on our Instagram.';
-      }
-      return;
-    }
+    if (data.error || !Array.isArray(data.reels) || !data.reels.length) return;
 
     if (note) note.hidden = true;
     renderReels(wrap, data.reels);
   } catch {
-    wrap.replaceChildren();
-    if (note) {
-      note.hidden = false;
-      note.textContent = 'Reels are not loading right now. They are all on our Instagram.';
-    }
+    /* LEAVE THE SEED ALONE.
+
+       This used to call wrap.replaceChildren() and show a failure note, which
+       was right when the section rendered empty and the fetch was its only
+       source. It is now seeded server-side with real posters, so clearing on
+       failure would DELETE working content because a proxy that may not even
+       be configured yet did not answer. Failing quietly leaves the visitor with
+       four real reels instead of an apology. */
   }
 }
 
