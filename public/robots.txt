@@ -1,0 +1,16 @@
+# Beyond Pixel Studio — https://beyondpixel.studio
+#
+# Everything is public and everything should be crawled. The only rule that
+# matters here is the sitemap line: without it a crawler has to discover pages
+# by following links, and a new page is found whenever it is found. With it,
+# every URL is declared on the first visit.
+
+User-agent: *
+Allow: /
+
+# The generated brochure. Not blocked — a 26-page PDF naming real clients and
+# real jobs is a genuine document, and PDFs rank. It is linked from every
+# service page anyway, so blocking it here would only hide it from search
+# while leaving it fully public.
+
+Sitemap: https://beyondpixel.studio/sitemap-index.xml

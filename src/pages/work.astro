@@ -91,6 +91,46 @@ const breadcrumb = {
   ],
 };
 
+/* VIDEO SCHEMA — the largest untapped thing on this site.
+ *
+ * Google runs a video vertical and surfaces VideoObject results with a
+ * thumbnail beside them, both in the main results and in the Videos tab. This
+ * page lists 35 real productions and was describing none of them as video, so
+ * a video production company was invisible in the one result type built for
+ * video.
+ *
+ * ItemList of VideoObject rather than 35 loose blocks: the page IS a list, and
+ * marking it up as one tells Google these are a collection with an order
+ * instead of 35 unrelated items that happen to share a URL.
+ *
+ * EVERY FIELD IS SOMETHING WE ACTUALLY HOLD. `name` is YouTube's own title,
+ * `thumbnailUrl` is the file we already verified returns 200, `contentUrl` is
+ * the watch page. There is no `uploadDate` and no `duration` because the
+ * keyless path does not carry them, and a guessed date on a schema block is a
+ * fabricated fact with a machine reading it. Both are optional; a wrong one is
+ * worse than a missing one.
+ */
+const videoSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Beyond Pixel Studio — selected video production work',
+  itemListElement: sections.flatMap((sec, si) =>
+    sec.videos.map((v, vi) => ({
+      '@type': 'ListItem',
+      position: si * PER_PLAYLIST + vi + 1,
+      item: {
+        '@type': 'VideoObject',
+        name: v.title,
+        description: `${sec.title} — produced by ${business.name}, Bhubaneswar.`,
+        thumbnailUrl: v.thumb,
+        contentUrl: `https://www.youtube.com/watch?v=${v.id}`,
+        embedUrl: `https://www.youtube.com/embed/${v.id}`,
+        publisher: { '@id': `${business.url}/#organization` },
+      },
+    }))
+  ),
+};
+
 const title = 'Our Work | Video Production Portfolio | Beyond Pixel Studio';
 const description =
   'Films, event coverage and live streams shot by Beyond Pixel Studio in Bhubaneswar. Watch the work by category, plus our latest reels.';
@@ -98,6 +138,7 @@ const description =
 
 <Base title={title} description={description}>
   <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumb)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(videoSchema)} />
 
   {/* ------------------------------------------------------------- HEADER */}
   <section class="shead">

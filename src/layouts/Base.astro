@@ -17,8 +17,17 @@ interface Props {
   description: string;
   /** Homepage only — the reveal does not run on internal navigation. */
   reveal?: boolean;
+  /**
+   * Overrides the robots directive. A PROP rather than a slot, because a slot
+   * appends: the 404 passed "noindex, follow" through one and the page shipped
+   * with both that and the default "index, follow" in its head. Google resolves
+   * a conflict like that by taking the most restrictive value, so it happened
+   * to behave — but two directives contradicting each other is a page telling
+   * a crawler two things and hoping it picks the right one.
+   */
+  robots?: string;
 }
-const { title, description, reveal = false } = Astro.props;
+const { title, description, reveal = false, robots = 'index, follow' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
 /**
@@ -52,7 +61,62 @@ const schema = {
     ...business.areaServed.map((c) => ({ '@type': 'City', name: c })),
     { '@type': 'State', name: business.areaServedBroad },
   ],
+
+  /* `image` and `logo` are what Google pulls for the visual beside a local
+     result. Without them the entry is text only, which loses against
+     competitors who supplied one. Absolute URLs — a crawler resolving a
+     relative path resolves it against its own host. */
+  image: `${business.url}/og-cover.jpg`,
+  logo: `${business.url}/logo-mark-512.png`,
+
+  /* What this business is about, as entities rather than adjectives. This is
+     the field that connects "Beyond Pixel Studio" to the concept "video
+     production" for a search engine that has never seen the site before. Every
+     one is a service actually offered — the list is derived from the six
+     service pages, not padded with terms worth ranking for. */
+  knowsAbout: [
+    'Corporate video production',
+    'Live event streaming',
+    'Drone and aerial videography',
+    'Commercial photography',
+    'Podcast production',
+    'Multi-camera event coverage',
+    'Video studio rental',
+  ],
+
+  /* The map link resolves the listing to the Business Profile Google already
+     holds, which is how the site and the profile are read as one entity rather
+     than two businesses with the same name. */
+  hasMap: business.social.googleBusiness,
+
   sameAs,
+
+  /* CONDITIONAL, AND THAT IS THE POINT. Each of these is a factual claim about
+     a real place, so an unanswered one is omitted rather than guessed —
+     inventing coordinates puts a pin on the wrong building and inventing hours
+     sends someone to a locked door. Spreading an empty object adds no key, so
+     the schema stays valid either way and quietly gains the field the day
+     business.ts is filled in. */
+  ...(business.geo.lat && business.geo.lng
+    ? {
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: business.geo.lat,
+          longitude: business.geo.lng,
+        },
+      }
+    : {}),
+  ...(business.openingHours.length
+    ? {
+        openingHoursSpecification: business.openingHours.map((h) => ({
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: h.days,
+          opens: h.opens,
+          closes: h.closes,
+        })),
+      }
+    : {}),
+  ...(business.priceRange ? { priceRange: business.priceRange } : {}),
 };
 ---
 
@@ -64,7 +128,7 @@ const schema = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={business.name} />
@@ -73,6 +137,24 @@ const schema = {
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="en_IN" />
     <meta name="twitter:card" content="summary_large_image" />
+
+    {/* THE CARD WAS PROMISED AND NEVER SHIPPED. `summary_large_image` tells
+       every platform to expect a picture; with no og:image behind it, a share
+       of this site rendered as a bare grey box with a headline on it. Absolute
+       URLs, because crawlers fetch these out of page context and a relative
+       path resolves against their own host, not ours. */}
+    <meta property="og:image" content={new URL('/og-cover.jpg', Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${business.name} — video production in ${business.address.locality}`} />
+    <meta name="twitter:image" content={new URL('/og-cover.jpg', Astro.site).href} />
+
+    {/* There were no icons at all, so every browser was requesting /favicon.ico
+       and getting the 404 page. The SVG is for modern browsers, the 128 PNG is
+       the fallback, and apple-touch-icon is what iOS uses when someone adds the
+       site to a home screen — a business people find on a phone. */}
+    <link rel="icon" href="/logo-mark-128.png" sizes="any" />
+    <link rel="apple-touch-icon" href="/logo-mark-512.png" />
 
     <meta name="geo.region" content="IN-OR" />
     <meta name="geo.placename" content={business.address.locality} />

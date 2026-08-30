@@ -241,6 +241,48 @@ let scanned = 0;
   }
 })(DIST);
 
+
+/* -- SEO essentials -------------------------------------------------------
+   Everything here was MISSING when the site was audited, and none of it was
+   caught by anything: no build error, no broken page, no failing check. A
+   missing og:image renders a blank share card; a missing robots.txt costs the
+   crawler the sitemap; a missing 404 hands a visitor Hostinger's default error
+   page. All three fail silently and forever, which is exactly the class of
+   defect a build audit exists to catch. */
+
+const rootFile = (name) => existsSync(join(DIST, name));
+
+if (!rootFile('robots.txt')) note('dist/', 'robots.txt is missing — the sitemap is undeclared');
+if (!rootFile('404.html')) note('dist/', '404.html is missing — the host serves its own error page');
+if (!rootFile('sitemap-index.xml')) note('dist/', 'sitemap-index.xml is missing');
+if (!rootFile('og-cover.jpg')) note('dist/', 'og-cover.jpg is missing — every share card is blank');
+
+if (rootFile('robots.txt')) {
+  const robots = readFileSync(join(DIST, 'robots.txt'), 'utf8');
+  if (!/^Sitemap:\s*https?:\/\//mi.test(robots)) {
+    note('dist/robots.txt', 'has no absolute Sitemap: line');
+  }
+}
+
+let seoPages = 0;
+for (const f of pages) {
+  const body = readFileSync(f, 'utf8');
+  const rel = f.slice(DIST.length + 1);
+  seoPages++;
+
+  /* twitter:card promises a picture. Shipping the promise without the picture
+     is worse than shipping neither, because the platform renders the empty
+     frame it was told to expect. */
+  if (/name="twitter:card"/.test(body) && !/property="og:image"/.test(body)) {
+    note(rel, 'declares twitter:card but has no og:image');
+  }
+  /* Relative og:image resolves against the CRAWLER's host, not ours. */
+  const og = body.match(/property="og:image" content="([^"]+)"/);
+  if (og && !/^https?:\/\//.test(og[1])) note(rel, `og:image is not an absolute URL (${og[1]})`);
+
+  if (!/rel="icon"/.test(body)) note(rel, 'has no favicon link');
+}
+
 /* -- Report -------------------------------------------------------------- */
 
 const line = '-'.repeat(78);
@@ -263,4 +305,6 @@ console.log(
   `  ok    ${faqQuestions} FAQ answers across ${faqPages} pages match their schema verbatim`
 );
 console.log(`  ok    no credentials in ${scanned} shipped files`);
+console.log('  ok    robots.txt, sitemap, 404 and og-cover all present');
+console.log(`  ok    absolute og:image and a favicon on all ${seoPages} pages`);
 console.log(`  ${line}\n  Clean.\n`);

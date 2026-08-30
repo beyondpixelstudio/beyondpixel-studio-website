@@ -116,6 +116,32 @@ export const business = {
   telegramBot: '@beyondpixelstudio_bot',
 
   /**
+   * LOCAL SEARCH FACTS.
+   *
+   * These are the fields Google's local results actually use and that the
+   * LocalBusiness schema was shipping without: coordinates, hours, a price
+   * band and a map link. Their absence is not a validation error — the schema
+   * passed without them — which is exactly why it went unnoticed.
+   *
+   * ALL THREE ARE BLANK, AND BLANK IS CORRECT UNTIL RAJESH FILLS THEM. Every
+   * one is a factual claim about a real place. Inventing plausible coordinates
+   * puts a pin on the wrong building; inventing hours sends someone to a locked
+   * door. The schema emits each field ONLY when it is non-empty, so an
+   * unanswered question is silence rather than a lie.
+   *
+   *   geo    — open the Business Profile pin in Google Maps, right-click it,
+   *            and the first item in the menu is "lat, lng". Paste both.
+   *   hours  — the days and times on the Business Profile, so the two agree.
+   *   price  — Google's own band notation: '$', '$$', '$$$', '$$$$'. It is a
+   *            relative bracket, not a rate, so it says nothing this site has
+   *            spent six months refusing to say about actual prices.
+   */
+  geo: { lat: '', lng: '' },
+  /** e.g. [{ days: ['Monday','Tuesday'], opens: '10:00', closes: '19:00' }] */
+  openingHours: [] as { days: string[]; opens: string; closes: string }[],
+  priceRange: '',
+
+  /**
    * MEDIA PROXY — a SEPARATE Apps Script deployment from googleScriptUrl above.
    *
    * Serves the Work page its YouTube playlists, holding the API key on Google's
