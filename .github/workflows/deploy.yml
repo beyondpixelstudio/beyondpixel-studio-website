@@ -1,0 +1,84 @@
+name: Build and deploy
+
+# WHEN THIS RUNS, and why there are three triggers rather than one.
+#
+#   push        — the obvious one. Change the site, it deploys.
+#   schedule    — the YouTube grids are baked at BUILD time, so without a
+#                 rebuild a video uploaded today would not appear until the next
+#                 code change. A daily run keeps the portfolio current on a site
+#                 nobody is pushing to. 02:30 UTC is 08:00 IST: after any
+#                 overnight upload, before anyone is looking.
+#   dispatch    — a button in the Actions tab, for when you have just uploaded
+#                 something and do not want to wait for the schedule.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+
+# One deploy at a time. Two builds finishing out of order would leave the older
+# one's files on the server; `cancel-in-progress: false` lets the earlier deploy
+# finish rather than aborting a half-written upload.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # `ci`, not `install` — it installs exactly what package-lock.json pins
+      # and fails if the lockfile and package.json disagree, so a deploy can
+      # never quietly pull a different dependency version than the one tested.
+      - name: Install
+        run: npm ci
+
+      # THIS IS THE GATE, AND IT IS THE WHOLE POINT OF AUTOMATING THIS.
+      #
+      # `npm run verify` is contrast + NAP + build + audit. If a colour pair
+      # drops below AA, a phone number appears outside business.ts, a link dies,
+      # a title runs past 60 characters, an FAQ answer stops matching its schema
+      # or a credential reaches dist/, this step fails and NOTHING is uploaded.
+      # The site on the server stays exactly as it was.
+      #
+      # A deploy pipeline that pushes whatever compiles is worse than deploying
+      # by hand, because it removes the moment where someone looks.
+      - name: Verify and build
+        env:
+          # Bakes the playlists into the HTML. Absent, the build still succeeds
+          # and the grids fall back to the hand-picked seed in works.ts — see
+          # src/lib/youtube.ts. The deploy is never blocked by YouTube.
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: npm run verify
+
+      - name: Deploy to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Trailing slashes are required by this action on both paths.
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          # Incremental by default: it keeps a manifest on the server and
+          # uploads only what changed, which on a site this size is a few files
+          # rather than a few hundred. Deliberately NOT using
+          # `dangerous-clean-slate` — that wipes the remote directory first, so
+          # a failure mid-upload leaves the live site empty.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
