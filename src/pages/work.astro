@@ -46,15 +46,34 @@ const baked = await Promise.all(
   }))
 );
 
-/** Sections are rendered even when the bake returned nothing — the client
-    top-up fills them, and the heading is ours either way. */
-const sections = baked.map(({ cfg, data }) => ({
-  id: cfg.id,
-  title: cfg.title ?? data?.title ?? 'Selected work',
-  blurb: cfg.blurb ?? '',
-  videos: data?.videos ?? [],
-  total: data?.total ?? 0,
-}));
+/* Three sources, in order of how current they are.
+
+   1. The BAKE — live from the API at build time. Always preferred.
+   2. The SEED — a hand-picked list in works.ts, used only when the bake
+      returned nothing. It is what stops a blocked API key shipping five empty
+      grids, which is exactly what it is doing today.
+   3. The TOP-UP — works-live.ts replaces either of the above in the browser
+      when the proxy answers, so a video uploaded an hour ago still appears.
+
+   The seed builds its own thumbnail URL from the video id. i.ytimg.com is
+   public and stable and needs no key — which is the only reason a keyless
+   fallback can look like the real thing rather than like a list of links. */
+const sections = baked.map(({ cfg, data }) => {
+  const seeded = (cfg.seed ?? []).map((v) => ({
+    id: v.id,
+    title: v.title,
+    thumb: `https://i.ytimg.com/vi/${v.id}/${v.thumb}.jpg`,
+    published: '',
+  }));
+  const videos = data?.videos?.length ? data.videos : seeded;
+  return {
+    id: cfg.id,
+    title: cfg.title ?? data?.title ?? 'Selected work',
+    blurb: cfg.blurb ?? '',
+    videos,
+    total: data?.total ?? cfg.seedTotal ?? videos.length,
+  };
+});
 
 const configured = playlists.length > 0;
 
