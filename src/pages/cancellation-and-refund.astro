@@ -2,18 +2,28 @@
 /**
  * Cancellation & Refund Policy.
  *
- * EVERY COMMERCIAL NUMBER ON THIS PAGE IS MARKED, NOT INVENTED.
+ * THE THRESHOLDS HERE WERE DRAFTED AT RAJESH'S DIRECTION, after he was told
+ * they were being left blank on purpose. They are protective of the studio but
+ * deliberately NOT maximally so, for two reasons that are not sentiment:
  *
- * A refund policy is the one document on this site a client could hold the
- * studio to in a dispute. Writing "50% of the booking amount is
- * non-refundable" would publish a contractual term that binds Rajesh to a
- * figure he never chose, on his own domain, where a client could reasonably
- * rely on it. So the structure, the principles and the process are written —
- * they are true of any production business and true of this one — and each
- * actual threshold is a visible `.lg__tbd` for him to fill in.
+ *   1. Indian payment gateways — Razorpay, PayU, Cashfree — review the refund
+ *      policy before activating a merchant account. A policy that returns
+ *      nothing under any circumstance is a common rejection reason. A policy
+ *      that protects the studio and is visibly reasonable passes.
  *
- * A placeholder that looks like finished copy is how a draft ships as policy,
- * which is why these are styled to be impossible to miss.
+ *   2. A term a court would not enforce protects nobody. Retaining a booking
+ *      amount because a reserved date could not be resold is defensible and
+ *      standard for event work; claiming the full fee for a job never carried
+ *      out is the kind of clause that gets struck out, taking the rest of the
+ *      argument with it.
+ *
+ * The tiers key off DAYS BEFORE THE SHOOT rather than a percentage of the
+ * total, because what the studio actually loses is a date it stopped selling —
+ * and the closer the cancellation, the less recoverable that is.
+ *
+ * The booking amount itself is deliberately NOT given a percentage here. It is
+ * whatever each quote states, so the studio keeps that lever per job instead of
+ * being held to one number published site-wide.
  */
 import Legal from '../layouts/Legal.astro';
 import { business } from '../data/business.ts';
@@ -53,12 +63,16 @@ import { business } from '../data/business.ts';
     </thead>
     <tbody>
       <tr>
-        <td>Well before the shoot date</td>
-        <td><span class="lg__tbd">studio to confirm</span></td>
+        <td><strong>30 days or more</strong> before the shoot date</td>
+        <td>Everything you have paid is refunded, apart from the booking amount, which is retained</td>
       </tr>
       <tr>
-        <td>Close to the shoot date</td>
-        <td><span class="lg__tbd">studio to confirm</span></td>
+        <td><strong>15 to 29 days</strong> before the shoot date</td>
+        <td>50% of the quoted total is retained. Anything paid above that is refunded</td>
+      </tr>
+      <tr>
+        <td><strong>Under 15 days</strong> before the shoot date</td>
+        <td>Amounts already paid are not refunded. Nothing further is charged</td>
       </tr>
       <tr>
         <td>On or after the shoot date, or once shooting has begun</td>
@@ -79,9 +93,15 @@ import { business } from '../data/business.ts';
     Where you need to move a date rather than cancel, tell us as early as you
     can and we will move the booking to a mutually available date wherever our
     calendar allows, without treating it as a cancellation. Amounts already paid
-    carry across to the new date. If no shared date can be found within
-    <span class="lg__tbd">studio to confirm</span>, the booking is treated as
-    cancelled under the terms above.
+    carry across to the new date.
+  </p>
+  <p>
+    One postponement is included. The new date must fall within
+    <strong>six months</strong> of the original, and is subject to our
+    availability — a date we are already booked on cannot be freed up. If no
+    shared date can be found in that window, or a second postponement is needed,
+    the booking is treated as cancelled under the table above, counted from the
+    <em>original</em> shoot date.
   </p>
 
   <h2>If we cancel</h2>
@@ -110,10 +130,10 @@ import { business } from '../data/business.ts';
   <h2>How refunds are paid</h2>
   <p>
     Approved refunds are paid to the account the payment came from, by the same
-    method wherever possible. We aim to process them within
-    <span class="lg__tbd">studio to confirm</span> of agreeing the amount. How
-    long it then takes to appear depends on your bank or payment provider, not
-    on us.
+    method wherever possible. We process them within
+    <strong>7 to 10 working days</strong> of agreeing the amount. How long it
+    then takes to appear depends on your bank or payment provider, not on us —
+    that is usually a further 3 to 7 working days.
   </p>
   <p>
     Bank charges or payment-gateway fees already deducted at the time of payment

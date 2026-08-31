@@ -8,10 +8,17 @@
  * hand every commercial number to the written quote, which is where they
  * already live.
  *
- * Anything the studio has not told me is marked `.lg__tbd` rather than filled
- * with a plausible figure. A payment schedule invented here would be a
- * contractual term published on the company's own site; a client could
- * reasonably rely on it, and it would be a number nobody at the studio chose.
+ * The default payment schedule was drafted at Rajesh's direction after being
+ * left blank on purpose. It is a FALLBACK, and says so: the quote governs, and
+ * this only applies where the quote is silent. That ordering matters — it lets
+ * the studio price each job however it likes without this page contradicting a
+ * signed document, while still giving a client a clear answer when no schedule
+ * was written down.
+ *
+ * 50/50 against delivery is the ordinary arrangement for production work and
+ * is defensible: half secures the date and covers pre-production, the balance
+ * falls due when the client has something in hand. Demanding the full fee up
+ * front would be better for cash flow and worse for winning the job.
  */
 import Legal from '../layouts/Legal.astro';
 import { business } from '../data/business.ts';
@@ -53,8 +60,27 @@ import { business } from '../data/business.ts';
   <h2>Payment</h2>
   <p>
     Payment terms — booking amount, stages and final settlement — are stated in
-    your quote. Where the quote is silent, the terms are:
-    <span class="lg__tbd">to be confirmed by the studio</span>.
+    your quote, and the quote governs. Where it does not say otherwise:
+  </p>
+  <ul>
+    <li>
+      <strong>50% of the quoted total</strong> is payable to confirm the
+      booking and hold the date. Work does not begin, and the date is not
+      reserved, until it is received.
+    </li>
+    <li>
+      <strong>The balance</strong> is payable on delivery of the finished
+      work, before final files are released.
+    </li>
+    <li>
+      Invoices are due within <strong>7 days</strong> of issue unless the quote
+      states otherwise.
+    </li>
+  </ul>
+  <p>
+    For multi-day, multi-city or long-running productions, we may stage payments
+    against milestones instead. Where we do, the stages are set out in the quote
+    before anything is booked.
   </p>
   <p>
     Prices are exclusive of GST unless stated otherwise. GST is charged at the
