@@ -237,7 +237,14 @@ import { services } from '../data/services.ts';
     text-decoration: none; color: var(--text);
     margin-inline-end: auto; line-height: 1.1;
   }
-  .hdr__words { display: flex; flex-direction: column; }
+  /* GAP, plus a tight line-height on each line.
+     The two were stacked with no gap at all, so the only thing separating them
+     was the leading of a 17px display face — which reads as one squashed block
+     rather than a name with a tagline under it. Setting both line-heights down
+     and adding a real 5px gap moves the space from INSIDE the glyph boxes to
+     BETWEEN them, so the pair reads as two lines without the lockup getting
+     taller and pushing the bar with it. */
+  .hdr__words { display: flex; flex-direction: column; gap: 5px; }
   /* The mark is 128x72 — a WIDE lotus, not a square icon. Exactly ONE dimension
      is set so its ratio can never be overridden by accident, and that dimension
      is HEIGHT: in a horizontal bar what reads is how tall the mark is against
@@ -254,11 +261,13 @@ import { services } from '../data/services.ts';
   .hdr__name {
     font-family: var(--font-display); font-stretch: var(--display-width);
     font-weight: 600; font-size: 17px; letter-spacing: -.01em;
+    line-height: 1;
     white-space: nowrap; /* "Beyond Pixel / Studio" over two lines is not a wordmark */
   }
   .hdr__tag {
     font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
     color: var(--text-dim); font-weight: 500;
+    line-height: 1;
   }
 
   .hdr__nav { display: none; align-items: center; gap: var(--s-4); white-space: nowrap; }
@@ -417,6 +426,7 @@ import { services } from '../data/services.ts';
   @media (max-width: 560px) {
     .hdr__bar { padding-inline: var(--s-3); gap: var(--s-3); }
     .hdr__tag { font-size: 8px; letter-spacing: .1em; }
+    .hdr__words { gap: 4px; }
     .hdr__mark { height: 26px; }
     .hdr__brand { gap: var(--s-2); }
     .hdr__name { font-size: 14px; }
