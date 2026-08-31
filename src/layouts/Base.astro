@@ -125,6 +125,30 @@ const schema = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/* Google Tag Manager. Placed as high in the head as Google asks, with the
+        single exception of charset and viewport, which have to come first: the
+        browser needs the encoding before it parses anything else, and moving
+        them below a script is a real parsing bug in exchange for nothing.
+
+        is:inline keeps Astro's bundler away from it — this is a third-party
+        snippet that must run as written, not be processed, hoisted or
+        deferred. */}
+    {business.gtmId && (
+      <script is:inline define:vars={{ gtmId: business.gtmId }}>
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || [];
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+          f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', gtmId);
+      </script>
+    )}
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -279,6 +303,24 @@ const schema = {
   </head>
 
   <body>
+    {/* Google Tag Manager, no-JS fallback. Immediately after <body> as
+        directed. Hidden from assistive technology as well as from sight — an
+        empty 0x0 tracking iframe is not content, and left unlabelled it is
+        announced as an unnamed frame. */}
+    {business.gtmId && (
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${business.gtmId}`}
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden"
+          title="Google Tag Manager"
+          aria-hidden="true"
+          tabindex="-1"
+        ></iframe>
+      </noscript>
+    )}
+
     <a class="skip" href="#main">Skip to content</a>
 
     {reveal && <slot name="reveal" />}

@@ -131,6 +131,12 @@ export const business = {
    */
   metaPixelId: '1058011239388287',
   /**
+   * Google Tag Manager container. Kept here rather than inline in the layout so
+   * the id lives with every other account identifier, and so a wrong or removed
+   * container is one edit in one file.
+   */
+  gtmId: 'GTM-5QHKZKSP',
+  /**
    * Apps Script Web App endpoint. Receives every lead, appends a row to the
    * "Beyond Pixel Studio Leads" sheet, and sends the Telegram alert server-side.
    *
