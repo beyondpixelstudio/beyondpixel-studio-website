@@ -86,7 +86,15 @@ if (testimonials.length === 0) return null;
        the section read as a video wall. Capping the track stops the stretch and
        `justify-content: center` puts the row back in the middle of the space it
        no longer fills. Still auto-fit, so narrow screens drop columns. */
-    grid-template-columns: repeat(auto-fit, minmax(140px, 188px));
+    /* PHONE IS EXPLICITLY TWO, not whatever auto-fit decides.
+
+       `auto-fit` with `minmax(140px, 188px)` was collapsing to a single 188px
+       track at 375px — arithmetically two should have fitted, but auto-fit
+       resolves against the track sizing function rather than the intent, and
+       the result was four reels stacked one above the other down a phone
+       screen. Two is a deliberate layout decision for a 9:16 card, so it is
+       written down rather than inferred. */
+    grid-template-columns: repeat(2, 1fr);
     justify-content: center;
   }
 
@@ -97,6 +105,13 @@ if (testimonials.length === 0) return null;
      printed the same name twice, a few pixels apart, in two different fonts:
      "Review- Director, APS-Aska" behind "Director / Aryan Public School".
      No amount of scrim fixes that; the text had to come off the picture. */
+  /* From 640 up, hand it back to auto-fit with a MAXIMUM track — that is what
+     stops four cards stretching to 270px wide on a desktop. Below it, the
+     explicit two-column rule wins. */
+  @media (min-width: 640px) {
+    .tst__list { grid-template-columns: repeat(auto-fit, minmax(140px, 188px)); }
+  }
+
   .tst__card {
     display: grid; grid-template-rows: auto auto; gap: var(--s-3);
     text-decoration: none; color: inherit;
