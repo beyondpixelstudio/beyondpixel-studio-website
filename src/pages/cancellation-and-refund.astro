@@ -1,0 +1,130 @@
+---
+/**
+ * Cancellation & Refund Policy.
+ *
+ * EVERY COMMERCIAL NUMBER ON THIS PAGE IS MARKED, NOT INVENTED.
+ *
+ * A refund policy is the one document on this site a client could hold the
+ * studio to in a dispute. Writing "50% of the booking amount is
+ * non-refundable" would publish a contractual term that binds Rajesh to a
+ * figure he never chose, on his own domain, where a client could reasonably
+ * rely on it. So the structure, the principles and the process are written —
+ * they are true of any production business and true of this one — and each
+ * actual threshold is a visible `.lg__tbd` for him to fill in.
+ *
+ * A placeholder that looks like finished copy is how a draft ships as policy,
+ * which is why these are styled to be impossible to miss.
+ */
+import Legal from '../layouts/Legal.astro';
+import { business } from '../data/business.ts';
+---
+
+<Legal
+  title="Cancellation & Refund Policy | Beyond Pixel Studio"
+  h1="Cancellation & Refund Policy"
+  description="How cancellations, postponements and refunds work for shoots and productions booked with Beyond Pixel Studio."
+  updated="2026-08-31"
+>
+  <p>
+    This policy covers work booked with <strong>{business.name}</strong>. The
+    exact amounts for your job are in your written quote; where the quote says
+    something different, the quote applies.
+  </p>
+
+  <h2>Why a booked date is different from a product</h2>
+  <p>
+    When you book a shoot, we reserve the date and the crew and stop offering
+    both to anyone else. A cancelled date close to the event usually cannot be
+    resold, and preparation — site survey, planning, scheduling, equipment
+    hold — has already been spent. That is what the terms below reflect.
+  </p>
+
+  <h2>Cancelling a booking</h2>
+  <p>
+    Cancellations must be sent in writing, by email to
+    <a href={`mailto:${business.email}`}>{business.email}</a> or by WhatsApp to
+    <a href={business.phone.href}>{business.phone.display}</a>. The date we
+    receive it is the date the cancellation takes effect.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>When you cancel</th><th>What is refunded</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Well before the shoot date</td>
+        <td><span class="lg__tbd">studio to confirm</span></td>
+      </tr>
+      <tr>
+        <td>Close to the shoot date</td>
+        <td><span class="lg__tbd">studio to confirm</span></td>
+      </tr>
+      <tr>
+        <td>On or after the shoot date, or once shooting has begun</td>
+        <td>No refund of amounts covering work already carried out</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Costs already committed on your behalf and not recoverable by us — travel
+    and accommodation already booked, hired equipment, third-party crew,
+    permissions and venue fees — are deducted from any refund at the amount
+    actually paid out.
+  </p>
+
+  <h2>Postponing instead of cancelling</h2>
+  <p>
+    Where you need to move a date rather than cancel, tell us as early as you
+    can and we will move the booking to a mutually available date wherever our
+    calendar allows, without treating it as a cancellation. Amounts already paid
+    carry across to the new date. If no shared date can be found within
+    <span class="lg__tbd">studio to confirm</span>, the booking is treated as
+    cancelled under the terms above.
+  </p>
+
+  <h2>If we cancel</h2>
+  <p>
+    If we cancel a confirmed booking for a reason within our control, you
+    receive a <strong>full refund of everything paid</strong>, including any
+    booking amount. Where we can, we will also help you find another studio for
+    the date.
+  </p>
+  <p>
+    Where a shoot cannot go ahead because of something outside anyone's
+    control — weather that makes the work unsafe or impossible, government
+    restriction, denial of venue access or airspace permission, civil
+    disruption — we will reschedule at no additional booking cost. Costs already
+    spent and not recoverable are not refundable in that situation, and we will
+    show you what they were.
+  </p>
+
+  <h2>Work already delivered</h2>
+  <p>
+    Fees for work already completed and delivered are not refundable. Where you
+    are unhappy with delivered work, tell us — revisions included in your quote
+    are the first route, and we would rather fix a piece than argue about it.
+  </p>
+
+  <h2>How refunds are paid</h2>
+  <p>
+    Approved refunds are paid to the account the payment came from, by the same
+    method wherever possible. We aim to process them within
+    <span class="lg__tbd">studio to confirm</span> of agreeing the amount. How
+    long it then takes to appear depends on your bank or payment provider, not
+    on us.
+  </p>
+  <p>
+    Bank charges or payment-gateway fees already deducted at the time of payment
+    are not recovered by us and cannot be refunded by us.
+  </p>
+
+  <h2>Raising something</h2>
+  <p>
+    If you think something has gone wrong, write to
+    <a href={`mailto:${business.email}`}>{business.email}</a> with the job and
+    the date. A person will read it and reply. We would always rather resolve a
+    disagreement directly than have it become a formal dispute.
+  </p>
+</Legal>

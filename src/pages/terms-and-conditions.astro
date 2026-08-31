@@ -1,0 +1,166 @@
+---
+/**
+ * Terms and Conditions.
+ *
+ * THE QUOTE GOVERNS, AND THAT IS BOTH TRUE AND DELIBERATE. This site has said
+ * from the first page that every job is quoted and itemised per project. So the
+ * terms here describe the framework — ownership, deliverables, liability — and
+ * hand every commercial number to the written quote, which is where they
+ * already live.
+ *
+ * Anything the studio has not told me is marked `.lg__tbd` rather than filled
+ * with a plausible figure. A payment schedule invented here would be a
+ * contractual term published on the company's own site; a client could
+ * reasonably rely on it, and it would be a number nobody at the studio chose.
+ */
+import Legal from '../layouts/Legal.astro';
+import { business } from '../data/business.ts';
+---
+
+<Legal
+  title="Terms and Conditions | Beyond Pixel Studio"
+  h1="Terms and Conditions"
+  description="The terms on which Beyond Pixel Studio provides video production, event coverage, photography and related services."
+  updated="2026-08-31"
+>
+  <p>
+    These terms apply to work carried out by <strong>{business.name}</strong>,
+    and to the use of this website. Where a signed quote, proposal or purchase
+    order says something different, that document wins — these terms fill the
+    gaps rather than override what was agreed for a specific job.
+  </p>
+
+  <h2>The quote is the agreement</h2>
+  <p>
+    Every job is quoted individually and itemised: crew, equipment, days and
+    deliverables appear as separate lines. That written quote — together with
+    anything agreed in writing afterwards — is what defines the scope, the
+    price, the schedule and what you receive.
+  </p>
+  <p>
+    We do not publish blanket per-video pricing, because the honest number
+    depends on things that change per job. Nothing on this website is an offer
+    or a binding price.
+  </p>
+
+  <h2>Booking a date</h2>
+  <p>
+    Event work is booked against a calendar. A date is held only once it has
+    been confirmed in writing and any booking amount stated in the quote has
+    been paid. Until then the date remains available to other clients.
+  </p>
+
+  <h2>Payment</h2>
+  <p>
+    Payment terms — booking amount, stages and final settlement — are stated in
+    your quote. Where the quote is silent, the terms are:
+    <span class="lg__tbd">to be confirmed by the studio</span>.
+  </p>
+  <p>
+    Prices are exclusive of GST unless stated otherwise. GST is charged at the
+    prevailing rate and shown separately on the invoice. Our GSTIN is
+    <span class="mono">{business.gstin}</span>.
+  </p>
+  <p>
+    Travel, accommodation and any additional crew outside the quoted scope are
+    itemised separately rather than absorbed into a day rate.
+  </p>
+
+  <h2>What you need to provide</h2>
+  <p>
+    So that we can do the job we were booked for, you agree to provide:
+  </p>
+  <ul>
+    <li>a date, a venue and a named contact who will be on site;</li>
+    <li>site access, and any permission the location itself requires;</li>
+    <li>a running order for events, and brand guidelines or logo files where the work needs them; and</li>
+    <li>reasonable working conditions, including power where the job needs it.</li>
+  </ul>
+  <p>
+    Where access or permission is not in place on the day, the job may not be
+    deliverable as quoted. Most delays we see come from access and permission,
+    not from production.
+  </p>
+
+  <h2>Ownership and licence</h2>
+  <p>
+    On full payment, you own the delivered final files and may use them across
+    your own channels, print and paid advertising.
+  </p>
+  <p>
+    Unless your quote says otherwise, we keep ownership of raw footage, project
+    files and working files. Raw footage can be handed over — ask at the quote
+    stage rather than after the shoot, because a multi-camera day is a large
+    amount of data and the handover method has to be agreed in advance.
+  </p>
+  <p>
+    We keep the right to show the finished work in our own portfolio, on this
+    site and on our social channels. If your work is confidential or under
+    embargo, tell us before the shoot and it will be excluded — write it into
+    the quote and we will not publish it.
+  </p>
+
+  <h2>Approvals and revisions</h2>
+  <p>
+    The number of revision rounds included is stated in your quote. Work beyond
+    that is quoted separately before it is started, never invoiced afterwards
+    as a surprise.
+  </p>
+
+  <h2>Things outside anyone's control</h2>
+  <p>
+    Weather, power failure, venue restrictions, network failure at the venue,
+    civil disruption, government restriction, illness and equipment loss can all
+    affect a shoot. Where something outside our reasonable control prevents or
+    interrupts a job, we will tell you as soon as we know, and will work with
+    you to reschedule. We are not liable for losses caused by such events.
+  </p>
+  <p>
+    For live streaming specifically: we test the venue's line in advance and
+    carry a mobile backup where the venue cannot guarantee bandwidth. We cannot
+    guarantee a third party's internet connection, and venue Wi-Fi is the most
+    common cause of a stream failing.
+  </p>
+
+  <h2>Drone work</h2>
+  <p>
+    Aerial work is flown in accordance with DGCA rules and the airspace
+    classification of the specific location. Where a site sits in restricted
+    airspace, or permission is refused or not granted in time, the aerial part
+    of a job may not be possible. We check the location before quoting and will
+    say plainly if it cannot be flown.
+  </p>
+
+  <h2>Limit of liability</h2>
+  <p>
+    Our total liability for any job is limited to the amount paid for that job.
+    We are not liable for indirect or consequential loss, including loss of
+    profit, business or goodwill. Nothing in these terms limits liability that
+    cannot be limited by law.
+  </p>
+
+  <h2>Cancellation</h2>
+  <p>
+    Cancellation and refunds are covered in the
+    <a href="/cancellation-and-refund/">Cancellation &amp; Refund Policy</a>.
+  </p>
+
+  <h2>This website</h2>
+  <p>
+    The text, photographs, video stills and design on this site belong to
+    {business.name} or to the clients whose work is shown, and may not be
+    reproduced without permission. Client names and logos are shown to identify
+    work we carried out for them; those marks belong to their owners.
+  </p>
+  <p>
+    We try to keep the site accurate, but it is provided as it is, without
+    warranty. Links to other sites are for convenience, and what is on them is
+    not ours.
+  </p>
+
+  <h2>Governing law</h2>
+  <p>
+    These terms are governed by the laws of India. Disputes are subject to the
+    exclusive jurisdiction of the courts at Bhubaneswar, Odisha.
+  </p>
+</Legal>

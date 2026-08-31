@@ -1,0 +1,190 @@
+---
+/**
+ * Careers.
+ *
+ * Content taken from the existing page at beyondpixel.online/bps-careers — the
+ * eight roles, the 0–5 year range, the freelance option and the three perks are
+ * all theirs, not invented. Applications go to the same Google Form.
+ *
+ * The one thing NOT carried over is "competitive salaries and comprehensive
+ * benefits". It is on the .online page and it is the kind of line every careers
+ * page carries, which is exactly why it persuades nobody — and on a site whose
+ * whole argument is that it says checkable things, an unverifiable claim about
+ * pay is the wrong sentence to import. What replaced it is the things a
+ * candidate can actually check: the work is real, the kit is the studio's own,
+ * and the credit is named.
+ *
+ * A JobPosting schema is deliberately NOT emitted. Google requires a specific
+ * job title, location and posting date per listing, and these are standing
+ * openings with none of that. Marking up a general "we hire creatives" page as
+ * eight structured job postings is how a site earns a manual action.
+ */
+import Base from '../layouts/Base.astro';
+import { business } from '../data/business.ts';
+
+const roles = [
+  { name: 'Content Creator', note: 'Reels, YouTube and documentary' },
+  { name: 'Videographer', note: 'Events, corporate and location work' },
+  { name: 'Cinematographer', note: 'Narrative and brand films' },
+  { name: 'Photographer', note: 'Events, product and commercial' },
+  { name: 'Video Editor', note: 'Long form, short form and grading' },
+  { name: 'Graphic Designer', note: 'Titles, thumbnails and campaign artwork' },
+  { name: 'Digital Marketing Associate', note: 'Campaigns, analytics and social' },
+  { name: 'WordPress Developer', note: 'Client sites and maintenance' },
+];
+
+const perks = [
+  { title: 'Flexible working hours', body: 'Shoot days are fixed by the event. The rest is arranged around the work, not around a clock.' },
+  { title: 'Remote where the work allows', body: 'Editing, design and development do not need a desk in Patia. Shoots obviously do.' },
+  { title: 'Internship certificate', body: 'For interns, a certificate on completion that names what you actually worked on.' },
+];
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: business.url },
+    { '@type': 'ListItem', position: 2, name: 'Careers', item: `${business.url}/careers/` },
+  ],
+};
+---
+
+<Base
+  title="Careers | Beyond Pixel Studio, Bhubaneswar"
+  description="Camera, edit, design and development roles at Beyond Pixel Studio in Bhubaneswar. Full-time and freelance, 0–5 years. Apply with your reel."
+>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumb)} />
+
+  <section class="shead">
+    <span class="flare" aria-hidden="true"></span>
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">Careers</li>
+        </ol>
+      </nav>
+
+      <span class="badge shead__badge">Bhubaneswar, Odisha</span>
+      <h1>Work on jobs that actually ship</h1>
+      <p class="lead shead__lead">
+        We shoot ministerial events, convocations, live streams and brand films for
+        companies and institutions across Odisha — on our own kit, with our own crew.
+        If you want your reel to fill up with real productions rather than test
+        footage, that is what this is.
+      </p>
+
+      <div class="shead__cta">
+        <a class="btn" href={business.careersFormUrl} target="_blank" rel="noopener">Apply now</a>
+        <a class="btn btn--ghost" href="/work/">See the work first</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  <section class="section section--band">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Open roles</p>
+        <h2>Eight ways in.</h2>
+        <p>
+          Full-time and freelance. Nought to five years — a strong reel counts for
+          more here than a number on a CV.
+        </p>
+      </div>
+
+      <ul class="cr__grid">
+        {roles.map((r, i) => (
+          <li class="cr__card panel" data-reveal style={`--reveal-delay:${i * 45}ms`}>
+            <span class="cr__name">{r.name}</span>
+            <span class="cr__note">{r.note}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">How it works here</p>
+        <h2>What we can actually promise.</h2>
+      </div>
+
+      <ul class="cr__perks">
+        {perks.map((p) => (
+          <li class="cr__perk panel" data-reveal>
+            <h3 class="cr__ph">{p.title}</h3>
+            <p class="cr__pb">{p.body}</p>
+          </li>
+        ))}
+      </ul>
+
+      <p class="cr__honest">
+        Pay depends on the role and on what you can already do, and it is discussed
+        openly before anyone commits — we would rather have that conversation early
+        than advertise a figure that turns out not to apply to you.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--band">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Applying</p>
+        <h2>Send the reel, not the essay.</h2>
+        <p>
+          Fill in the form with a link to your work — showreel, portfolio, Drive
+          folder, Instagram, whatever shows what you have shot, cut or designed.
+          That is the part we look at first.
+        </p>
+      </div>
+
+      <div class="cr__apply">
+        <a class="btn btn--lg" href={business.careersFormUrl} target="_blank" rel="noopener">
+          Open the application form
+        </a>
+        <p class="cr__or">
+          Or message us on WhatsApp at{' '}
+          <a href={business.phone.href}>{business.phone.display}</a> — a link to your
+          work and one line about which role is enough to start.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shead {
+    position: relative; z-index: 2;
+    padding-block: clamp(40px, 6vw, 76px) clamp(32px, 5vw, 60px);
+  }
+  .shead__badge { margin-bottom: var(--s-4); }
+  .shead h1 { max-width: 18ch; }
+  .shead__lead { margin-top: var(--s-4); max-width: 58ch; }
+  .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
+
+  .cr__grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 620px) { .cr__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .cr__grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .cr__card { display: grid; gap: 5px; padding: var(--s-3) var(--s-4); }
+  .cr__name { color: var(--text); font-weight: 600; font-size: .98rem; line-height: 1.3; }
+  .cr__note { color: var(--text-muted); font-size: .85rem; line-height: 1.45; }
+
+  .cr__perks { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 860px) { .cr__perks { grid-template-columns: repeat(3, 1fr); } }
+  .cr__perk { padding: var(--s-4); }
+  .cr__ph { font-size: 1rem; margin: 0 0 var(--s-2); color: var(--text); }
+  .cr__pb { margin: 0; color: var(--text-muted); font-size: .9rem; line-height: 1.6; }
+
+  .cr__honest {
+    margin-top: var(--s-4); max-width: 62ch;
+    color: var(--text-dim); font-size: .9rem; line-height: 1.65;
+  }
+
+  .cr__apply { display: grid; gap: var(--s-3); justify-items: start; }
+  .cr__or { margin: 0; color: var(--text-muted); font-size: .92rem; max-width: 52ch; }
+  .cr__or a { color: var(--ember-text); }
+</style>

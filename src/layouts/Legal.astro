@@ -1,0 +1,138 @@
+---
+/**
+ * Wrapper for the four policy pages.
+ *
+ * They share a shape — a title, a date, and a column of prose — so they share a
+ * layout rather than four copies of the same markup that drift the first time
+ * one of them is edited.
+ *
+ * `noindex` is NOT set on these. It is tempting, because nobody searches for
+ * them, but they exist partly to be FOUND: payment gateways, Google Business
+ * verification and prospective clients all look for them, and a policy page a
+ * crawler cannot see is a policy page that cannot be cited as evidence the
+ * business published one.
+ *
+ * The measure is capped at 68 characters. Legal text is read slowly and in
+ * full, which is the one kind of copy on this site where a long line genuinely
+ * costs comprehension rather than just looking wide.
+ */
+import Base from './Base.astro';
+import { business } from '../data/business.ts';
+
+interface Props {
+  title: string;
+  h1: string;
+  description: string;
+  /** ISO date. Shown as "Last updated" and emitted as a machine-readable date. */
+  updated: string;
+}
+const { title, h1, description, updated } = Astro.props;
+
+const shown = new Date(updated).toLocaleDateString('en-IN', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<Base title={title} description={description}>
+  <section class="shead">
+    <span class="flare" aria-hidden="true"></span>
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">{h1}</li>
+        </ol>
+      </nav>
+      <h1>{h1}</h1>
+      <p class="lg__meta mono">
+        Last updated <time datetime={updated}>{shown}</time>
+      </p>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="lg">
+        <slot />
+
+        {/* Every policy ends with the same identifying block, built from
+            business.ts. A policy that does not say who published it is not
+            much of a policy, and the GSTIN is what ties this document to a
+            registered entity rather than to a brand name. */}
+        <hr class="lg__rule" />
+        <h2>Who this policy is from</h2>
+        <p>
+          <strong>{business.name}</strong><br />
+          {business.address.display}<br />
+          GSTIN: <span class="mono">{business.gstin}</span>
+        </p>
+        <p>
+          Questions about this policy:
+          <a href={`mailto:${business.email}`}>{business.email}</a> or
+          <a href={business.phone.href}>{business.phone.display}</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shead {
+    position: relative; z-index: 2;
+    padding-block: clamp(40px, 6vw, 72px) clamp(24px, 4vw, 40px);
+  }
+  .shead h1 { max-width: 22ch; }
+  .lg__meta { margin-top: var(--s-3); font-size: 12px; color: var(--text-dim); }
+
+  /* 68ch, not the page's usual wider measure. Legal text is read slowly and in
+     full — the one place on this site where line length costs comprehension
+     rather than just looking wide. */
+  .lg { max-width: 68ch; color: var(--text-muted); }
+
+  .lg :global(h2) {
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    color: var(--text);
+    margin: var(--s-5) 0 var(--s-3);
+    line-height: 1.25;
+  }
+  .lg :global(h3) {
+    font-size: 1rem;
+    color: var(--text);
+    margin: var(--s-4) 0 var(--s-2);
+  }
+  .lg :global(p) { margin: 0 0 var(--s-3); line-height: 1.7; }
+  .lg :global(ul), .lg :global(ol) { margin: 0 0 var(--s-3); padding-left: 1.25rem; }
+  .lg :global(li) { margin-bottom: var(--s-2); line-height: 1.65; }
+  .lg :global(strong) { color: var(--text); font-weight: 600; }
+  .lg :global(a) { color: var(--ember-text); }
+  .lg :global(table) {
+    width: 100%; border-collapse: collapse; margin: 0 0 var(--s-4); font-size: .92rem;
+  }
+  .lg :global(th), .lg :global(td) {
+    text-align: left; padding: 10px 12px; vertical-align: top;
+    border-bottom: 1px solid rgb(255 255 255 / .08);
+  }
+  .lg :global(th) { color: var(--text); font-weight: 600; }
+
+  /* Marks a term the studio has to set. Visible on purpose — a placeholder
+     that looks like finished copy is how a draft ships as policy. */
+  .lg :global(.lg__tbd) {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: var(--r-sm);
+    background: rgb(199 67 30 / .16);
+    box-shadow: inset 0 0 0 1px rgb(242 112 74 / .4);
+    color: var(--ember-text);
+    font-family: var(--font-mono);
+    font-size: .82em;
+  }
+
+  .lg__rule {
+    border: 0; height: 1px; margin: var(--s-5) 0 var(--s-4);
+    background: rgb(255 255 255 / .1);
+  }
+</style>

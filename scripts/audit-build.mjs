@@ -153,8 +153,20 @@ for (const page of pages) {
   const text = strip(
     html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')
   );
-  // any run of the number's digits that is NOT formatted the canonical way
-  const loose = new RegExp(digitsOnly.replace(/(\d)/g, '$1[\\s-]?'), 'g');
+  /* Any run of the number's digits that is NOT formatted the canonical way.
+
+     Separators go BETWEEN digits, never after the last one. The original built
+     this with `.replace(/(\d)/g, '$1[\\s-]?')`, which appends the optional
+     separator to every digit including the final one — so the match greedily
+     swallowed a trailing space and came back as "91 76089 24893 ", which then
+     failed the equality test against the canonical string.
+
+     It never fired until a page put the number inline in a sentence followed
+     by more words. Everywhere else the number is immediately followed by a tag,
+     so there was no trailing space to eat. A checker whose false positives
+     depend on surrounding prose is a checker nobody will trust the third time
+     it cries wolf. */
+  const loose = new RegExp([...digitsOnly].join('[\\s-]?'), 'g');
   for (const m of text.match(loose) ?? []) {
     if (m !== PHONE_DISPLAY.replace('+91 ', '').trim() && !PHONE_DISPLAY.includes(m)) {
       note(page, `phone rendered as "${m}" — canonical is "${PHONE_DISPLAY}"`);

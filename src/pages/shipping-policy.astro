@@ -1,0 +1,102 @@
+---
+/**
+ * Shipping Policy.
+ *
+ * WHY A SERVICE STUDIO HAS ONE AT ALL. Nothing here is shipped, and a page
+ * called "Shipping Policy" on a video production site looks like a template
+ * left in by mistake. It is here because Indian payment gateways — Razorpay,
+ * PayU, Cashfree — require a reachable shipping policy before they will
+ * activate an account, and Rajesh asked for it by name.
+ *
+ * So it says the true thing rather than inventing couriers and dispatch
+ * windows: this is a service, delivery is digital, and here is exactly how and
+ * when files arrive. That satisfies the requirement honestly, and it is
+ * genuinely useful to a client who wants to know how they will receive a
+ * multi-camera day's footage.
+ */
+import Legal from '../layouts/Legal.astro';
+import { business } from '../data/business.ts';
+---
+
+<Legal
+  title="Shipping & Delivery Policy | Beyond Pixel Studio"
+  h1="Shipping & Delivery Policy"
+  description="How Beyond Pixel Studio delivers finished films, photographs and raw footage — digitally, and by physical media where a job needs it."
+  updated="2026-08-31"
+>
+  <p>
+    <strong>{business.name}</strong> provides services, not physical products.
+    There is nothing to ship in the ordinary sense: no goods are dispatched, no
+    courier is used for a normal job, and there are no shipping charges.
+  </p>
+  <p>
+    What we do deliver is files. This page explains how they reach you and when.
+  </p>
+
+  <h2>How work is delivered</h2>
+  <table>
+    <thead>
+      <tr><th>What</th><th>How it reaches you</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Finished films, edits and photographs</td>
+        <td>A download link, or a shared cloud folder, sent to the email address on your quote</td>
+      </tr>
+      <tr>
+        <td>Live streams</td>
+        <td>Streamed to your own channel during the event; a recording follows by link afterwards where the quote includes one</td>
+      </tr>
+      <tr>
+        <td>Raw footage from a multi-camera day</td>
+        <td>By transfer link, or copied to a drive — agreed at the quote stage, because the volume decides which is practical</td>
+      </tr>
+      <tr>
+        <td>Physical media, where a job needs it</td>
+        <td>Handed over in person in Bhubaneswar, or couriered at cost where agreed in writing</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>When</h2>
+  <p>
+    Delivery timelines are stated in your quote, because they depend on the job:
+    a single-camera interview and a multi-day event with several language
+    versions are not the same piece of work. Where a deadline matters, say so in
+    the first message and we will tell you plainly whether it is achievable
+    before you book.
+  </p>
+  <p>
+    Where a delivery date has been agreed and something puts it at risk, you
+    will hear it from us before the date, not after it.
+  </p>
+
+  <h2>Delivery charges</h2>
+  <p>
+    Digital delivery is included in every quote and costs nothing extra.
+  </p>
+  <p>
+    Where you ask for physical media — a hard drive, a pen drive, printed
+    photographs — the cost of the media and of any courier is itemised in the
+    quote as a separate line, or agreed in writing before it is sent. We do not
+    add delivery charges that were not quoted.
+  </p>
+
+  <h2>If something does not arrive</h2>
+  <p>
+    Download links can expire, land in spam, or be blocked by a corporate mail
+    filter. If a delivery has not reached you, write to
+    <a href={`mailto:${business.email}`}>{business.email}</a> or message{' '}
+    <a href={business.phone.href}>{business.phone.display}</a> and we will send
+    it again by another route. We keep delivered work on our own storage for a
+    reasonable period after handover for exactly this reason.
+  </p>
+
+  <h2>Where we work</h2>
+  <p>
+    Shoots are carried out in {business.areaServed.join(', ')} and across
+    {business.areaServedBroad}, with travel elsewhere itemised in the quote. AI
+    video production is delivered nationwide. Digital delivery has no
+    geographic limit.
+  </p>
+</Legal>

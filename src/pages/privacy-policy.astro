@@ -1,0 +1,171 @@
+---
+/**
+ * Privacy Policy.
+ *
+ * WRITTEN FROM THE CODE, NOT FROM A TEMPLATE. Every claim here was checked
+ * against what this site actually does: the two forms and their exact fields,
+ * the Apps Script that receives them, the Sheet and Telegram alert they land
+ * in, the Meta Pixel, the fonts, the YouTube thumbnails. A generic policy would
+ * have listed cookies we do not set and third parties we do not use, and
+ * omitted the Telegram alert, which is the one destination a visitor would
+ * least expect.
+ *
+ * That accuracy is the point. A privacy policy describing a different website
+ * is worse than none: it is a published, checkable false statement about how
+ * personal data is handled.
+ */
+import Legal from '../layouts/Legal.astro';
+import { business } from '../data/business.ts';
+---
+
+<Legal
+  title="Privacy Policy | Beyond Pixel Studio"
+  h1="Privacy Policy"
+  description="What Beyond Pixel Studio collects when you use this website, where it goes, how long it is kept, and how to have it removed."
+  updated="2026-08-31"
+>
+  <p>
+    This policy covers <strong>beyondpixel.studio</strong>. It describes what this
+    website collects, where that information goes, and what you can ask us to do
+    with it. It is written from how the site is actually built, not from a
+    template.
+  </p>
+
+  <h2>What we collect, and only when you send it</h2>
+  <p>
+    This site has no accounts, no logins and no comments. Nothing personal is
+    collected by browsing it. Information reaches us only when you choose to
+    send it, through one of three routes:
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Where</th><th>What it asks for</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Enquiry form (contact page)</td>
+        <td>Name, phone number, email address, the service you are asking about, the event date if you give one, and your message</td>
+      </tr>
+      <tr>
+        <td>Portfolio download</td>
+        <td>Name, phone number, email address and the purpose of your enquiry, in exchange for the PDF</td>
+      </tr>
+      <tr>
+        <td>WhatsApp, phone and email links</td>
+        <td>Whatever you write in the message you send. These open your own app — the message is not recorded by this website</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Where it goes</h2>
+  <p>
+    A submitted form is sent to a Google Apps Script belonging to us, which does
+    two things with it:
+  </p>
+  <ul>
+    <li>
+      appends a row to a private Google Sheet in our own Google account, so we
+      have a record of the enquiry; and
+    </li>
+    <li>
+      sends the same details as a message to a private Telegram group used only
+      by our team, so an enquiry is seen quickly rather than at the end of the
+      day.
+    </li>
+  </ul>
+  <p>
+    Both are internal. Your details are not sold, rented, published, or shared
+    with anyone outside {business.name}, and we do not send marketing email to
+    addresses collected here.
+  </p>
+
+  <h2>Cookies and measurement</h2>
+  <p>
+    We set no cookies of our own. The site loads one third-party measurement
+    tool:
+  </p>
+  <ul>
+    <li>
+      <strong>Meta Pixel</strong> — records that a page was viewed and that an
+      enquiry was submitted, so we can tell which advertising is working. It
+      sets cookies belonging to Meta and is subject to
+      <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener">Meta's privacy policy</a>.
+      It is not told your name, phone number or message.
+    </li>
+  </ul>
+  <p>
+    Blocking it changes nothing about how the site works for you. Any browser
+    setting, extension or tracking-protection feature that blocks it is welcome
+    to.
+  </p>
+
+  <h2>Other services this site touches</h2>
+  <ul>
+    <li>
+      <strong>Hostinger</strong> hosts the site, on servers in Mumbai. Their
+      systems keep ordinary web-server logs, including IP addresses.
+    </li>
+    <li>
+      <strong>YouTube</strong> supplies the thumbnail images on the work pages,
+      loaded from Google's servers. Video plays on YouTube, not here — nothing
+      is embedded, so YouTube is not loaded until you click through.
+    </li>
+    <li>
+      <strong>Instagram</strong> is linked to. Clicking through leaves this
+      site. No Instagram code runs on it.
+    </li>
+    <li>
+      <strong>Google Fonts</strong> are not used. The typefaces are served from
+      this site's own domain, so no font request goes to Google.
+    </li>
+  </ul>
+
+  <h2>How long we keep it</h2>
+  <p>
+    Enquiries are kept while they are useful — an ongoing conversation, a
+    booked job, or a record of work delivered — and reviewed periodically after
+    that. Records connected to invoiced work are kept as long as Indian tax and
+    company law requires. Enquiries that go nowhere are deleted on request, or
+    when they are no longer of any use.
+  </p>
+
+  <h2>What you can ask for</h2>
+  <p>
+    Write to <a href={`mailto:${business.email}`}>{business.email}</a> and you
+    can ask us to:
+  </p>
+  <ul>
+    <li>tell you what we hold about you;</li>
+    <li>correct anything that is wrong;</li>
+    <li>delete it, where we are not required to keep it; or</li>
+    <li>stop contacting you.</li>
+  </ul>
+  <p>
+    We will respond within a reasonable period. Asking us to delete an enquiry
+    does not remove messages you sent us on WhatsApp — those live in your own
+    account as well as ours, and you can delete your copy yourself.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    This site is aimed at businesses and institutions and is not directed at
+    children. We do not knowingly collect information from anyone under 18. If a
+    parent or guardian believes we hold something we should not, write to us and
+    it will be removed.
+  </p>
+
+  <h2>Security, stated plainly</h2>
+  <p>
+    The site is served over HTTPS, and the credentials that reach our Sheet and
+    Telegram are held on Google's servers rather than in this website's code —
+    the browser never holds them. That said, no method of transmission over the
+    internet is completely secure, and we will not claim otherwise. Please do
+    not send anything confidential through a web form.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If this policy changes, the date at the top of the page changes with it.
+  </p>
+</Legal>

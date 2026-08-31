@@ -74,6 +74,26 @@ export const business = {
   email: 'admin@beyondpixel.online',
   emailManager: 'manager@beyondpixel.online',
 
+  /**
+   * GSTIN. Typed once here for the same reason the phone number is: it appears
+   * in the footer, on the contact page and across four legal pages, and a
+   * business identifier that is wrong in one place is worse than one that is
+   * missing everywhere.
+   *
+   * The 21 prefix is the state code for Odisha, which matches the registered
+   * address below — a GSTIN whose state code disagrees with its address is the
+   * first thing anyone checking will notice.
+   */
+  gstin: '21CICPG3102P1ZO',
+
+  /**
+   * Where applications go. A Google Form rather than a form on this site,
+   * deliberately: a CV is a bigger and more personal payload than an enquiry,
+   * and Google already handles the file upload, the storage and the access
+   * control that would otherwise have to be built and secured here.
+   */
+  careersFormUrl: 'https://forms.gle/Ne1xV4VtAPVH5NYM9',
+
   address: {
     /** Canonical display string. Render THIS, verbatim, everywhere. */
     display: 'Patia / Nandan Vihar, Bhubaneswar, Odisha, India — 751024',
