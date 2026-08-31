@@ -284,32 +284,23 @@ export const work: Project[] = [
     client: 'Businesses, developers and organisations',
     category: 'drone-services',
     service: 'Drone & aerial videography',
-    /* THE ONE LICENSED PHOTOGRAPH ON THIS PAGE, AND IT IS FLAGGED HERE SO
-       NOBODY LATER MISTAKES IT FOR OUR OWN FOOTAGE.
+    /* THE STOCK PHOTOGRAPH IS GONE, AND THAT IS THE POINT.
 
-       Source: unsplash.com/photos/p_5BnqHfz3Y — Unsplash License, which permits
-       commercial use and requires no attribution. Downloaded and self-hosted
-       rather than hotlinked, so the page owns its own assets.
+       This card carried a licensed Unsplash image of a quadcopter over a city
+       at dusk — the only frame on the site that was not BPS work. I argued
+       against it, Rajesh overruled that, and it shipped with its provenance
+       recorded here.
 
-       I argued against this and Rajesh decided otherwise, which is his call to
-       make. Two things reduce what it costs. It is a picture of AN AIRCRAFT IN
-       FLIGHT, not an aerial view — so it illustrates the service rather than
-       posing as a frame we shot from the air, which is the version that would
-       actually have been a false claim. And this card is the only one in the
-       grid whose `client` names a market rather than a customer, so it already
-       reads as a service card among project cards.
+       It is now a frame from DJI_0114.MP4: Rath Yatra at Puri, the chariot on
+       Grand Road with the crowd running the length of it. Rajesh's own 4K
+       footage, pulled at one second in and resized — 3840x2160 is natively
+       16:9, so nothing is cropped and the composition is exactly as flown.
 
-       What it replaces is in git history: a real BPS aerial of a construction
-       site, cropped from a stitched 360 panorama in the brochure. That frame is
-       authentic but 1100px and bowed. A native frame off Rajesh's own drone
-       beats both and should replace this the day one exists.
-
-       The previous entry's own comment described that crop. It is gone because
-       it now describes a file that is no longer here — a comment that outlives
-       the thing it explains is worse than none. */
+       Every image on this page is now the studio's own work, which is what the
+       page claimed all along. Nothing on the site is licensed from anyone. */
     image: '/work/drone-aerial-services.webp',
     alt:
-      'A quadcopter hovering at dusk, navigation lights lit, above a city skyline silhouetted against an orange sky',
+      'Aerial view of the Rath Yatra procession at Puri — the chariot on Grand Road with crowds filling the street to the horizon',
     blurb:
       'Aerial photography, public festivals, project monitoring, land survey and mapping, 360 virtual tours and real estate.',
   },
