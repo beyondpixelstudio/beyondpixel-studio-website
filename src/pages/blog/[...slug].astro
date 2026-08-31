@@ -175,6 +175,21 @@ const related = (await getCollection('blog'))
   .prose :global(ul), .prose :global(ol) { margin: 0 0 var(--s-3); padding-left: 1.2em; }
   .prose :global(li) { margin-bottom: var(--s-1); }
   .prose :global(li::marker) { color: var(--ember-text); }
+  /* In-body imagery. Added with the second batch of posts, which are the first
+     to carry photographs inside the article rather than only a hero — without a
+     width cap an 1600px WebP blows straight through the 760px measure. */
+  .prose :global(figure) { margin: var(--s-4) 0; }
+  .prose :global(img) {
+    display: block; width: 100%; height: auto;
+    border-radius: var(--radius);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    background: var(--void);
+  }
+  .prose :global(figcaption) {
+    margin-top: var(--s-2); font-size: 12px; line-height: 1.55;
+    color: var(--text-dim);
+  }
+
   .prose :global(hr) {
     border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
     margin: var(--s-5) 0;

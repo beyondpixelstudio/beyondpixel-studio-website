@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="A video production pipeline from brief to delivery, with each stage marked according to whether AI does the work today, assists a person, or cannot yet be trusted with it">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#16121F"/><stop offset="1" stop-color="#0A0814"/>
+</linearGradient>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.d{font-family:'DM Mono',ui-monospace,monospace;fill:#6E6796}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+
+<text class="lbl" x="60" y="56" font-size="13" font-weight="700">WHERE AI SITS IN A REAL PIPELINE</text>
+<text class="d" x="60" y="82" font-size="13">Eight stages of a corporate film, marked by how much of the work a model can carry today.</text>
+
+<!-- legend -->
+<circle cx="68" cy="121" r="6" fill="#3F9D6B"/>
+<text class="m" x="84" y="126" font-size="12">DOES THE WORK</text>
+<circle cx="288" cy="121" r="6" fill="#D9A441"/>
+<text class="m" x="304" y="126" font-size="12">ASSISTS A PERSON</text>
+<circle cx="524" cy="121" r="6" fill="#C4553F"/>
+<text class="m" x="540" y="126" font-size="12">NOT YET</text>
+
+<line x1="60" y1="148" x2="1140" y2="148" stroke="#FAFAF8" stroke-opacity=".08"/>
+
+<!-- rail -->
+<line x1="98" y1="212" x2="98" y2="612" stroke="#FAFAF8" stroke-opacity=".12" stroke-width="2"/>
+
+<!-- 1 -->
+<circle cx="98" cy="212" r="9" fill="#05040B" stroke="#D9A441" stroke-width="3"/>
+<text class="t" x="140" y="206" font-size="19" font-weight="600">Brief and script</text>
+<text class="d" x="140" y="230" font-size="13">Drafts and structure in seconds. What the company actually wants to say is still yours.</text>
+
+<!-- 2 -->
+<circle cx="98" cy="269" r="9" fill="#05040B" stroke="#3F9D6B" stroke-width="3"/>
+<text class="t" x="140" y="263" font-size="19" font-weight="600">Storyboards and pre-viz</text>
+<text class="d" x="140" y="287" font-size="13">Frames to argue over before a crew is booked. The clearest win on this list.</text>
+
+<!-- 3 -->
+<circle cx="98" cy="326" r="9" fill="#05040B" stroke="#C4553F" stroke-width="3"/>
+<text class="t" x="140" y="320" font-size="19" font-weight="600">The shoot</text>
+<text class="d" x="140" y="344" font-size="13">Your plant, your people, your chief guest, on the day it happened. No model has this footage.</text>
+
+<!-- 4 -->
+<circle cx="98" cy="383" r="9" fill="#05040B" stroke="#3F9D6B" stroke-width="3"/>
+<text class="t" x="140" y="377" font-size="19" font-weight="600">Transcription and logging</text>
+<text class="d" x="140" y="401" font-size="13">Hours of rushes made searchable. Quietly the biggest time saving in the whole process.</text>
+
+<!-- 5 -->
+<circle cx="98" cy="440" r="9" fill="#05040B" stroke="#D9A441" stroke-width="3"/>
+<text class="t" x="140" y="434" font-size="19" font-weight="600">The edit</text>
+<text class="d" x="140" y="458" font-size="13">Rough assemblies and silence trimming, yes. Deciding which take carries the meaning, no.</text>
+
+<!-- 6 -->
+<circle cx="98" cy="497" r="9" fill="#05040B" stroke="#3F9D6B" stroke-width="3"/>
+<text class="t" x="140" y="491" font-size="19" font-weight="600">Cleanup and subtitles</text>
+<text class="d" x="140" y="515" font-size="13">Noise removal, upscaling, subtitles in two languages. Reliable, cheap, unglamorous.</text>
+
+<!-- 7 -->
+<circle cx="98" cy="554" r="9" fill="#05040B" stroke="#D9A441" stroke-width="3"/>
+<text class="t" x="140" y="548" font-size="19" font-weight="600">B-roll and inserts</text>
+<text class="d" x="140" y="572" font-size="13">Generated shots hold for a few seconds. Past that, coherence drifts and it shows.</text>
+
+<!-- 8 -->
+<circle cx="98" cy="611" r="9" fill="#05040B" stroke="#C4553F" stroke-width="3"/>
+<text class="t" x="140" y="605" font-size="19" font-weight="600">A named person on camera</text>
+<text class="d" x="140" y="629" font-size="13">Synthesising a real employee or client is a consent problem long before it is a craft one.</text>
+</svg>

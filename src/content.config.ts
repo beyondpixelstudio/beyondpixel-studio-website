@@ -16,8 +16,13 @@ const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
-    /** <= 160 chars — becomes the meta description. */
-    description: z.string(),
+    /**
+     * Becomes the meta description, so 160 chars is a hard cap rather than a
+     * note — Google truncates past it. Enforced here because the first six-post
+     * batch shipped six descriptions over the limit and only the built-output
+     * audit caught them; a schema failure stops the build at the source file.
+     */
+    description: z.string().max(160),
     /**
      * <title> when the headline is too long for one. Post titles are written to
      * be read on the page, and a good headline is often longer than the ~60
