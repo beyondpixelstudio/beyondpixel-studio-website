@@ -1,0 +1,127 @@
+---
+/**
+ * Google reviews, as quoted cards.
+ *
+ * `service` filters to the reviews that name that service specifically, so the
+ * Studio Rental page shows the two people who wrote about the room and the
+ * equipment rather than a generic "great team". A review that mentions what the
+ * page is selling is worth more than a longer one that does not.
+ *
+ * NO schema.org Review markup — see src/data/reviews.ts for why. These are
+ * indexable text, and that is where the value is: real sentences containing
+ * "live streaming", "photography studio" and "rent", written by other people.
+ */
+import { business } from '../data/business.ts';
+import { reviews } from '../data/reviews.ts';
+
+interface Props {
+  /** Show only reviews tagged for this service slug. Omit for the general set. */
+  service?: string;
+  /** Section heading. */
+  heading?: string;
+  /** `band` gives the section its alternating background. */
+  band?: boolean;
+  /** Cap, so a page does not turn into a wall of quotes. */
+  limit?: number;
+}
+const { service, heading = 'What clients wrote on Google', band = false, limit = 6 } = Astro.props;
+
+/* On a service page: only its own reviews, and nothing at all if it has none —
+   padding a page with unrelated praise is the same move as padding it with
+   stock footage, which this site does not do. */
+const list = (service ? reviews.filter((r) => r.service === service) : reviews).slice(0, limit);
+
+const googleUrl = business.reviews.find((r) => r.source === 'Google')?.url ?? null;
+---
+
+{list.length > 0 && (
+  <section class:list={['section', band && 'section--band']}>
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Reviews</p>
+        <h2>{heading}</h2>
+        <p>
+          Left on our Google Business Profile, quoted word for word. Names and
+          wording are theirs.
+        </p>
+      </div>
+
+      <ul class="gr">
+        {list.map((r, i) => (
+          <li class="gr__card panel" data-reveal style={`--reveal-delay:${i * 55}ms`}>
+            {/* Five stars is a statement about THIS review, which was five
+                stars, not an aggregate claim about the business. The
+                distinction is the whole reason there is no rating markup. */}
+            <span class="gr__stars" aria-label="Rated 5 out of 5">
+              <span aria-hidden="true">★★★★★</span>
+            </span>
+            <blockquote class="gr__q">{r.text}</blockquote>
+            <footer class="gr__by">
+              <span class="gr__name">{r.name}</span>
+              <span class="gr__meta mono">
+                {r.localGuide && <span class="gr__guide">Local Guide</span>}
+                {r.when}
+              </span>
+            </footer>
+          </li>
+        ))}
+      </ul>
+
+      {googleUrl && (
+        <p class="gr__more">
+          <a href={googleUrl} target="_blank" rel="noopener">Read them all on Google →</a>
+        </p>
+      )}
+    </div>
+  </section>
+)}
+
+<style>
+  .gr { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 680px) { .gr { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .gr { grid-template-columns: repeat(3, 1fr); } }
+
+  .gr__card {
+    padding: var(--s-4);
+    display: grid;
+    /* The attribution is pushed to the bottom of every card regardless of quote
+       length, so the names line up across a row instead of stepping. */
+    grid-template-rows: auto 1fr auto;
+    gap: var(--s-3);
+  }
+
+  .gr__stars { color: var(--tungsten); font-size: 13px; letter-spacing: .12em; line-height: 1; }
+
+  .gr__q {
+    margin: 0;
+    color: var(--text);
+    font-size: .96rem;
+    line-height: 1.6;
+  }
+  /* Real quotation marks, set outside the measure so the first word still
+     aligns with everything below it. */
+  /* ONE backslash. Written with two, CSS read it as an escaped backslash
+     followed by the literal characters 201C, and every card on the site
+     rendered "\201CA well-equipped photography studio…\201D" — the escape
+     sequence printed as text, in quotation marks, under a real person's name. */
+  .gr__q::before { content: '“'; }
+  .gr__q::after { content: '”'; }
+
+  .gr__by { display: grid; gap: 3px; }
+  .gr__name { color: var(--text); font-weight: 600; font-size: .88rem; }
+  .gr__meta {
+    font-size: 11px; color: var(--text-dim);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  }
+  .gr__guide {
+    padding: 1px 6px;
+    border-radius: var(--r-sm);
+    background: rgb(27 108 168 / .18);
+    box-shadow: inset 0 0 0 1px rgb(127 180 226 / .35);
+    color: var(--ocean-text);
+    letter-spacing: .04em;
+  }
+
+  .gr__more { margin-top: var(--s-4); }
+  .gr__more a { color: var(--ember-text); }
+</style>

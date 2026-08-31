@@ -16,6 +16,7 @@ import Base from '../layouts/Base.astro';
 import Check from '../components/Check.astro';
 import Faq from '../components/Faq.astro';
 import ServiceRig from '../components/ServiceRig.astro';
+import GoogleReviews from '../components/GoogleReviews.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
 
@@ -342,6 +343,15 @@ const breadcrumb = {
   {/* ----------------------------------------------------------------- FAQ
       Before the CTA on purpose: these are the objections that stop someone
       enquiring, so they belong between the pitch and the ask. */}
+  {/* Before the FAQ, not after. Someone still deciding reads what other
+      clients said; someone with a specific question scrolls past it to the
+      answers. Renders nothing when no review names this service. */}
+  <GoogleReviews
+    service={service.slug}
+    heading={`What ${service.name.toLowerCase()} clients wrote`}
+    limit={3}
+  />
+
   <Faq items={service.faqs} heading={`${service.name} — questions we get asked`} />
 
   {/* ---------------------------------------------------------- FINAL CTA */}
