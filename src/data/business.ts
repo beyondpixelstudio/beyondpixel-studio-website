@@ -126,8 +126,17 @@ export const business = {
   /**
    * INTEGRATIONS & AUTOMATION
    * -------------------------------------------------------------------------
-   * - Meta Pixel ID for tracking PageViews & Lead Custom Audiences
    * - Google Apps Script Webhook URL for Google Sheets logging & Telegram bot
+   *
+   * NOTHING READS metaPixelId ANY MORE. The Meta Pixel base code was removed
+   * from Base.astro at Rajesh's direction once Tag Manager went in, because a
+   * pixel hardcoded in the layout AND fired again by a GTM tag is the same
+   * pixel loading twice — duplicate PageViews, inflated counts, and a
+   * deduplication problem that is invisible until the numbers are wrong.
+   *
+   * The id stays here because it is the value you paste into the GTM tag, and
+   * because hunting it out of Meta's UI again is a waste of ten minutes. It is
+   * a reference, not a switch: setting it does not put a pixel on the site.
    */
   metaPixelId: '1058011239388287',
   /**
