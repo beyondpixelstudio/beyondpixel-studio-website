@@ -134,9 +134,15 @@ export const business = {
    * pixel loading twice — duplicate PageViews, inflated counts, and a
    * deduplication problem that is invisible until the numbers are wrong.
    *
-   * The id stays here because it is the value you paste into the GTM tag, and
-   * because hunting it out of Meta's UI again is a waste of ten minutes. It is
-   * a reference, not a switch: setting it does not put a pixel on the site.
+   * The id stays here as a record of the pixel this site used to load directly.
+   * It is a reference, not a switch: setting it does not put a pixel on the
+   * site.
+   *
+   * HEADS UP — THIS IS NOT THE PIXEL CURRENTLY FIRING. The GTM container loads
+   * Meta Pixel 516392647864653, observed live in fbq.getState(). This id,
+   * 1058011239388287, is a DIFFERENT pixel and nothing on the site references
+   * it any more. Two pixels means two sets of numbers; whichever one is the
+   * real one, the other should be retired on the Meta side.
    */
   metaPixelId: '1058011239388287',
   /**
@@ -145,6 +151,17 @@ export const business = {
    * container is one edit in one file.
    */
   gtmId: 'GTM-5QHKZKSP',
+  /**
+   * Google tag (gtag.js). A SECOND, SEPARATE Google container from gtmId above
+   * — GT- and GTM- ids are different products and both are meant to be here if
+   * that is how the account is set up.
+   *
+   * They share window.dataLayer, which is fine and is how Google intends it.
+   * The one thing to watch: if a GA4 measurement tag is ALSO configured inside
+   * the GTM container, that property receives every page_view twice. The fix is
+   * on the Google side, not here — configure GA4 in one place, not both.
+   */
+  googleTagId: 'GT-WFMDVC8Z',
   /**
    * Apps Script Web App endpoint. Receives every lead, appends a row to the
    * "Beyond Pixel Studio Leads" sheet, and sends the Telegram alert server-side.

@@ -149,6 +149,37 @@ const schema = {
       </script>
     )}
 
+    {/* Google tag (gtag.js). Sits alongside the GTM container above, not
+        instead of it — they are separate Google products and share dataLayer
+        by design.
+
+        The loader is async per Google's snippet, and the inline config script
+        follows it immediately. Order matters between these two but not against
+        the loader: gtag() queues into dataLayer, so the config calls are safe
+        to run before the remote script has finished downloading.
+
+        gtag IS ASSIGNED TO window ON PURPOSE, and Google's own snippet is
+        edited here for exactly one reason: define:vars wraps the script in an
+        IIFE — the emitted markup is `(function(){const googleTagId = "...";
+        ...})();`. A bare `function gtag()` inside that closure is NOT global,
+        so the config calls below would still work (they push straight to
+        dataLayer) while any later gtag('event', ...) from another script died
+        with a ReferenceError. That failure is invisible until someone adds
+        conversion tracking weeks from now, so the assignment is explicit. */}
+    {business.googleTagId && (
+      <>
+        <script async is:inline src={`https://www.googletagmanager.com/gtag/js?id=${business.googleTagId}`}></script>
+        <script is:inline define:vars={{ googleTagId: business.googleTagId }}>
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function gtag() {
+            window.dataLayer.push(arguments);
+          };
+          gtag('js', new Date());
+          gtag('config', googleTagId);
+        </script>
+      </>
+    )}
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

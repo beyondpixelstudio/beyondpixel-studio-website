@@ -5,8 +5,8 @@
  * WRITTEN FROM THE CODE, NOT FROM A TEMPLATE. Every claim here was checked
  * against what this site actually does: the two forms and their exact fields,
  * the Apps Script that receives them, the Sheet and Telegram alert they land
- * in, the Google Tag Manager container, the fonts, the YouTube thumbnails. A
- * generic policy would
+ * in, the Google Tag Manager container, the Google tag, the fonts, the YouTube
+ * thumbnails. A generic policy would
  * have listed cookies we do not set and third parties we do not use, and
  * omitted the Telegram alert, which is the one destination a visitor would
  * least expect.
@@ -83,7 +83,8 @@ import { business } from '../data/business.ts';
 
   <h2>Cookies and measurement</h2>
   <p>
-    We set no cookies of our own. The site loads one third-party tool directly:
+    We set no cookies of our own. The site loads two third-party tools from
+    Google directly:
   </p>
   <ul>
     <li>
@@ -94,6 +95,14 @@ import { business } from '../data/business.ts';
       changing on the same day. Tag Manager itself is covered by
       <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's privacy policy</a>,
       and it is not passed your name, phone number or message.
+    </li>
+    <li>
+      <strong>Google tag (gtag.js)</strong> — Google's measurement tag, which
+      records page views and how the site is used so we can see which pages
+      people actually read. It sets cookies belonging to Google and is covered
+      by the same
+      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a>.
+      It is not passed your name, phone number or message.
     </li>
   </ul>
   <p>
