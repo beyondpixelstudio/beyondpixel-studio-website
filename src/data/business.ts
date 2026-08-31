@@ -95,9 +95,21 @@ export const business = {
   careersFormUrl: 'https://forms.gle/Ne1xV4VtAPVH5NYM9',
 
   address: {
-    /** Canonical display string. Render THIS, verbatim, everywhere. */
-    display: 'Patia / Nandan Vihar, Bhubaneswar, Odisha, India — 751024',
-    street: 'Nandan Vihar, Patia',
+    /**
+     * Canonical display string. Render THIS, verbatim, everywhere.
+     *
+     * 2026-08-31 — "Nandan Vihar" dropped at Rajesh's direction. It was
+     * previously "Patia / Nandan Vihar, Bhubaneswar, Odisha, India — 751024".
+     *
+     * NAP CONSISTENCY IS THE WHOLE POINT OF THIS FILE, so changing it here is
+     * only half the job: the address on the Google Business Profile, JustDial
+     * and any directory listing has to change to match, character for
+     * character. An address that reads one way on the site and another way on
+     * the Business Profile is the precise inconsistency this file exists to
+     * prevent, and Google weighs the profile more heavily than the site.
+     */
+    display: 'Patia, Bhubaneswar, Odisha, 751024',
+    street: 'Patia',
     locality: 'Bhubaneswar',
     region: 'Odisha',
     postalCode: '751024',

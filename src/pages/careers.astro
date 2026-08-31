@@ -22,7 +22,15 @@
 import Base from '../layouts/Base.astro';
 import { business } from '../data/business.ts';
 
+/* Twelve roles. The heading below counts this array rather than stating a
+   number, because the first version said "Eight ways in." in prose and four
+   more arrived a day later — a hardcoded count is a fact that goes stale the
+   moment the list it describes is edited, and nothing would have caught it. */
 const roles = [
+  { name: 'Creative Lead', note: 'Concept, direction and the standard the work is held to' },
+  { name: 'Operations Manager', note: 'Scheduling, crew, kit and getting deliveries out' },
+  { name: 'Marketing Manager', note: 'Campaigns, clients and the enquiry pipeline' },
+  { name: 'Marketing Field Staff', note: 'On-ground outreach across Odisha' },
   { name: 'Content Creator', note: 'Reels, YouTube and documentary' },
   { name: 'Videographer', note: 'Events, corporate and location work' },
   { name: 'Cinematographer', note: 'Narrative and brand films' },
@@ -51,7 +59,7 @@ const breadcrumb = {
 
 <Base
   title="Careers | Beyond Pixel Studio, Bhubaneswar"
-  description="Camera, edit, design and development roles at Beyond Pixel Studio in Bhubaneswar. Full-time and freelance, 0–5 years. Apply with your reel."
+  description="Creative, camera, edit, marketing and operations roles at Beyond Pixel Studio in Bhubaneswar. Full-time and freelance. Apply with your reel."
 >
   <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumb)} />
 
@@ -87,7 +95,7 @@ const breadcrumb = {
     <div class="wrap">
       <div class="sechead">
         <p class="eyebrow">Open roles</p>
-        <h2>Eight ways in.</h2>
+        <h2>{roles.length} ways in.</h2>
         <p>
           Full-time and freelance. Nought to five years — a strong reel counts for
           more here than a number on a CV.
