@@ -11,6 +11,7 @@ import PortfolioModal from '../components/PortfolioModal.astro';
 import Tunnel from '../components/Tunnel.astro';
 import Bubbles from '../components/Bubbles.astro';
 import { business, sameAs } from '../data/business.ts';
+import { services } from '../data/services.ts';
 
 interface Props {
   title: string;
@@ -26,8 +27,66 @@ interface Props {
    * a crawler two things and hoping it picks the right one.
    */
   robots?: string;
+  /**
+   * Share image for this page, as a root-relative path to a 1200x630 JPEG.
+   * Omitted, every page shares og-cover.jpg — which is why, before this, a
+   * WhatsApp share of the studio page and of the drone page looked identical.
+   */
+  ogImage?: string;
+  /** Required in practice whenever ogImage is set: it describes THAT image. */
+  ogImageAlt?: string;
 }
-const { title, description, reveal = false, robots = 'index, follow' } = Astro.props;
+const {
+  title,
+  description,
+  reveal = false,
+  robots = 'index, follow',
+  ogImage = '/og-cover.jpg',
+  ogImageAlt = `${business.name} — video production in ${business.address.locality}`,
+} = Astro.props;
+const ogImageUrl = new URL(ogImage, Astro.site).href;
+const ogImageType =
+  { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[
+    ogImage.split('.').pop()!.toLowerCase()
+  ] ?? 'image/jpeg';
+
+/**
+ * The sitewide offer catalogue, one OfferCatalog per pillar, built from the
+ * `specs` on the service pages rather than written out here.
+ *
+ * Every Service below is a heading a visitor can see, with a URL that lands on
+ * it — the item's anchor on its own page, or `href` where its real home is a
+ * different page. A separately maintained list would drift from the pages
+ * within a month and end up describing services the site no longer shows,
+ * which is the one thing structured data is not allowed to do.
+ *
+ * NAMES ARE THE VISIBLE HEADINGS, NOT THE SEARCH PHRASES. "CSR video
+ * production", not "csr video production bhubaneswar": the city is already
+ * stated once, correctly, in `areaServed`, and repeating it inside every
+ * service name would be keyword text that appears nowhere on the page as a
+ * name. The exact phrases are in the page copy, where they read as sentences.
+ */
+const offerCatalog = services
+  .filter((sv) => sv.pillar && sv.specs?.length)
+  .map((sv) => {
+    const page = `${business.url}/${sv.slug}/`;
+    const offers = sv.specs!.flatMap((sec) => [
+      ...(sec.service ? [{ name: sec.service, url: `${page}#${sec.id}` }] : []),
+      ...(sec.items ?? []).map((it) => ({
+        name: it.h3,
+        url: it.href ? new URL(it.href, business.url).href : `${page}#${it.id}`,
+      })),
+    ]);
+    return {
+      '@type': 'OfferCatalog',
+      name: sv.pillar,
+      url: page,
+      itemListElement: offers.map((o) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: o.name, url: o.url },
+      })),
+    };
+  });
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
 /**
@@ -90,6 +149,16 @@ const schema = {
   hasMap: business.social.googleBusiness,
 
   sameAs,
+
+  ...(offerCatalog.length
+    ? {
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: `${business.name} services`,
+          itemListElement: offerCatalog,
+        },
+      }
+    : {}),
 
   /* CONDITIONAL, AND THAT IS THE POINT. Each of these is a factual claim about
      a real place, so an unanswered one is omitted rather than guessed —
@@ -198,11 +267,13 @@ const schema = {
        of this site rendered as a bare grey box with a headline on it. Absolute
        URLs, because crawlers fetch these out of page context and a relative
        path resolves against their own host, not ours. */}
-    <meta property="og:image" content={new URL('/og-cover.jpg', Astro.site).href} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content={ogImageType} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${business.name} — video production in ${business.address.locality}`} />
-    <meta name="twitter:image" content={new URL('/og-cover.jpg', Astro.site).href} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     {/* THE MARK IS 16:9 AND EVERY ICON SLOT IS SQUARE.
 

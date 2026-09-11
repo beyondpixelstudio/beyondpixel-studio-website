@@ -301,6 +301,70 @@ for (const f of pages) {
   if (!/rel="icon"/.test(body)) note(rel, 'has no favicon link');
 }
 
+/* -- Keyword-pillar pages ------------------------------------------------ */
+
+/* The four pages carrying a keyword cluster have a stricter protocol than the
+   sitewide checks above, and it is enforced here rather than trusted to
+   memory — the format and the 60-char cap pull against each other, and the
+   next person to tweak a title will not have the arithmetic in their head.
+
+   Hardcoded rather than read from services.ts: this script is plain Node and
+   cannot import TypeScript. Four slugs is a list someone can keep true. */
+const PILLARS = [
+  'corporate-video-production-bhubaneswar',
+  'live-event-streaming-bhubaneswar',
+  'studio-rental-bhubaneswar',
+  'drone-aerial-videography-bhubaneswar',
+];
+const SERVING = 'Serving Bhubaneswar, Cuttack, and across Odisha.';
+const TITLE_FORMAT = /^[^|]+ \| [^|]+ - Beyond Pixel Studio$/;
+for (const slug of PILLARS) {
+  const file = join(DIST, slug, 'index.html');
+  if (!existsSync(file)) { note(file, 'pillar page missing from the build'); continue; }
+  const html = readFileSync(file, 'utf8');
+  const title = decode((html.match(/<title>([^<]*)<\/title>/) || [, ''])[1]);
+  const desc = decode((html.match(/name="description" content="([^"]*)"/) || [, ''])[1]);
+
+  if (!TITLE_FORMAT.test(title)) note(file, `title breaks "[Keyword] | [Secondary] - Beyond Pixel Studio": ${title}`);
+  if (title.length > 60) note(file, `pillar title is ${title.length} chars (max 60)`);
+  if (desc.length > 155) note(file, `pillar description is ${desc.length} chars (max 155)`);
+  if (!desc.endsWith(SERVING)) note(file, `pillar description must end "${SERVING}"`);
+
+  /* A share image that 404s renders as the same empty grey frame the og
+     check above exists to prevent — just one hop later. */
+  const og = (html.match(/property="og:image" content="([^"]+)"/) || [, ''])[1];
+  const ogPath = og.replace(/^https?:\/\/[^/]+/, '');
+  if (!ogPath.startsWith('/og/')) note(file, `pillar page falls back to the generic share image (${ogPath})`);
+  else if (!existsSync(join(DIST, ogPath))) note(file, `og:image ${ogPath} is not in the build`);
+}
+
+/* Every Service in the sitewide catalogue must land on something a visitor can
+   see: the page exists, and where the URL carries an anchor, an element with
+   that id exists on it. This is the schema/visible-content parity Google
+   requires, checked rather than assumed. */
+let catalogOffers = 0;
+{
+  const home = readFileSync(join(DIST, 'index.html'), 'utf8');
+  const blocks = [...home.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+  const org = blocks.map((b) => { try { return JSON.parse(b[1]); } catch { return null; } })
+    .find((j) => j && j.hasOfferCatalog);
+  if (!org) note(join(DIST, 'index.html'), 'sitewide schema has no hasOfferCatalog');
+  else {
+    for (const pillar of org.hasOfferCatalog.itemListElement) {
+      for (const offer of pillar.itemListElement) {
+        catalogOffers++;
+        const u = new URL(offer.itemOffered.url);
+        const target = join(DIST, u.pathname, 'index.html');
+        if (!existsSync(target)) { note(target, `catalogue entry "${offer.itemOffered.name}" points at a missing page`); continue; }
+        const id = u.hash.slice(1);
+        if (id && !new RegExp(`\\sid="${id}"`).test(readFileSync(target, 'utf8'))) {
+          note(target, `catalogue entry "${offer.itemOffered.name}" points at #${id}, which is not on the page`);
+        }
+      }
+    }
+  }
+}
+
 /* -- Report -------------------------------------------------------------- */
 
 const line = '-'.repeat(78);
@@ -325,4 +389,6 @@ console.log(
 console.log(`  ok    no credentials in ${scanned} shipped files`);
 console.log('  ok    robots.txt, sitemap, 404 and og-cover all present');
 console.log(`  ok    absolute og:image and a favicon on all ${seoPages} pages`);
+console.log(`  ok    ${PILLARS.length} pillar pages: title format, <= 155 descriptions, own share image`);
+console.log(`  ok    ${catalogOffers} offer-catalogue services each land on a visible heading`);
 console.log(`  ${line}\n  Clean.\n`);

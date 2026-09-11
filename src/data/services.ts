@@ -27,9 +27,27 @@ export interface Service {
   name: string;
   /** Exactly one H1 per page. Keyword-led. */
   h1: string;
-  /** <= 60 characters. Keyword first, brand last. */
+  /**
+   * <= 60 characters. Keyword first, brand last.
+   *
+   * On the four `pillar` pages the format is fixed:
+   *   [Primary keyword] | [Secondary service] - Beyond Pixel Studio
+   * and it collides with the 60-char cap. The brand suffix alone is 22 chars,
+   * so keyword + secondary get 35 — and four of the five primary keywords are
+   * longer than that on their own ("Live Streaming Services for Events in
+   * Bhubaneswar" is 49). The title therefore carries a condensed form of the
+   * keyword, and the exact long-form phrase goes in the h1 instead, which has
+   * no length limit. scripts/audit-build.mjs enforces both the format and the
+   * cap on those pages.
+   */
   title: string;
-  /** <= 160 characters, ends with a call to action. */
+  /**
+   * <= 160 characters, ends with a call to action.
+   *
+   * On `pillar` pages: <= 155, ending with the exact sentence "Serving
+   * Bhubaneswar, Cuttack, and across Odisha." in place of the call to action —
+   * the two do not both fit.
+   */
   description: string;
   /** One line on the card: what it is. */
   summary: string;
@@ -113,6 +131,53 @@ export interface Service {
   images?: { src: string; alt: string; caption: string }[];
   /** AI video has national reach, so its slug carries no location. */
   national?: boolean;
+
+  /**
+   * Which of the four offer-catalogue pillars this page is. Set on exactly the
+   * pages that carry a keyword cluster; Base.astro builds the sitewide
+   * `hasOfferCatalog` from every service that has both this and `specs`, so a
+   * fifth pillar is one data change, not a schema edit.
+   */
+  pillar?: string;
+
+  /**
+   * Keyword-cluster sections, rendered as h2 blocks (with h3 items) between
+   * the itemised job and the selected work.
+   *
+   * THE SITEWIDE OFFER CATALOGUE IS BUILT FROM THIS SAME ARRAY. Every h3 is an
+   * Offer in the ProfessionalService schema, and a section with no items joins
+   * the catalogue only if it names a `service`. So the structured data can
+   * only ever list services a visitor can see on the page — the requirement
+   * Google actually enforces — and the catalogue names are the visible
+   * headings, not a second keyword-stuffed list written for the crawler.
+   *
+   * Exact long-tail phrases ("csr video production in Bhubaneswar") live in
+   * the BODY copy, once each, where they read as sentences. Headings stay
+   * short service names, because a heading that repeats the city six times
+   * down a page reads as spam to people before it does to Google.
+   *
+   * `id`s double as deep-link anchors: the catalogue points each Service at
+   * its own heading, and `href` overrides that for a service whose real home
+   * is another page (commercial photography, cross-linked from corporate
+   * video rather than competing with its own page for the same query).
+   */
+  specs?: {
+    id: string;
+    h2: string;
+    lead?: string;
+    /** Catalogue name for a section that is itself one service and has no items. */
+    service?: string;
+    link?: { href: string; text: string };
+    items?: { id: string; h3: string; body: string; href?: string; hrefText?: string }[];
+  }[];
+
+  /**
+   * Per-page share image — 1200x630 JPEG in /public/og/, cropped from the
+   * page's own work photograph. JPEG rather than WebP because WhatsApp is how
+   * this market passes a link around, and its preview is unreliable with
+   * WebP. Omitted, the page falls back to the sitewide og-cover.jpg.
+   */
+  og?: { src: string; alt: string };
 }
 
 /**
@@ -181,10 +246,10 @@ export const services: Service[] = [
   {
     slug: 'corporate-video-production-bhubaneswar',
     name: 'Corporate Video Production',
-    h1: 'Corporate Video Production in Bhubaneswar',
-    title: 'Corporate Video Production Bhubaneswar | Beyond Pixel Studio',
+    h1: 'Corporate Film Makers in Bhubaneswar',
+    title: 'Corporate Video Bhubaneswar | Ad Films - Beyond Pixel Studio',
     description:
-      'Corporate films, brand videos and CSR documentation for companies and institutions across Odisha. Own crew, own equipment. Request a custom quote.',
+      'Corporate film makers in Bhubaneswar: brand and ad films, CSR, industrial, campus and real estate video. Serving Bhubaneswar, Cuttack, and across Odisha.',
     summary: 'Brand films, CSR documentation, training and internal communication.',
     audience: 'For companies and institutions who need to be believed, not just seen.',
     intro:
@@ -228,6 +293,59 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for corporate video production.',
     rig: 'gimbal',
     portfolio: 'corporate-institutional',
+    pillar: 'Corporate & Commercial Video Production',
+    og: {
+      src: '/og/corporate-video-production-bhubaneswar.jpg',
+      alt: 'Industrial site coverage in Odisha by Beyond Pixel Studio — a site visit group in hi-vis vests and hard hats inside the industrial shed',
+    },
+    specs: [
+      {
+        id: 'services',
+        h2: 'Commercial video production services across Odisha',
+        lead:
+          'One crew, one kit list and one quote format, whatever the brief. As a corporate video production company in Bhubaneswar, most of what we make falls into one of these.',
+        items: [
+          {
+            id: 'ad-film-production',
+            h3: 'Ad film production',
+            body:
+              'Thirty- and sixty-second spots for broadcast, YouTube pre-roll and paid social, framed for every placement at the shoot rather than cropped after it. As an ad film production house in Bhubaneswar we script, shoot and grade in-house, so the spot you approve at storyboard is the one that goes out.',
+          },
+          {
+            id: 'industrial-video',
+            h3: 'Industrial video shoots',
+            body:
+              'Plant walkthroughs, process films and safety inductions. An industrial video shoot in Odisha runs on the site\'s rules, not ours: permits, PPE and shutdown windows are agreed with your EHS team before the crew arrives, and the shot list is built around when the line is running, so the footage shows the plant working.',
+          },
+          {
+            id: 'csr-video-production',
+            h3: 'CSR video production',
+            body:
+              'Annual impact documentation for CSR reports, board reviews and funder updates. CSR video production in Bhubaneswar usually means filming beneficiaries in villages and schools, so consent is arranged with your field team before anyone is filmed, and the edit is built around outcomes a reviewer can check.',
+          },
+          {
+            id: 'campus-promotional-video',
+            h3: 'Campus promotional videos',
+            body:
+              'Admissions films, department showcases and convocation recaps for universities and schools. A campus promotional video shoot in Bhubaneswar is scheduled around the academic calendar — shot while students are on campus, and delivered before your admissions window opens rather than after it.',
+          },
+          {
+            id: 'real-estate-videography',
+            h3: 'Real estate videography',
+            body:
+              'Show-flat and amenity walkthroughs, finished interiors, and progress films for builders and developers. Where our real estate videography services in Bhubaneswar produce a film that will advertise a registered project, the RERA registration number and the authority\'s website go on the end card — the Act requires both.',
+          },
+          {
+            id: 'commercial-photography',
+            h3: 'Commercial photography',
+            body:
+              'Stills for the same campaign — product, architectural and people — shot by the same team, often on the same visit, so the photographs and the film match.',
+            href: '/commercial-photography-videography-bhubaneswar/',
+            hrefText: 'Commercial photographer in Bhubaneswar →',
+          },
+        ],
+      },
+    ],
     videos: [
       { id: 'oaXWhSasxh4', thumb: 'maxresdefault', title: 'Audi — brand film' },
       { id: '3GWlQ35kLVM', thumb: 'maxresdefault', title: 'Aditya Ashray — full documentary' },
@@ -240,10 +358,10 @@ export const services: Service[] = [
   {
     slug: 'live-event-streaming-bhubaneswar',
     name: 'Event Coverage & Live Streaming',
-    h1: 'Live Event Streaming in Bhubaneswar',
-    title: 'Live Event Streaming Bhubaneswar | Beyond Pixel Studio',
+    h1: 'Live Streaming Services for Events in Bhubaneswar',
+    title: 'Live Streaming Bhubaneswar | Webcasts - Beyond Pixel Studio',
     description:
-      'Multi-camera live streaming and event coverage for conferences, convocations and official functions across Odisha. Request a custom quote.',
+      'Multi-camera live streaming for conferences, convocations and hybrid events, switched on ATEM and vMix. Serving Bhubaneswar, Cuttack, and across Odisha.',
     summary: 'Multi-camera coverage streamed where your audience already is.',
     audience: 'For conferences, convocations and official functions.',
     intro:
@@ -287,6 +405,71 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for event coverage and live streaming.',
     rig: 'broadcast',
     portfolio: 'government-events',
+    pillar: 'Multi-Camera Live Streaming & Webcasting',
+    og: {
+      src: '/og/live-event-streaming-bhubaneswar.jpg',
+      alt: 'Multi-camera live streaming setup at trackside — monitors, vision switcher and laptop rigged beside the running track at Kalinga Stadium, Bhubaneswar',
+    },
+    specs: [
+      {
+        id: 'multi-camera-setup',
+        h2: 'ATEM & vMix multi-camera setup for convocations and summits',
+        lead:
+          'A multi camera live streaming setup in Bhubaneswar, as we run it, is a switched production rather than a camera on a tripod: an ATEM or vMix vision mixer, an operator cutting between angles live, and graphics keyed over the programme feed. That is multi-camera video production done in real time — recorded at full quality at the same moment it goes out.',
+        items: [
+          {
+            id: 'convocation-live-telecast',
+            h3: 'Convocation live telecast',
+            body:
+              'Degree conferment runs to a fixed order with no retakes, so a convocation live telecast setup in Bhubaneswar is planned from the run sheet: a locked wide on the stage, a tight on the lectern, a camera on the conferment line, and name supers prepared in advance from your list.',
+          },
+          {
+            id: 'conference-live-streaming',
+            h3: 'Conference and CME streaming',
+            body:
+              'Medical CME sessions, association meetings and corporate summits across halls and days. Conference live streaming services in Odisha have to carry slides as legibly as faces, so presenter decks are taken as a direct feed from the laptop and switched in with the cameras — never filmed off the projector screen.',
+          },
+          {
+            id: 'hybrid-event-streaming',
+            h3: 'Hybrid event streaming',
+            body:
+              'The room and the remote audience watching the same programme. A hybrid event streaming setup in Bhubaneswar sends one switched feed to the venue screens and to the stream together, and can bring a remote speaker in over a video call so they appear on stage and online at once.',
+          },
+          {
+            id: 'webcast-services',
+            h3: 'Secure webcasts',
+            body:
+              'Investor briefings, internal town halls and closed-door sessions. Our webcast services in Bhubaneswar publish to an unlisted link, a password-protected player or your own platform, so the audience is the one you invited.',
+          },
+        ],
+      },
+      {
+        id: 'cuttack-bhubaneswar',
+        h2: 'Live streaming setup for events in Cuttack & Bhubaneswar',
+        lead:
+          'Cuttack is covered by the same crew and the same kit as Bhubaneswar, with the same venue recce done ahead of the date. Beyond the twin city we travel across Odisha, with travel itemised on the quote rather than folded into a day rate.',
+      },
+      {
+        id: 'event-coverage',
+        h2: 'Event coverage without the stream',
+        lead:
+          'The same multi-camera video production in Bhubaneswar, without the stream — for events where the audience is in the room and the recording is what lasts.',
+        items: [
+          {
+            id: 'corporate-event-videography',
+            h3: 'Corporate event videography',
+            body:
+              'As a corporate event videographer in Bhubaneswar we cover launches, AGMs, dealer meets and award nights for the recording alone: multi-camera, with a highlight cut and stills pulled from the day.',
+          },
+          {
+            id: 'corporate-videography-odisha',
+            h3: 'Corporate videography across Odisha',
+            body:
+              'Plant events, inaugurations and regional meets outside the twin city get the same team travelling as your corporate videographer in Odisha: one quote, one crew, and nobody subcontracted in on the day.',
+          },
+        ],
+      },
+    ],
     videos: [
       { id: 'OmUSt1bdov4', thumb: 'maxresdefault', title: 'KIMS Laboratory Professional Week, Bhubaneswar' },
       { id: '1AsAeci0j1E', thumb: 'maxresdefault', title: 'Sankalp — Sagar Business Ventures Limited' },
@@ -358,10 +541,10 @@ export const services: Service[] = [
   {
     slug: 'drone-aerial-videography-bhubaneswar',
     name: 'Drone & Aerial Videography',
-    h1: 'Drone & Aerial Videography in Bhubaneswar',
-    title: 'Drone & Aerial Videography Bhubaneswar | Beyond Pixel Studio',
+    h1: 'Drone Videography Services in Bhubaneswar',
+    title: 'Drone Videography Bhubaneswar | Survey - Beyond Pixel Studio',
     description:
-      'Aerial cinematography for campuses, industrial sites, construction progress and events across Odisha. Request a custom quote.',
+      'Drone videography for institutions, industrial sites and construction — airspace checked before we quote. Serving Bhubaneswar, Cuttack, and across Odisha.',
     summary: 'Aerial cinematography for campuses, plants, sites and events.',
     audience: 'For anyone whose scale only reads from the air.',
     /**
@@ -414,6 +597,44 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for drone and aerial videography.',
     rig: 'drone',
     portfolio: 'corporate-institutional',
+    pillar: 'Aerial / Drone Cinematography & Industrial Survey',
+    og: {
+      src: '/og/drone-aerial-videography-bhubaneswar.jpg',
+      alt: 'Aerial drone view of the Rath Yatra procession at Puri, Odisha — the chariot on Grand Road with crowds filling the street to the horizon',
+    },
+    /* The same rule as the rest of this entry: PROCESS, never credential. No
+       sentence below says or implies a pilot certificate. "Survey" is used in
+       the sense the homepage portfolio card already offers ("land survey and
+       mapping"), and measured outputs are described as a scoping question
+       rather than promised, because an orthomosaic is a different flight plan
+       from a progress film. */
+    specs: [
+      {
+        id: 'institutions',
+        h2: 'Drone videography services for institutions in Odisha',
+        service: 'Drone videography for institutions',
+        lead:
+          'Universities, hospitals, schools and government campuses, filmed so their scale reads in the opening seconds of a film. Institutional sites often sit near airports or protected buildings, so the airspace check comes first — and written permission from whoever controls the site comes second.',
+      },
+      {
+        id: 'industrial-survey',
+        h2: 'Industrial drone survey video & aerial progress tracking',
+        items: [
+          {
+            id: 'industrial-drone-survey',
+            h3: 'Industrial drone survey video',
+            body:
+              'Mines, ports, solar parks, plants and pipelines — assets too large or too hazardous to walk. Industrial drone survey video in Odisha is flown under your site safety plan, after a ground brief with the site and security teams, and delivered as graded 4K for inspection reviews and stakeholder reports.',
+          },
+          {
+            id: 'aerial-survey-construction',
+            h3: 'Aerial survey and photography for construction',
+            body:
+              'Progress sets shot to a repeatable flight path, so month three lines up against month one frame for frame. Aerial survey and photography in Bhubaneswar for builders and contractors is flown at the same point in each cycle. If you need measured outputs — orthomosaics, volumes, contours — say so at the brief, because that is a mapping flight with its own plan and ground control.',
+          },
+        ],
+      },
+    ],
     videos: [
       { id: 'ZCV0WhJPVKg', thumb: 'maxresdefault', title: 'Drone portfolio' },
       { id: '3SKW4GwPV20', thumb: 'maxresdefault', title: 'Live streaming from height — drone rental' },
@@ -423,10 +644,10 @@ export const services: Service[] = [
   {
     slug: 'studio-rental-bhubaneswar',
     name: 'Studio Rental',
-    h1: 'Studio Rental in Bhubaneswar',
-    title: 'Studio Rental in Bhubaneswar | Beyond Pixel Studio',
+    h1: 'Photo Studio Rental in Bhubaneswar',
+    title: 'Studio Rental Bhubaneswar | Cyclorama - Beyond Pixel Studio',
     description:
-      'Shooting floor with lighting, backdrops and grip available on hourly and day rates in Patia, Bhubaneswar. Check availability.',
+      'Photo studio on rent in Patia: cyclorama, chroma, product and podcast setups, lit before you arrive. Serving Bhubaneswar, Cuttack, and across Odisha.',
     summary: 'Shooting floor with lighting, backdrops and grip.',
     audience: 'For teams who need a controlled space by the hour or the day.',
     /**
@@ -464,7 +685,7 @@ export const services: Service[] = [
       {
         q: 'Can we book by the hour, or only for a full day?',
         a:
-          'Both hourly and day bookings. [PRICING TBD — confirm with Rajesh] Rates are not published here yet; ask and we will send the current rate card rather than quote you a number that has moved.',
+          'Both hourly and day bookings. Rates are not published here yet; ask and we will send the current rate card rather than quote you a number that has moved.',
       },
       {
         q: 'Can we bring our own crew and equipment?',
@@ -480,15 +701,82 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like to check studio rental availability and rates.',
     rig: 'studio',
     portfolio: 'corporate-institutional',
+    pillar: 'Professional Studio & Floor Rental',
+    og: {
+      src: '/og/studio-rental-bhubaneswar.jpg',
+      alt: 'Studio on rent in Patia, Bhubaneswar, rigged for a podcast — presenter at the desk behind a vision switcher, camera and key light in the foreground',
+    },
+    /* STILL NO DIMENSIONS, deliberately, for the reason in the comment above
+       `intro`. The cyclorama lead below turns that gap into a process — send
+       the frame size, get a yes or no before booking — instead of printing a
+       floor size nobody has measured. */
+    specs: [
+      {
+        id: 'cyclorama-chroma',
+        h2: 'Cyclorama & chroma floor specs for commercial shoots',
+        lead:
+          'A photography studio on rent in Bhubaneswar is only useful if the floor takes your setup. Send the frame size, the number of people in shot and whether anything moves, and we confirm the floor covers it before you book — not on the day.',
+        items: [
+          {
+            id: 'cyclorama-studio',
+            h3: 'Cyclorama studio on rent',
+            body:
+              'A lit cyclorama: an infinity cove where the wall curves into the floor, so there is no horizon line behind the subject. It is the setup for full-length fashion, product-on-white and movement, where the background has to vanish. Book the cyclorama studio on rent in Bhubaneswar with your frame size, and the cove is lit before your call time.',
+          },
+          {
+            id: 'chroma-studio',
+            h3: 'Chroma studio on rent',
+            body:
+              'A chroma green backdrop for keying: presenters over graphics, product over a generated scene, talent composited into a location you could not travel to. Chroma studio on rent in Bhubaneswar only keys cleanly if the green is lit evenly and the subject stands clear of it, so the backdrop and the talent are lit separately to keep green spill off hair and edges.',
+          },
+        ],
+      },
+      {
+        id: 'product-studio',
+        h2: 'Product shoot studio for catalogue and tabletop',
+        items: [
+          {
+            id: 'product-shoot-studio',
+            h3: 'Product shoot studio',
+            body:
+              'Tabletop sets, sweeps and controlled light for catalogue, packaging and campaign work. A product shoot studio in Bhubaneswar saves a day on location: the light does not move, so forty SKUs match from the first frame to the last.',
+          },
+          {
+            id: 'ecommerce-product-shoot',
+            h3: 'E-commerce product shoot studio',
+            body:
+              'Marketplace images shot to the platform\'s rules — for an Amazon main image that means a pure white background with the product filling at least 85% of the frame. In an ecommerce product shoot studio in Bhubaneswar that spec is set once, at the start, and held for the whole run.',
+          },
+        ],
+      },
+      {
+        id: 'podcast-studio',
+        h2: 'Podcast recording studio in Bhubaneswar',
+        service: 'Podcast recording studio',
+        lead:
+          'Multi-mic video podcasting in a treated room: a microphone per person on its own track, three cameras at eye level, and lighting already rigged when you arrive, so the session starts with the conversation rather than an hour of setup. The photographs below are real recordings in it.',
+        link: {
+          href: '/blog/recording-a-video-podcast-that-people-finish/',
+          text: 'How to record a video podcast people actually finish →',
+        },
+      },
+      {
+        id: 'video-studio',
+        h2: 'Video shoot studio rental with lighting & grip',
+        service: 'Video shoot studio rental',
+        lead:
+          'For interviews, explainers, music and brand content, video shoot studio rental in Bhubaneswar comes with continuous LED and strobe lighting, modifiers, C-stands, flags and a monitor for client viewing, included in the rate rather than itemised. The same floor works as a photo studio on rent in Bhubaneswar by the hour or the day — bring your own crew, or add ours.',
+      },
+    ],
     images: [
       {
         src: '/work/in-studio-podcast.webp',
-        alt: 'The studio rigged for a podcast — presenter at the desk behind a vision switcher, key light and camera in the foreground, branded backdrop behind',
+        alt: 'Podcast recording studio in Bhubaneswar rigged for a session — presenter at the desk behind a vision switcher, key light and camera in the foreground, branded backdrop behind',
         caption: 'The room in Patia, rigged for a podcast',
       },
       {
         src: '/work/reliance-foundation-podcast.webp',
-        alt: 'The podcast set lit and rigged before the guests arrive — armchairs, boom microphones and planting against a glazed wall',
+        alt: 'Podcast set at the Patia studio, lit and rigged before the guests arrive — armchairs, boom microphones and planting against a glazed wall',
         caption: 'Lit and rigged before anyone arrives',
       },
       {

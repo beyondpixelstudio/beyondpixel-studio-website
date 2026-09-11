@@ -98,7 +98,12 @@ const breadcrumb = {
 };
 ---
 
-<Base title={service.title} description={service.description}>
+<Base
+  title={service.title}
+  description={service.description}
+  ogImage={service.og?.src}
+  ogImageAlt={service.og?.alt}
+>
   <script
     type="application/ld+json"
     is:inline
@@ -206,6 +211,45 @@ const breadcrumb = {
       </div>
     </div>
   </section>
+
+  {/* -------------------------------------------------------------- SPECS
+      The keyword-cluster sections, one h2 each with h3 services beneath. The
+      sitewide offer catalogue in Base.astro is built from this same array, so
+      every Service in the schema is a heading on this page.
+
+      Banding is counted from the END: the WORK section after these is always
+      banded, so the last spec section is always plain and the two never merge
+      into one undivided stripe, however many sections a service has. */}
+  {service.specs?.map((sec, si, all) => (
+    <section
+      id={sec.id}
+      class:list={['section', 'specsec', (all.length - 1 - si) % 2 === 1 && 'section--band']}
+    >
+      <div class="wrap">
+        <div class="sechead">
+          <h2>{sec.h2}</h2>
+          {sec.lead && <p>{sec.lead}</p>}
+          {sec.link && (
+            <p class="spec__more"><a href={sec.link.href}>{sec.link.text}</a></p>
+          )}
+        </div>
+
+        {sec.items?.length ? (
+          <ul class="specs">
+            {sec.items.map((it, n) => (
+              <li id={it.id} class="spec panel" data-reveal style={`--reveal-delay:${n * 55}ms`}>
+                <h3 class="spec__h">{it.h3}</h3>
+                <p class="spec__b">{it.body}</p>
+                {it.href && (
+                  <a class="spec__link" href={it.href}>{it.hrefText ?? it.h3}</a>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </section>
+  ))}
 
   {/* --------------------------------------------------------------- WORK */}
   <section class="section section--band">
@@ -414,6 +458,24 @@ const breadcrumb = {
     .shead:has(.rig__gl.is-live) > .wrap { width: 100%; }
   }
   .shead__lead { margin-top: var(--s-4); }
+
+  /* --- Keyword-cluster sections -------------------------------------------
+     Two across from tablet up. A single column of six cards on a laptop
+     is a scroll with no shape; three across leaves the body copy at ~30
+     characters a line, which is too narrow for sentences this long. */
+  .specsec { scroll-margin-top: 90px; }
+  .specs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 760px) { .specs { grid-template-columns: repeat(2, 1fr); } }
+  .spec {
+    padding: var(--s-4);
+    display: grid; align-content: start; gap: var(--s-2);
+    scroll-margin-top: 90px;
+  }
+  .spec__h { margin: 0; color: var(--text); font-size: 1.08rem; line-height: 1.3; }
+  .spec__b { margin: 0; color: var(--text-muted); font-size: .94rem; line-height: 1.65; }
+  .spec__link, .spec__more a { color: var(--ember-text); font-size: .92rem; }
+  .spec__link { margin-top: var(--s-1); justify-self: start; }
+  .spec__more { margin-top: var(--s-3); }
   .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
 
   /* --- Photo grid ---------------------------------------------------------
