@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Conference stream layout: presenter slides full frame from a direct laptop feed, the speaker in a picture-in-picture box, and a name strap along the bottom">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#F2704A"/></marker>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.an{stroke:#F2704A;stroke-width:2;fill:none}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">THE CONFERENCE LAYOUT: SLIDES FIRST</text>
+
+<rect x="60" y="96" width="720" height="405" rx="10" fill="#f4f3f7"/>
+<rect x="100" y="126" width="420" height="22" rx="4" fill="#2a2440"/>
+<rect x="100" y="160" width="300" height="12" rx="3" fill="#8f89a8"/>
+<line x1="120" y1="360" x2="500" y2="360" stroke="#2a2440" stroke-width="3"/>
+<line x1="120" y1="200" x2="120" y2="360" stroke="#2a2440" stroke-width="3"/>
+<polyline points="120,215 180,232 240,262 300,284 360,300 420,318 480,330" fill="none" stroke="#1B6CA8" stroke-width="5"/>
+<polyline points="120,215 180,245 240,290 300,318 360,336 420,346 480,352" fill="none" stroke="#C7431E" stroke-width="5"/>
+<text x="130" y="384" font-family="system-ui,sans-serif" font-size="15" fill="#2a2440">Months from diagnosis</text>
+<rect x="560" y="200" width="190" height="14" rx="3" fill="#8f89a8"/><rect x="560" y="226" width="160" height="14" rx="3" fill="#8f89a8"/><rect x="560" y="252" width="175" height="14" rx="3" fill="#8f89a8"/>
+
+<rect x="566" y="296" width="200" height="118" rx="8" fill="#241a2e" stroke="#FAFAF8" stroke-opacity=".5" stroke-width="2"/>
+<circle cx="666" cy="338" r="22" fill="#6b6484"/><rect x="630" y="364" width="72" height="50" rx="20" fill="#6b6484"/>
+
+<rect x="60" y="440" width="470" height="48" rx="0" fill="#C7431E" opacity=".95"/>
+<text class="t" x="80" y="471" font-size="19" font-weight="700">Speaker name</text>
+<text x="226" y="471" font-family="system-ui,sans-serif" font-size="16" fill="#ffe7de">Designation, Institution</text>
+
+<path class="an" d="M812 150 C790 150 760 170 530 175" marker-end="url(#a)"/>
+<text class="t" x="820" y="146" font-size="19" font-weight="600">Slides, full frame</text>
+<text class="m" x="820" y="172" font-size="15">direct feed from the laptop —</text>
+<text class="m" x="820" y="194" font-size="15">sharp, exactly as designed</text>
+
+<path class="an" d="M812 318 C796 330 786 344 772 352" marker-end="url(#a)"/>
+<text class="t" x="820" y="310" font-size="19" font-weight="600">Speaker, picture-in-picture</text>
+<text class="m" x="820" y="336" font-size="15">so delegates see who is talking</text>
+
+<path class="an" d="M812 470 L538 466" marker-end="url(#a)"/>
+<text class="t" x="820" y="462" font-size="19" font-weight="600">Name strap</text>
+<text class="m" x="820" y="488" font-size="15">prepared from the programme</text>
+
+<line x1="60" y1="540" x2="1140" y2="540" stroke="#FAFAF8" stroke-opacity=".08"/>
+<text class="t" x="60" y="584" font-size="19" font-weight="700" style="fill:#F09A86">Filmed off the projector</text>
+<text class="m" x="60" y="614" font-size="15">grey, low contrast, unreadable axis labels</text>
+<text class="t" x="620" y="584" font-size="19" font-weight="700" style="fill:#7FD1A0">Taken as a direct feed</text>
+<text class="m" x="620" y="614" font-size="15">full resolution — every figure legible online</text>
+</svg>

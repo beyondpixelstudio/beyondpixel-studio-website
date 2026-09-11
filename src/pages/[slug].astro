@@ -19,6 +19,7 @@ import ServiceRig from '../components/ServiceRig.astro';
 import GoogleReviews from '../components/GoogleReviews.astro';
 import { business, wa } from '../data/business.ts';
 import { services } from '../data/services.ts';
+import { getCollection } from 'astro:content';
 
 export function getStaticPaths() {
   return services.map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
@@ -28,6 +29,11 @@ const { service } = Astro.props;
 
 /** Cross-links: every other service, so no page is a dead end. */
 const others = services.filter((s) => s.slug !== service.slug);
+
+/** This service's guides — the other half of the topic cluster. Newest first. */
+const guides = (await getCollection('blog'))
+  .filter((p) => p.data.service === service.slug)
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
 
 const where = service.national
   ? 'Delivered nationwide from Bhubaneswar.'
@@ -365,6 +371,32 @@ const breadcrumb = {
 
   <div class="letterbox"></div>
 
+  {/* ------------------------------------------------------------ GUIDES
+      The informational posts that support this page. They rank for the
+      questions people ask before they buy; this list is how that traffic,
+      and the link equity behind it, finds its way back here — and how a
+      crawler learns the two belong together. */}
+  {guides.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="sechead">
+          <p class="eyebrow">Before you book</p>
+          <h2>Guides on {service.name.toLowerCase()}</h2>
+        </div>
+        <ul class="guides">
+          {guides.map((g) => (
+            <li>
+              <a class="guide panel" href={`/blog/${g.id}/`}>
+                <span class="guide__k mono">{g.data.kicker}</span>
+                <span class="guide__t">{g.data.title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
   {/* ------------------------------------------------------------ OTHERS */}
   <section class="section">
     <div class="wrap">
@@ -476,6 +508,17 @@ const breadcrumb = {
   .spec__link, .spec__more a { color: var(--ember-text); font-size: .92rem; }
   .spec__link { margin-top: var(--s-1); justify-self: start; }
   .spec__more { margin-top: var(--s-3); }
+
+  .guides { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 760px) { .guides { grid-template-columns: repeat(2, 1fr); } }
+  .guide {
+    display: grid; gap: 6px; height: 100%;
+    padding: var(--s-3) var(--s-4); text-decoration: none;
+    transition: transform .2s ease;
+  }
+  .guide:hover { transform: translateY(-2px); }
+  .guide__k { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember-text); }
+  .guide__t { color: var(--text); font-weight: 600; line-height: 1.35; }
   .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
 
   /* --- Photo grid ---------------------------------------------------------

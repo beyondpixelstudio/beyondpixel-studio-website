@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Hybrid event audio routing: stage and audience microphones into the venue sound desk, the desk feeding the room speakers, the stream and a remote speaker, with the remote speaker sent the room mix minus their own voice">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16121F"/><stop offset="1" stop-color="#0A0814"/></linearGradient>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ADA6C8"/></marker>
+<marker id="gr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3F9D6B"/></marker>
+<marker id="em" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#F2704A"/></marker>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.box{fill:url(#g);stroke:#FAFAF8;stroke-opacity:.12}
+.ln{stroke:#ADA6C8;stroke-width:2;fill:none}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">HYBRID EVENT AUDIO: THE MIX-MINUS</text>
+
+<rect class="box" x="60" y="140" width="270" height="72" rx="12"/><text class="t" x="84" y="172" font-size="20" font-weight="600">Stage and panel mics</text><text class="m" x="84" y="196" font-size="15">in the room</text>
+<rect class="box" x="60" y="250" width="270" height="72" rx="12"/><text class="t" x="84" y="282" font-size="20" font-weight="600">Audience Q&amp;A mic</text><text class="m" x="84" y="306" font-size="15">in the room</text>
+<path class="ln" d="M330 176 C390 176 400 230 446 230" marker-end="url(#a)"/>
+<path class="ln" d="M330 286 C390 286 400 262 446 262" marker-end="url(#a)"/>
+
+<rect x="450" y="170" width="300" height="160" rx="16" fill="#1d1426" stroke="#F2704A" stroke-opacity=".6" stroke-width="2"/>
+<text class="t" x="476" y="216" font-size="24" font-weight="700">Venue sound desk</text>
+<text class="m" x="476" y="246" font-size="16">+ production switcher</text>
+<text class="m" x="476" y="290" font-size="15">every source in,</text>
+<text class="m" x="476" y="312" font-size="15">a different mix out</text>
+
+<rect class="box" x="860" y="100" width="280" height="64" rx="12"/><text class="t" x="884" y="130" font-size="19" font-weight="600">Room speakers (PA)</text><text class="m" x="884" y="152" font-size="14">full mix</text>
+<rect class="box" x="860" y="184" width="280" height="64" rx="12"/><text class="t" x="884" y="214" font-size="19" font-weight="600">Stream / webcast</text><text class="m" x="884" y="236" font-size="14">full mix</text>
+<path class="ln" d="M750 205 C810 205 810 132 856 132" marker-end="url(#a)"/>
+<path class="ln" d="M750 220 C810 220 810 216 856 216" marker-end="url(#a)"/>
+
+<rect x="860" y="320" width="280" height="90" rx="12" fill="#12211a" stroke="#3F9D6B" stroke-opacity=".7" stroke-width="2"/>
+<text class="t" x="884" y="356" font-size="20" font-weight="600">Remote speaker</text><text class="m" x="884" y="382" font-size="15">on a video call</text>
+<path d="M856 390 C800 390 790 315 754 315" stroke="#F2704A" stroke-width="2.5" fill="none" marker-end="url(#em)"/>
+<text class="m" x="770" y="428" font-size="14" style="fill:#F2704A">their voice in</text>
+<path d="M750 285 C800 285 810 345 856 345" stroke="#3F9D6B" stroke-width="2.5" fill="none" marker-end="url(#gr)"/>
+<text class="m" x="600" y="370" font-size="14" style="fill:#3F9D6B" text-anchor="middle">room mix MINUS their own voice</text>
+
+<rect x="60" y="480" width="525" height="130" rx="14" fill="#1f1016" stroke="#C4553F" stroke-opacity=".5"/>
+<text class="t" x="86" y="518" font-size="19" font-weight="700" style="fill:#F09A86">Without a mix-minus</text>
+<text class="m" x="86" y="550" font-size="15">The remote speaker hears their own voice</text>
+<text class="m" x="86" y="574" font-size="15">come back a second late — an echo that</text>
+<text class="m" x="86" y="598" font-size="15">stops them mid-sentence.</text>
+<rect x="615" y="480" width="525" height="130" rx="14" fill="#12211a" stroke="#3F9D6B" stroke-opacity=".5"/>
+<text class="t" x="641" y="518" font-size="19" font-weight="700" style="fill:#7FD1A0">With a mix-minus</text>
+<text class="m" x="641" y="550" font-size="15">They hear the room, the moderator and the</text>
+<text class="m" x="641" y="574" font-size="15">panel — and never themselves. Set up and</text>
+<text class="m" x="641" y="598" font-size="15">tested before doors open.</text>
+</svg>

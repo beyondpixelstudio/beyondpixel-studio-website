@@ -7,6 +7,7 @@ kicker: 'AI in production'
 hero: '/blog/ai-in-the-production-pipeline.svg'
 heroAlt: 'Diagram of an eight-stage video production pipeline, each stage marked according to whether AI does the work, assists a person, or cannot yet be trusted with it'
 tags: ['AI', 'Production', 'Workflow']
+service: 'ai-video-production'
 ---
 
 Two claims are made about AI video, and both are wrong.

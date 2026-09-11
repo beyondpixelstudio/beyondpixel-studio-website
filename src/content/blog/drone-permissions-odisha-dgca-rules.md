@@ -8,6 +8,7 @@ hero: '/blog/dgca-airspace-zones.svg'
 heroAlt: 'Diagram of Indian drone airspace showing green, yellow and red zones around an airport, with the 400 foot ceiling marked and the permission required in each zone'
 tags: ['Drone', 'Regulation', 'Odisha']
 featured: true
+service: 'drone-aerial-videography-bhubaneswar'
 ---
 
 "Can you get a drone shot of the campus?" is one of the most common requests we get, and

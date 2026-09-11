@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="An ad film stage by stage: brief, treatment, pre-production meeting, shoot, offline edit, online finish and deliverables, with the cost of a change rising steeply after the pre-production meeting">
+<defs>
+<linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2704A" stop-opacity=".35"/><stop offset="1" stop-color="#F2704A" stop-opacity="0"/></linearGradient>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">AN AD FILM, STAGE BY STAGE</text>
+
+<line x1="110" y1="170" x2="1090" y2="170" stroke="#FAFAF8" stroke-opacity=".18" stroke-width="3"/>
+<g>
+<circle cx="110" cy="170" r="13" fill="#05040B" stroke="#ADA6C8" stroke-width="3"/>
+<circle cx="273" cy="170" r="13" fill="#05040B" stroke="#ADA6C8" stroke-width="3"/>
+<circle cx="437" cy="170" r="15" fill="#F2704A"/>
+<circle cx="600" cy="170" r="13" fill="#05040B" stroke="#ADA6C8" stroke-width="3"/>
+<circle cx="763" cy="170" r="13" fill="#05040B" stroke="#ADA6C8" stroke-width="3"/>
+<circle cx="927" cy="170" r="13" fill="#05040B" stroke="#ADA6C8" stroke-width="3"/>
+<circle cx="1090" cy="170" r="13" fill="#05040B" stroke="#ADA6C8" stroke-width="3"/>
+</g>
+<g text-anchor="middle">
+<text class="t" x="110" y="222" font-size="20" font-weight="700">Brief</text><text class="m" x="110" y="248" font-size="14">objective, media,</text><text class="m" x="110" y="268" font-size="14">mandatories</text>
+<text class="t" x="273" y="222" font-size="20" font-weight="700">Treatment</text><text class="m" x="273" y="248" font-size="14">idea, script,</text><text class="m" x="273" y="268" font-size="14">storyboard</text>
+<text class="t" x="437" y="222" font-size="20" font-weight="700" style="fill:#F2704A">PPM</text><text class="m" x="437" y="248" font-size="14">everything</text><text class="m" x="437" y="268" font-size="14">signed off</text>
+<text class="t" x="600" y="222" font-size="20" font-weight="700">Shoot</text><text class="m" x="600" y="248" font-size="14">1–3 days,</text><text class="m" x="600" y="268" font-size="14">takes approved</text>
+<text class="t" x="763" y="222" font-size="20" font-weight="700">Offline</text><text class="m" x="763" y="248" font-size="14">story and</text><text class="m" x="763" y="268" font-size="14">pacing</text>
+<text class="t" x="927" y="222" font-size="20" font-weight="700">Online</text><text class="m" x="927" y="248" font-size="14">grade, VFX,</text><text class="m" x="927" y="268" font-size="14">sound, mix</text>
+<text class="t" x="1090" y="222" font-size="20" font-weight="700">Delivery</text><text class="m" x="1090" y="248" font-size="14">master, cut-</text><text class="m" x="1090" y="268" font-size="14">downs, ratios</text>
+</g>
+
+<line x1="437" y1="120" x2="437" y2="152" stroke="#F2704A" stroke-width="2" stroke-dasharray="8 7"/>
+<line x1="437" y1="286" x2="437" y2="600" stroke="#F2704A" stroke-width="2" stroke-dasharray="8 7"/>
+<text class="t" x="452" y="128" font-size="16" font-weight="700" style="fill:#F2704A">Changes after this line cost money</text>
+
+<line x1="110" y1="580" x2="1090" y2="580" stroke="#FAFAF8" stroke-opacity=".15"/>
+<path d="M110 566 L273 562 L437 552 C520 540 560 500 600 470 C660 425 720 395 763 380 C840 355 880 345 927 338 L1090 330 L1090 580 L110 580 Z" fill="url(#area)"/>
+<path d="M110 566 L273 562 L437 552 C520 540 560 500 600 470 C660 425 720 395 763 380 C840 355 880 345 927 338 L1090 330" fill="none" stroke="#F2704A" stroke-width="3"/>
+<text class="m" x="120" y="540" font-size="15">cost of changing your mind</text>
+<text class="t" x="118" y="632" font-size="17" font-weight="600">Cheap: change the storyboard</text>
+<text class="t" x="760" y="632" font-size="17" font-weight="600">Expensive: re-shoot or re-finish</text>
+</svg>

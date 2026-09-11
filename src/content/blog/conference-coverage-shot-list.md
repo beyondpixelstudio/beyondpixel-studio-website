@@ -2,12 +2,14 @@
 title: 'The conference shot list: what to capture so the footage is still useful in six months'
 description: 'Most event coverage is shot for the day and useless by the next quarter. The shots that keep earning, and the planning that decides whether they exist.'
 seoTitle: 'Conference photo and video shot list | Beyond Pixel'
+updated: 2026-09-11
 published: 2026-08-31
 kicker: 'Event coverage'
 hero: '/work/swamashree-conclave.webp'
 heroAlt: 'Conference and conclave coverage at the Swamashree conclave in Bhubaneswar, photographed by Beyond Pixel Studio'
 tags: ['Event coverage', 'Photography', 'Conferences']
 featured: true
+service: 'commercial-photography-videography-bhubaneswar'
 ---
 
 Six months after a conference, somebody in marketing opens the folder looking for one
@@ -136,3 +138,9 @@ purpose. Cover the corridor. Take audio from the desk. Deliver a shortlist.
 
 Do those six things and the folder is still working next year, which is the only test of
 event coverage that means anything.
+
+Our [corporate event videographer in Bhubaneswar](/live-event-streaming-bhubaneswar/#corporate-event-videography)
+coverage is built on exactly this list — launches, AGMs, dealer meets and award nights, filmed for the
+recording with a highlight cut and stills — and the same team travels as your
+[corporate videographer in Odisha](/live-event-streaming-bhubaneswar/#corporate-videography-odisha)
+for plant events and regional meets outside the twin city.

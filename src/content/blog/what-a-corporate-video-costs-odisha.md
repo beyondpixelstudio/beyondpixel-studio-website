@@ -8,6 +8,7 @@ hero: '/work/nalco-foundation-day.webp'
 heroAlt: 'Corporate event coverage at a NALCO foundation day in Bhubaneswar, shot by Beyond Pixel Studio'
 tags: ['Corporate video', 'Budgets', 'Odisha']
 featured: true
+service: 'corporate-video-production-bhubaneswar'
 ---
 
 The first question on almost every call is the same one: *what does a corporate video cost?*

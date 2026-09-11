@@ -2,12 +2,14 @@
 title: 'Live streams fail at the venue, not in the edit: what to check before the day'
 description: 'Almost every failed live stream is a network failure, not a production one. The upload figures that matter, and the test to run a week before the day.'
 seoTitle: 'Why live streams fail: venue internet | Beyond Pixel'
+updated: 2026-09-11
 published: 2026-08-31
 kicker: 'Live production'
 hero: '/work/para-athletics-broadcast-gallery.webp'
 heroAlt: 'Broadcast gallery with multi-camera switching desk and monitors during para athletics coverage in Bhubaneswar'
 tags: ['Live streaming', 'Events', 'Bhubaneswar']
 featured: true
+service: 'live-event-streaming-bhubaneswar'
 ---
 
 When a live stream goes wrong in front of two thousand people, the cameras were almost never
@@ -132,3 +134,8 @@ control.
 
 What we can promise is that the failure modes above are checked before your date, and that
 if a venue's network cannot carry your event, you will hear it from us early enough to fix it.
+
+It is how our [live streaming services for events in Bhubaneswar](/live-event-streaming-bhubaneswar/)
+are run: the line tested a week out, a bonded backup on a different carrier, and a local recording
+that does not depend on any of it. If you are choosing kit, [ATEM or vMix](/blog/multi-camera-live-streaming-setup-atem-vmix/)
+explains what a switched stream is actually made of.

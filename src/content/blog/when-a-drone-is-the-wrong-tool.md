@@ -7,6 +7,7 @@ kicker: 'Aerial'
 hero: '/work/drone-aerial-services.webp'
 heroAlt: 'Aerial drone photograph of a large public gathering in Odisha, showing the scale of the crowd from above'
 tags: ['Drone', 'Aerial', 'Production']
+service: 'drone-aerial-videography-bhubaneswar'
 ---
 
 A drone is in almost every brief we receive, and in a meaningful share of them it should not

@@ -333,7 +333,7 @@ export const services: Service[] = [
             id: 'real-estate-videography',
             h3: 'Real estate videography',
             body:
-              'Show-flat and amenity walkthroughs, finished interiors, and progress films for builders and developers. Where our real estate videography services in Bhubaneswar produce a film that will advertise a registered project, the RERA registration number and the authority\'s website go on the end card — the Act requires both.',
+              'Show-flat and amenity walkthroughs, finished interiors, and progress films for builders and developers. Where our real estate videography services in Bhubaneswar produce a film that will advertise a registered project, the RERA registration number and the authority\'s website go on the end card and into the voiceover: the Act requires both details, and Odisha RERA requires the number to be clearly audible in TV and digital ads.',
           },
           {
             id: 'commercial-photography',

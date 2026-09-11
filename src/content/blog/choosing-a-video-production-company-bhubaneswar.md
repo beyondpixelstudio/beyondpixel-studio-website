@@ -8,6 +8,7 @@ hero: '/blog/choosing-a-studio.svg'
 heroAlt: 'Diagram comparing an itemised production quote against a single lump-sum figure, showing which lines are hidden in each'
 tags: ['Corporate video', 'Buying guide', 'Bhubaneswar']
 featured: true
+service: 'corporate-video-production-bhubaneswar'
 ---
 
 Most people commissioning a corporate video have not commissioned one before. That is

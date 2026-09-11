@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { business } from '../../data/business.ts';
+import { services } from '../../data/services.ts';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -48,10 +49,19 @@ const breadcrumb = {
   ],
 };
 
+/* Related by TOPIC, not by date. It used to be "the two newest posts", which
+   meant every article on the site linked to the same two articles whatever it
+   was about — internal links that told a crawler nothing about which pages
+   belong together. Now: same service first, then shared tags, then recency
+   only as the tiebreak. */
+const service = services.find((s) => s.slug === post.data.service);
+const score = (p: typeof post) =>
+  (post.data.service && p.data.service === post.data.service ? 10 : 0) +
+  p.data.tags.filter((t) => post.data.tags.includes(t)).length;
 const related = (await getCollection('blog'))
   .filter((p) => p.id !== post.id)
-  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
-  .slice(0, 2);
+  .sort((a, b) => score(b) - score(a) || b.data.published.valueOf() - a.data.published.valueOf())
+  .slice(0, 3);
 ---
 
 <Base title={post.data.seoTitle ?? post.data.title} description={post.data.description}>
@@ -132,6 +142,11 @@ const related = (await getCollection('blog'))
       </p>
       <div class="cta__btns">
         <a class="btn btn--lg" href="/contact/">Request a custom quote</a>
+        {/* The service by its own name, which is its target keyword — the
+            same anchor text the rest of the site uses for it. */}
+        {service && (
+          <a class="btn btn--ghost btn--lg" href={`/${service.slug}/`}>{service.name}</a>
+        )}
         <button type="button" class="btn btn--ghost btn--lg" data-open-portfolio>
           <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M3 14v3a1 1 0 001 1h12a1 1 0 001-1v-3M10 2v11M6 9l4 4 4-4" />
@@ -188,6 +203,22 @@ const related = (await getCollection('blog'))
   .prose :global(figcaption) {
     margin-top: var(--s-2); font-size: 12px; line-height: 1.55;
     color: var(--text-dim);
+  }
+
+  /* Tables. First used by the drone survey guide's "which one do you need"
+     comparison. display:block + overflow-x lets a wide table scroll inside
+     its own box on a phone instead of pushing the whole page sideways. */
+  .prose :global(table) {
+    display: block; overflow-x: auto; max-width: 100%;
+    border-collapse: collapse; margin: var(--s-4) 0; font-size: 15px;
+  }
+  .prose :global(th), .prose :global(td) {
+    text-align: left; vertical-align: top; padding: 10px 14px;
+    border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  }
+  .prose :global(th) {
+    color: var(--text); font-weight: 600;
+    border-bottom-color: color-mix(in srgb, var(--ember-text) 55%, transparent);
   }
 
   .prose :global(hr) {

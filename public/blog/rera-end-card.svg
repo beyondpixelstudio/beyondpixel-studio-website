@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="End card of a property video for Odisha: the RERA registration number and the Odisha RERA website on screen, with the voiceover reading the number aloud, in every cut of the ad">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2440"/><stop offset="1" stop-color="#120e1c"/></linearGradient>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#F2704A"/></marker>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.n{font-family:'DM Mono',ui-monospace,monospace;fill:#F2704A}
+.an{stroke:#F2704A;stroke-width:2;fill:none}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">THE LAST FIVE SECONDS OF A PROPERTY AD IN ODISHA</text>
+
+<rect x="60" y="96" width="720" height="405" rx="10" fill="url(#sky)" stroke="#FAFAF8" stroke-opacity=".12"/>
+<rect x="150" y="190" width="90" height="190" fill="#3a3354"/><rect x="250" y="150" width="110" height="230" fill="#4a4266"/><rect x="370" y="210" width="80" height="170" fill="#3a3354"/>
+<g fill="#D9A441" opacity=".75"><rect x="170" y="210" width="14" height="14"/><rect x="206" y="210" width="14" height="14"/><rect x="170" y="246" width="14" height="14"/><rect x="274" y="176" width="14" height="14"/><rect x="310" y="176" width="14" height="14"/><rect x="274" y="212" width="14" height="14"/><rect x="310" y="248" width="14" height="14"/><rect x="390" y="232" width="14" height="14"/></g>
+<rect x="60" y="380" width="720" height="121" fill="#0b0912" opacity=".92"/>
+<text class="t" x="500" y="236" font-size="30" font-weight="700">Project name</text>
+<text class="m" x="500" y="268" font-size="17">2 &amp; 3 BHK · Bhubaneswar</text>
+<text class="t" x="90" y="424" font-size="20" font-weight="600">RERA Regn. No.  <tspan class="n">— — — — — — — —</tspan></text>
+<text class="t" x="90" y="460" font-size="20" font-weight="600">rera.odisha.gov.in</text>
+<g transform="translate(560 414)"><rect width="190" height="56" rx="28" fill="#1d1426" stroke="#F2704A" stroke-opacity=".7"/>
+<g fill="#F2704A"><rect x="22" y="22" width="5" height="12" rx="2"/><rect x="32" y="16" width="5" height="24" rx="2"/><rect x="42" y="10" width="5" height="36" rx="2"/><rect x="52" y="18" width="5" height="20" rx="2"/><rect x="62" y="14" width="5" height="28" rx="2"/></g>
+<text class="m" x="80" y="34" font-size="15" style="fill:#FAFAF8">VO reads it</text></g>
+
+<text class="n" x="820" y="130" font-size="20" font-weight="700">1</text><text class="t" x="846" y="130" font-size="20" font-weight="700">Registration number</text>
+<text class="m" x="846" y="156" font-size="15">copied from the certificate —</text>
+<text class="m" x="846" y="178" font-size="15">phase-wise if registered by phase</text>
+<text class="n" x="820" y="232" font-size="20" font-weight="700">2</text><text class="t" x="846" y="232" font-size="20" font-weight="700">ORERA website</text>
+<text class="m" x="846" y="258" font-size="15">rera.odisha.gov.in</text>
+<text class="n" x="820" y="312" font-size="20" font-weight="700">3</text><text class="t" x="846" y="312" font-size="20" font-weight="700">Spoken, not only shown</text>
+<text class="m" x="846" y="338" font-size="15">"clearly audible" on TV, radio</text>
+<text class="m" x="846" y="360" font-size="15">and digital media</text>
+<text class="n" x="820" y="414" font-size="20" font-weight="700">4</text><text class="t" x="846" y="414" font-size="20" font-weight="700">In every cut</text>
+<text class="m" x="846" y="440" font-size="15">the 60s film, the 30s, the</text>
+<text class="m" x="846" y="462" font-size="15">15s reel — each is an ad</text>
+
+<line x1="60" y1="540" x2="1140" y2="540" stroke="#FAFAF8" stroke-opacity=".08"/>
+<text class="m" x="60" y="584" font-size="16">RERA Act 2016, Section 11(2) · Odisha RERA Circular No. 2132, 27 July 2021</text>
+<text class="m" x="60" y="614" font-size="15" style="fill:#6E6796">Placeholder shown for the number. Use the project's own, exactly as registered.</text>
+</svg>

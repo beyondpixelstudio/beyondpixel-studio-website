@@ -7,6 +7,7 @@ kicker: 'Studio'
 hero: '/work/in-studio-podcast.webp'
 heroAlt: 'Multi-camera video podcast recording in progress at the Beyond Pixel Studio floor in Bhubaneswar'
 tags: ['Podcast', 'Studio', 'Audio']
+service: 'studio-rental-bhubaneswar'
 ---
 
 People will watch a podcast that looks ordinary. They will not finish one that sounds bad.

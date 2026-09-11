@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Signal flow of a multi-camera live stream: cameras and a presenter laptop into a vision switcher, graphics and venue audio joining it, the programme going to an encoder for the stream and separately to a local recorder">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16121F"/><stop offset="1" stop-color="#0A0814"/></linearGradient>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ADA6C8"/></marker>
+<marker id="gr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3F9D6B"/></marker>
+<marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#F2704A"/></marker>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.box{fill:url(#g);stroke:#FAFAF8;stroke-opacity:.12}
+.ln{stroke:#ADA6C8;stroke-width:2;fill:none}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">A MULTI-CAMERA LIVE STREAM, END TO END</text>
+
+<rect class="box" x="60" y="110" width="250" height="66" rx="12"/><text class="t" x="84" y="140" font-size="20" font-weight="600">Camera 1</text><text class="m" x="84" y="162" font-size="15">locked wide</text>
+<rect class="box" x="60" y="192" width="250" height="66" rx="12"/><text class="t" x="84" y="222" font-size="20" font-weight="600">Camera 2</text><text class="m" x="84" y="244" font-size="15">tight on lectern</text>
+<rect class="box" x="60" y="274" width="250" height="66" rx="12"/><text class="t" x="84" y="304" font-size="20" font-weight="600">Camera 3</text><text class="m" x="84" y="326" font-size="15">roaming</text>
+<rect class="box" x="60" y="356" width="250" height="66" rx="12"/><text class="t" x="84" y="386" font-size="20" font-weight="600">Presenter laptop</text><text class="m" x="84" y="408" font-size="15">direct feed</text>
+
+<path class="ln" d="M310 143 C380 143 390 250 448 250" marker-end="url(#a)"/>
+<path class="ln" d="M310 225 C380 225 390 275 448 275" marker-end="url(#a)"/>
+<path class="ln" d="M310 307 C380 307 390 300 448 300" marker-end="url(#a)"/>
+<path class="ln" d="M310 389 C380 389 390 325 448 325" marker-end="url(#a)"/>
+
+<rect x="450" y="210" width="300" height="160" rx="16" fill="#1d1426" stroke="#F2704A" stroke-opacity=".6" stroke-width="2"/>
+<text class="t" x="476" y="254" font-size="24" font-weight="700">Vision switcher</text>
+<text class="m" x="476" y="284" font-size="17" style="fill:#F2704A">ATEM · vMix</text>
+<text class="m" x="476" y="316" font-size="15">an operator cutting</text>
+<text class="m" x="476" y="338" font-size="15">between sources live</text>
+
+<rect class="box" x="480" y="100" width="240" height="60" rx="12"/><text class="t" x="504" y="136" font-size="18" font-weight="600">Graphics, name straps</text>
+<path class="ln" d="M600 160 L600 206" marker-end="url(#a)"/>
+<rect class="box" x="480" y="420" width="240" height="60" rx="12"/><text class="t" x="504" y="456" font-size="18" font-weight="600">Venue sound desk</text>
+<path class="ln" d="M600 420 L600 374" marker-end="url(#a)"/>
+
+<rect class="box" x="860" y="150" width="280" height="66" rx="12"/><text class="t" x="884" y="182" font-size="20" font-weight="600">Encoder</text><text class="m" x="884" y="204" font-size="15">compresses the programme</text>
+<path class="ln" d="M750 260 C810 260 810 183 856 183" marker-end="url(#a)"/>
+<rect x="860" y="232" width="84" height="34" rx="17" fill="#241a2e"/><text class="m" x="874" y="255" font-size="14">YouTube</text>
+<rect x="952" y="232" width="92" height="34" rx="17" fill="#241a2e"/><text class="m" x="964" y="255" font-size="14">Facebook</text>
+<rect x="1052" y="232" width="88" height="34" rx="17" fill="#241a2e"/><text class="m" x="1064" y="255" font-size="14">Private</text>
+
+<rect x="860" y="330" width="280" height="80" rx="12" fill="#12211a" stroke="#3F9D6B" stroke-opacity=".7" stroke-width="2"/>
+<text class="t" x="884" y="364" font-size="20" font-weight="600">Local recorder</text><text class="m" x="884" y="390" font-size="15">full quality, no internet</text>
+<path d="M750 320 C810 320 810 370 856 370" stroke="#3F9D6B" stroke-width="2.5" fill="none" marker-end="url(#gr)"/>
+
+<line x1="60" y1="530" x2="1140" y2="530" stroke="#FAFAF8" stroke-opacity=".08"/>
+<text class="t" x="60" y="578" font-size="21" font-weight="600">The recording never depends on the internet.</text>
+<text class="m" x="60" y="610" font-size="16">If the stream drops, the event is still captured — and can be uploaded afterwards.</text>
+</svg>

@@ -2,12 +2,14 @@
 title: 'Live streaming a convocation: what actually decides whether it works'
 description: 'Bandwidth, the PA feed, camera positions and what to do when the venue internet fails — a practical guide for universities and institutions in Odisha.'
 seoTitle: 'Live streaming a convocation in Odisha | Beyond Pixel'
+updated: 2026-09-11
 published: 2026-08-26
 kicker: 'Event production'
 hero: '/blog/convocation-camera-plan.svg'
 heroAlt: 'Overhead plan of a convocation hall showing four camera positions, their coverage arcs, the audio feed from the PA desk and the encoder position'
 tags: ['Live streaming', 'Events', 'Institutions']
 featured: true
+service: 'live-event-streaming-bhubaneswar'
 ---
 
 A convocation is the least forgiving thing a camera crew can be asked to cover. It happens
@@ -152,3 +154,8 @@ camera rather than the desk, and there was no independent recording when the con
 went.
 
 None of those are expensive to fix. They just have to be decided before the hall fills up.
+
+A convocation is [multi-camera video production](/live-event-streaming-bhubaneswar/#multi-camera-setup)
+with no second take. Our [convocation live telecast setup in Bhubaneswar](/live-event-streaming-bhubaneswar/#convocation-live-telecast)
+is planned from your run sheet, with name supers prepared from the graduate list — and the recording
+is footage your [admissions team can use all year](/blog/campus-promotional-video-admissions/).

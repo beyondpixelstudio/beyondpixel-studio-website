@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="A marketplace main image to specification: a square frame on pure white RGB 255, the product filling at least 85 percent of it, at least 1000 pixels on the longest side for zoom, with a checklist of what is and is not allowed">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#F2704A"/></marker>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">A MARKETPLACE MAIN IMAGE, TO SPEC</text>
+
+<rect x="80" y="96" width="480" height="480" fill="#FFFFFF"/>
+<rect x="116" y="132" width="408" height="408" fill="none" stroke="#F2704A" stroke-width="2" stroke-dasharray="8 7"/>
+<text x="128" y="156" font-family="DM Mono,ui-monospace,monospace" font-size="15" fill="#C7431E">85% of the frame</text>
+<rect x="254" y="164" width="132" height="44" rx="10" fill="#2a2440"/>
+<path d="M232 214 L408 214 Q420 214 420 228 L420 520 Q420 540 400 540 L240 540 Q220 540 220 520 L220 228 Q220 214 232 214 Z" fill="#1B6CA8"/>
+<rect x="244" y="300" width="152" height="120" rx="10" fill="#FAFAF8" opacity=".92"/>
+<rect x="262" y="330" width="116" height="14" rx="3" fill="#1B6CA8"/><rect x="262" y="356" width="84" height="10" rx="3" fill="#8f89a8"/><rect x="262" y="376" width="96" height="10" rx="3" fill="#8f89a8"/>
+<text x="92" y="566" font-family="DM Mono,ui-monospace,monospace" font-size="15" fill="#6b6484">RGB 255 · 255 · 255</text>
+<path d="M584 100 L584 572" stroke="#F2704A" stroke-width="2" fill="none" marker-start="url(#a)" marker-end="url(#a)"/>
+<text class="t" x="600" y="330" font-size="18" font-weight="700" style="fill:#F2704A">1,000 px +</text>
+<text class="m" x="600" y="354" font-size="14">longest side,</text>
+<text class="m" x="600" y="374" font-size="14">enables zoom</text>
+
+<text class="t" x="780" y="140" font-size="21" font-weight="700">Allowed</text>
+<g font-family="DM Sans,system-ui,sans-serif" font-size="18" fill="#FAFAF8">
+<text x="780" y="182"><tspan fill="#3F9D6B" font-weight="700">✓</tspan>  Pure white background</text>
+<text x="780" y="218"><tspan fill="#3F9D6B" font-weight="700">✓</tspan>  Product fills 85% or more</text>
+<text x="780" y="254"><tspan fill="#3F9D6B" font-weight="700">✓</tspan>  The actual product, photographed</text>
+<text x="780" y="290"><tspan fill="#3F9D6B" font-weight="700">✓</tspan>  JPEG preferred</text>
+</g>
+<text class="t" x="780" y="352" font-size="21" font-weight="700">Not allowed</text>
+<g font-family="DM Sans,system-ui,sans-serif" font-size="18" fill="#FAFAF8">
+<text x="780" y="394"><tspan fill="#C4553F" font-weight="700">✕</tspan>  Text, logos or watermarks</text>
+<text x="780" y="430"><tspan fill="#C4553F" font-weight="700">✕</tspan>  Inset images</text>
+<text x="780" y="466"><tspan fill="#C4553F" font-weight="700">✕</tspan>  Props not in the box</text>
+<text x="780" y="502"><tspan fill="#C4553F" font-weight="700">✕</tspan>  Renders or mock-ups</text>
+</g>
+<text class="m" x="780" y="560" font-size="14">Amazon's main-image rules. Check each</text>
+<text class="m" x="780" y="582" font-size="14">marketplace's current spec before shooting.</text>
+</svg>

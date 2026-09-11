@@ -1,5 +1,10 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { services } from './data/services.ts';
+
+/* The six service slugs, as a zod enum — a typo in a post's `service` fails
+   the build instead of silently orphaning the post from its service page. */
+const serviceSlugs = services.map((s) => s.slug) as [string, ...string[]];
 
 /**
  * Blog posts.
@@ -39,6 +44,14 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     /** Pulled onto the homepage highlight strip. */
     featured: z.boolean().default(false),
+    /**
+     * The service page this post supports. Drives the topic cluster in both
+     * directions: the service page lists its guides, the post's related list
+     * prefers its siblings, and the closing call to action points at the
+     * service by name. Informational posts rank for the question; the service
+     * page ranks for the purchase. This field is the wire between them.
+     */
+    service: z.enum(serviceSlugs).optional(),
   }),
 });
 

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Two drone flights compared: a survey video orbit around a structure for inspection and documentation, and a mapping grid of overlapping parallel passes that produces an orthomosaic, 3D model, volumes and contours">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16121F"/><stop offset="1" stop-color="#0A0814"/></linearGradient>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#F2704A"/></marker>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.pill{fill:#241a2e}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">TWO FLIGHTS BOTH CALLED "SURVEY"</text>
+
+<rect x="60" y="86" width="520" height="470" rx="16" fill="url(#g)" stroke="#FAFAF8" stroke-opacity=".1"/>
+<text class="t" x="88" y="126" font-size="23" font-weight="700">Survey video</text>
+<text class="m" x="88" y="152" font-size="16">seeing — flown by a pilot</text>
+<rect x="296" y="200" width="46" height="190" fill="#4a4266"/><rect x="286" y="382" width="66" height="18" fill="#3a3354"/>
+<rect x="240" y="400" width="160" height="10" fill="#2a2440"/>
+<ellipse cx="320" cy="300" rx="170" ry="62" fill="none" stroke="#F2704A" stroke-width="2.5" stroke-dasharray="10 8"/>
+<path d="M468 272 L486 286" stroke="#F2704A" stroke-width="2.5" marker-end="url(#a)"/>
+<g transform="translate(150 262)"><rect x="-14" y="-5" width="28" height="10" rx="4" fill="#FAFAF8"/><circle cx="-18" cy="-8" r="7" fill="none" stroke="#FAFAF8" stroke-width="2"/><circle cx="18" cy="-8" r="7" fill="none" stroke="#FAFAF8" stroke-width="2"/></g>
+<rect class="pill" x="88" y="450" width="130" height="34" rx="17"/><text class="m" x="104" y="473" font-size="14">Inspection</text>
+<rect class="pill" x="228" y="450" width="164" height="34" rx="17"/><text class="m" x="244" y="473" font-size="14">Stakeholder report</text>
+<rect class="pill" x="402" y="450" width="150" height="34" rx="17"/><text class="m" x="418" y="473" font-size="14">Progress film</text>
+<text class="t" x="88" y="528" font-size="17" font-weight="600" style="fill:#F09A86">Cannot measure</text>
+
+<rect x="620" y="86" width="520" height="470" rx="16" fill="url(#g)" stroke="#FAFAF8" stroke-opacity=".1"/>
+<text class="t" x="648" y="126" font-size="23" font-weight="700">Mapping</text>
+<text class="m" x="648" y="152" font-size="16">measuring — flown by software</text>
+<rect x="680" y="186" width="400" height="230" fill="#1a2a20" stroke="#3F9D6B" stroke-opacity=".4"/>
+<g fill="#7FD1A0" opacity=".13"><rect x="690" y="194" width="92" height="64"/><rect x="740" y="194" width="92" height="64"/><rect x="790" y="194" width="92" height="64"/><rect x="690" y="236" width="92" height="64"/><rect x="740" y="236" width="92" height="64"/></g>
+<path d="M700 214 L1060 214 L1060 262 L700 262 L700 310 L1060 310 L1060 358 L700 358 L700 398 L1060 398" fill="none" stroke="#3F9D6B" stroke-width="2.5"/>
+<text class="m" x="690" y="440" font-size="14" style="fill:#7FD1A0">70–80% forward · 60–70% side overlap</text>
+<rect class="pill" x="648" y="458" width="124" height="34" rx="17"/><text class="m" x="662" y="481" font-size="14">Orthomosaic</text>
+<rect class="pill" x="780" y="458" width="100" height="34" rx="17"/><text class="m" x="794" y="481" font-size="14">3D model</text>
+<rect class="pill" x="888" y="458" width="92" height="34" rx="17"/><text class="m" x="902" y="481" font-size="14">Volumes</text>
+<rect class="pill" x="988" y="458" width="104" height="34" rx="17"/><text class="m" x="1002" y="481" font-size="14">Contours</text>
+<text class="t" x="648" y="528" font-size="17" font-weight="600" style="fill:#7FD1A0">Accuracy from ground control or RTK/PPK</text>
+
+<text class="m" x="60" y="604" font-size="16">Many industrial sites need both — a measured map for the engineers and a progress film for everyone else —</text>
+<text class="m" x="60" y="630" font-size="16">and both can come from one site visit if they are planned together.</text>
+</svg>
