@@ -178,6 +178,20 @@ export interface Service {
    * WebP. Omitted, the page falls back to the sitewide og-cover.jpg.
    */
   og?: { src: string; alt: string };
+
+  /**
+   * Hard facts about a hired space — floor, ceiling, cove, power. Rendered as
+   * a spec list on the page. EMPTY UNTIL MEASURED: a guessed floor size is
+   * worse than none, because someone books on it.
+   */
+  facts?: { label: string; value: string }[];
+
+  /**
+   * Published rates, in rupees, exclusive of GST. Each renders on the rate
+   * card AND as a priced Offer in the page's Service schema. Empty, both are
+   * omitted — the page never shows a price nobody has confirmed.
+   */
+  rates?: { label: string; price: number; unit: string; note?: string }[];
 }
 
 /**
@@ -241,6 +255,31 @@ export const generalFaqs: { q: string; a: string }[] = [
       'Yes. Cameras, lighting and grip are ours and the crew are our own people, so the person quoting your job is the person who turns up to shoot it. Nothing is subcontracted out on the day, which is where most last-minute substitutions in this market come from.',
   },
 ];
+
+/**
+ * STUDIO FLOOR AND RATES — the one place to fill in.
+ *
+ * Both arrays drive THREE things at once, so they can never disagree: the
+ * "floor size and rates" section on the studio page, the priced Offers in its
+ * schema, and the answer to the booking FAQ (whose visible text and FAQPage
+ * markup are the same string). Leave an array empty and all three stay silent
+ * rather than guessing.
+ *
+ * Uncomment and fill in — values as Rajesh supplies them, not estimates:
+ */
+const studioFacts: NonNullable<Service['facts']> = [
+  // { label: 'Shooting floor', value: '__ ft × __ ft' },
+  // { label: 'Ceiling height', value: '__ ft' },
+  // { label: 'Cyclorama', value: '__ ft wide × __ ft high, white' },
+  // { label: 'Chroma backdrop', value: '__ ft × __ ft, green' },
+  // { label: 'Power', value: '__ circuits' },
+];
+const studioRates: NonNullable<Service['rates']> = [
+  // { label: 'Hourly', price: 0, unit: 'hour', note: 'minimum __ hours' },
+  // { label: 'Half day', price: 0, unit: 'half day', note: '4 hours' },
+  // { label: 'Full day', price: 0, unit: 'day', note: '8 hours' },
+];
+const inr = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
 export const services: Service[] = [
   {
@@ -482,10 +521,16 @@ export const services: Service[] = [
   {
     slug: 'commercial-photography-videography-bhubaneswar',
     name: 'Commercial Photography & Videography',
-    h1: 'Commercial Photography & Videography in Bhubaneswar',
-    title: 'Commercial Photography Bhubaneswar | Beyond Pixel Studio',
+    h1: 'Commercial Photographer in Bhubaneswar',
+    /* "Commercial Photographer Bhubaneswar" alone is 35 chars, which leaves
+       nothing for the format's secondary service. The state stands in for the
+       city in the title; the city is in the h1 and the description. "Commercial"
+       is the word that cannot go: "photographer bhubaneswar" on its own is a
+       wedding-and-portrait query, exactly the retail traffic this site keeps
+       out. */
+    title: 'Commercial Photographer Odisha | Video - Beyond Pixel Studio',
     description:
-      'Product, architectural, campus and campaign photography and video for brands and institutions in Bhubaneswar. Request a custom quote.',
+      'Commercial photographer in Bhubaneswar for product, architectural, industrial and campaign work. Serving Bhubaneswar, Cuttack, and across Odisha.',
     summary: 'Product, architectural, campus and campaign work.',
     audience: 'For brands and institutions who need images they own.',
     intro:
@@ -529,6 +574,76 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for commercial photography and videography.',
     rig: 'aperture',
     portfolio: 'corporate-institutional',
+    pillar: 'Commercial Photography & Videography',
+    og: {
+      src: '/og/commercial-photography-videography-bhubaneswar.jpg',
+      alt: 'Timber-panelled bedroom lit by a bedside lamp, from a commercial property shoot by Beyond Pixel Studio',
+    },
+    /* The line with the studio page: THIS page is hiring someone to shoot;
+       Studio Rental is hiring the floor. "Product photographer" here, "product
+       shoot studio" there — two intents, two pages, and each links to the
+       other rather than competing for it. */
+    specs: [
+      {
+        id: 'photography-services',
+        h2: 'Commercial photography services in Bhubaneswar',
+        lead:
+          'Every brief below is shot to a shot list agreed in writing, retouched to a fixed brief, and delivered with commercial usage rights in writing — so an image can go on a hoarding, a marketplace or an annual report without a second conversation.',
+        link: {
+          href: '/studio-rental-bhubaneswar/#product-shoot-studio',
+          text: 'Have your own photographer? Rent the product shoot studio →',
+        },
+        items: [
+          {
+            id: 'product-photography',
+            h3: 'Product photography',
+            body:
+              'Catalogue, packaging and campaign product work, shot tethered so you approve frames as they happen. As a product photographer in Bhubaneswar we shoot to each marketplace\'s image rules from the first frame — pure white, the product filling the frame, files named to your SKU scheme.',
+          },
+          {
+            id: 'architectural-photography',
+            h3: 'Architectural and interior photography',
+            body:
+              'Buildings, show flats, hotels and finished interiors for architects, interior designers and developers. Architectural photography in Bhubaneswar is shot at the hour the building actually looks best, with verticals kept straight and interiors lit to match what the eye sees in the room.',
+          },
+          {
+            id: 'industrial-photography',
+            h3: 'Industrial photography',
+            body:
+              'Plants, machinery, processes and people at work, for annual reports, safety manuals and investor decks. Industrial photography in Odisha runs on the site\'s safety rules — inductions, PPE and permitted areas agreed with your EHS team before the first frame.',
+          },
+          {
+            id: 'corporate-portraits',
+            h3: 'Corporate portraits and headshots',
+            body:
+              'Leadership portraits, team pages and press-kit headshots, lit consistently so a whole team matches, at your office or in our studio in Patia. Corporate headshots in Bhubaneswar are retouched for cleanup and colour only — nobody\'s face is reshaped.',
+          },
+          {
+            id: 'event-photography',
+            h3: 'Event photography',
+            body:
+              'Conferences, launches, award nights and official functions, delivered as a sorted shortlist rather than a raw dump. As a corporate event photographer in Bhubaneswar we agree the must-have frames beforehand: the full room, the speakers against a clean wall, the branding in shot.',
+          },
+          {
+            id: 'campaign-photography',
+            h3: 'Campaign and advertising photography',
+            body:
+              'Key visuals for hoardings, print, packaging and paid social, shot to the crops each placement needs. Advertising photography in Odisha comes with full commercial usage rights in writing, in perpetuity, so the image you paid for is one you can use anywhere.',
+          },
+        ],
+      },
+      {
+        id: 'interior-product-video',
+        h2: 'Interior and product video',
+        service: 'Interior and product video',
+        lead:
+          'The same eye, moving: walkthrough films for interior designers and hotels, and product films for brands that need the product shown working. The films below are that work. For developer marketing films with RERA details and progress aerials, see our real estate videography.',
+        link: {
+          href: '/corporate-video-production-bhubaneswar/#real-estate-videography',
+          text: 'Real estate videography →',
+        },
+      },
+    ],
     videos: [
       { id: 'ePu-PXoIg5U', thumb: 'maxresdefault', title: 'Heartspace Property, Bhubaneswar' },
       { id: 'XIHhydeuwng', thumb: 'hqdefault', title: 'PBI Interiors' },
@@ -684,8 +799,11 @@ export const services: Service[] = [
       },
       {
         q: 'Can we book by the hour, or only for a full day?',
-        a:
-          'Both hourly and day bookings. Rates are not published here yet; ask and we will send the current rate card rather than quote you a number that has moved.',
+        a: studioRates.length
+          ? `Both. ${studioRates
+              .map((r) => `${r.label}: ${inr(r.price)} per ${r.unit}${r.note ? ` (${r.note})` : ''}`)
+              .join('; ')}. Rates are exclusive of GST, and the lighting and grip on the floor are included rather than itemised.`
+          : 'Both hourly and day bookings. Rates are not published here yet; ask and we will send the current rate card rather than quote you a number that has moved.',
       },
       {
         q: 'Can we bring our own crew and equipment?',
@@ -702,6 +820,8 @@ export const services: Service[] = [
     rig: 'studio',
     portfolio: 'corporate-institutional',
     pillar: 'Professional Studio & Floor Rental',
+    facts: studioFacts,
+    rates: studioRates,
     og: {
       src: '/og/studio-rental-bhubaneswar.jpg',
       alt: 'Studio on rent in Patia, Bhubaneswar, rigged for a podcast — presenter at the desk behind a vision switcher, camera and key light in the foreground',
@@ -789,10 +909,16 @@ export const services: Service[] = [
   {
     slug: 'ai-video-production',
     name: 'AI Video Production',
-    h1: 'AI Video Production',
-    title: 'AI Video Production India | Beyond Pixel Studio',
+    h1: 'AI Video Production Company in India',
+    title: 'AI Video Production India | Video Ads - Beyond Pixel Studio',
+    /* The one pillar page that does NOT end "Serving Bhubaneswar, Cuttack, and
+       across Odisha." This service is sold nationwide — its slug carries no
+       city for that reason — and a sentence confining it to Odisha would
+       argue against the page it describes. It still names the city, which is
+       what the protocol asks the sentence to do. The audit knows this page's
+       sentence is different. */
     description:
-      'AI-assisted video production for brands nationwide — concept, generation, editing and finishing, supervised by a working crew. Request a quote.',
+      'AI-assisted video for brands: generated ads, product films and interior visualisation, supervised by a crew. Made in Bhubaneswar, delivered across India.',
     summary: 'AI-assisted concept, generation, edit and finish.',
     audience: 'For brands who want volume without losing a human eye on it.',
     intro:
@@ -836,6 +962,55 @@ export const services: Service[] = [
     whatsapp: 'Hello, I would like a quote for AI video production.',
     rig: 'neural',
     portfolio: 'corporate-institutional',
+    pillar: 'AI Video Production',
+    og: {
+      src: '/og/ai-video-production.jpg',
+      alt: 'Frame from an AI interior visualisation by Beyond Pixel Studio — a room drawn as a glowing blue wireframe before it is rendered as a finished interior',
+    },
+    /* Every item below keeps the same line the rest of this entry draws: the
+       product stays real, a real person is never synthesised without written
+       consent, and generated footage is labelled wherever it could be taken
+       for a recording. Those are the claims this page can keep. */
+    specs: [
+      {
+        id: 'ai-services',
+        h2: 'AI video production services for brands',
+        lead:
+          'Generation is used where it holds up and a camera where it does not, on the same timeline. Every generated sequence is supervised shot by shot, and disclosed in writing for your compliance team.',
+        items: [
+          {
+            id: 'ai-video-ads',
+            h3: 'AI video ads',
+            body:
+              'Performance-ad variations built from one approved concept — new hooks, settings and cut-downs for testing, without a reshoot for each. AI video ads are generated shot by shot and reviewed frame by frame, so the variant that wins the test is one you are happy to put your name on.',
+          },
+          {
+            id: 'ai-product-video',
+            h3: 'AI product videos',
+            body:
+              'Your real product, photographed or filmed, placed into generated scenes — a kitchen, a festival, a landscape you could not travel to. AI product videos keep the product itself real, because a generated version of what you sell is a claim about something that does not exist.',
+          },
+          {
+            id: 'ai-interior-visualisation',
+            h3: 'AI interior visualisation',
+            body:
+              'An empty room taken to a finished interior before a piece of furniture is bought, for interior designers, developers and hotels. AI interior visualisation is labelled as an artist\'s impression wherever it is used to sell, and for a registered real estate project it carries the RERA details like any other ad.',
+          },
+          {
+            id: 'ai-explainer-video',
+            h3: 'AI explainer videos',
+            body:
+              'Products and processes that are hard to film — software, services, anything that happens inside a machine — explained in motion. AI explainer videos start from a script written and approved first, before anything is generated.',
+          },
+          {
+            id: 'ai-voiceover',
+            h3: 'AI voiceover and language versions',
+            body:
+              'Synthetic or human voiceover, your call, quoted either way, and language versions of a finished film for audiences across India. A synthetic voice is never modelled on a real person without that person\'s written consent.',
+          },
+        ],
+      },
+    ],
     videos: [
       { id: 'o8wH0lEVCcM', thumb: 'maxresdefault', title: 'Empty room to luxury interior, generated' },
     ],

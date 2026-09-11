@@ -310,13 +310,19 @@ for (const f of pages) {
 
    Hardcoded rather than read from services.ts: this script is plain Node and
    cannot import TypeScript. Four slugs is a list someone can keep true. */
-const PILLARS = [
-  'corporate-video-production-bhubaneswar',
-  'live-event-streaming-bhubaneswar',
-  'studio-rental-bhubaneswar',
-  'drone-aerial-videography-bhubaneswar',
-];
 const SERVING = 'Serving Bhubaneswar, Cuttack, and across Odisha.';
+/* slug -> the sentence its description must end with. AI video is sold
+   nationwide, so its sentence names the city without confining the service
+   to the state — see the comment on its entry in services.ts. */
+const PILLAR_ENDINGS = {
+  'corporate-video-production-bhubaneswar': SERVING,
+  'live-event-streaming-bhubaneswar': SERVING,
+  'studio-rental-bhubaneswar': SERVING,
+  'drone-aerial-videography-bhubaneswar': SERVING,
+  'commercial-photography-videography-bhubaneswar': SERVING,
+  'ai-video-production': 'Made in Bhubaneswar, delivered across India.',
+};
+const PILLARS = Object.keys(PILLAR_ENDINGS);
 const TITLE_FORMAT = /^[^|]+ \| [^|]+ - Beyond Pixel Studio$/;
 for (const slug of PILLARS) {
   const file = join(DIST, slug, 'index.html');
@@ -328,7 +334,7 @@ for (const slug of PILLARS) {
   if (!TITLE_FORMAT.test(title)) note(file, `title breaks "[Keyword] | [Secondary] - Beyond Pixel Studio": ${title}`);
   if (title.length > 60) note(file, `pillar title is ${title.length} chars (max 60)`);
   if (desc.length > 155) note(file, `pillar description is ${desc.length} chars (max 155)`);
-  if (!desc.endsWith(SERVING)) note(file, `pillar description must end "${SERVING}"`);
+  if (!desc.endsWith(PILLAR_ENDINGS[slug])) note(file, `pillar description must end "${PILLAR_ENDINGS[slug]}"`);
 
   /* A share image that 404s renders as the same empty grey frame the og
      check above exists to prevent — just one hop later. */

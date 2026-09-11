@@ -30,6 +30,12 @@ const { service } = Astro.props;
 /** Cross-links: every other service, so no page is a dead end. */
 const others = services.filter((s) => s.slug !== service.slug);
 
+/* The floor-and-rates section, when it exists, sits between the last spec
+   section and the (banded) work section. It is plain, so the specs shift by
+   one to keep the stripes alternating through it. */
+const hasFloor = Boolean(service.facts?.length || service.rates?.length);
+const bandOffset = hasFloor ? 1 : 0;
+
 /** This service's guides — the other half of the topic cluster. Newest first. */
 const guides = (await getCollection('blog'))
   .filter((p) => p.data.service === service.slug)
@@ -52,6 +58,27 @@ const schema = {
     : business.areaServed.map((c) => ({ '@type': 'City', name: c })),
   // What the job contains, as an itemised offer catalogue. This is the visible
   // list — not a second, more flattering version written for the crawler.
+  /* Priced offers, only once real rates exist. Each is a line on the visible
+     rate card, so the markup cannot state a price the page does not. GST is
+     excluded, and said so, because that is how the rate card reads. */
+  ...(service.rates?.length
+    ? {
+        offers: service.rates.map((r) => ({
+          '@type': 'Offer',
+          name: `${service.name} — ${r.label}`,
+          priceCurrency: 'INR',
+          price: r.price,
+          priceSpecification: {
+            '@type': 'UnitPriceSpecification',
+            price: r.price,
+            priceCurrency: 'INR',
+            unitText: r.unit,
+            valueAddedTaxIncluded: false,
+          },
+          url: `${business.url}/${service.slug}/#floor-and-rates`,
+        })),
+      }
+    : {}),
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
     name: `${service.name} — what is included`,
@@ -229,7 +256,7 @@ const breadcrumb = {
   {service.specs?.map((sec, si, all) => (
     <section
       id={sec.id}
-      class:list={['section', 'specsec', (all.length - 1 - si) % 2 === 1 && 'section--band']}
+      class:list={['section', 'specsec', (all.length - 1 - si + bandOffset) % 2 === 1 && 'section--band']}
     >
       <div class="wrap">
         <div class="sechead">
@@ -256,6 +283,42 @@ const breadcrumb = {
       </div>
     </section>
   ))}
+
+  {/* ---------------------------------------------------- FLOOR AND RATES
+      Renders only when facts or rates exist. The studio page ships without it
+      until the numbers are real — see studioFacts / studioRates in
+      services.ts, which also drive the schema Offers and the booking FAQ. */}
+  {hasFloor ? (
+    <section id="floor-and-rates" class="section specsec">
+      <div class="wrap">
+        <div class="sechead">
+          <p class="eyebrow">The floor, in numbers</p>
+          <h2>{service.name} floor size and rates</h2>
+          <p>Rates are in rupees and exclusive of GST. Lighting and grip on the floor are included.</p>
+        </div>
+        <div class="fr">
+          {service.facts?.length ? (
+            <dl class="fr__facts panel">
+              {service.facts.map((f) => (
+                <div class="fr__row"><dt>{f.label}</dt><dd>{f.value}</dd></div>
+              ))}
+            </dl>
+          ) : null}
+          {service.rates?.length ? (
+            <ul class="fr__rates">
+              {service.rates.map((r) => (
+                <li class="fr__rate panel">
+                  <span class="fr__label">{r.label}</span>
+                  <span class="fr__price">₹{r.price.toLocaleString('en-IN')}</span>
+                  <span class="fr__unit mono">per {r.unit}{r.note ? ` · ${r.note}` : ''}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
+    </section>
+  ) : null}
 
   {/* --------------------------------------------------------------- WORK */}
   <section class="section section--band">
@@ -508,6 +571,24 @@ const breadcrumb = {
   .spec__link, .spec__more a { color: var(--ember-text); font-size: .92rem; }
   .spec__link { margin-top: var(--s-1); justify-self: start; }
   .spec__more { margin-top: var(--s-3); }
+
+  /* --- Floor and rates --------------------------------------------------- */
+  .fr { display: grid; gap: var(--s-3); }
+  @media (min-width: 900px) { .fr { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .fr__facts { margin: 0; padding: var(--s-2) var(--s-4); }
+  .fr__row {
+    display: flex; justify-content: space-between; gap: var(--s-3);
+    padding: 12px 0; border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+  }
+  .fr__row:last-child { border-bottom: 0; }
+  .fr__row dt { color: var(--text-muted); }
+  .fr__row dd { margin: 0; color: var(--text); font-weight: 600; text-align: right; }
+  .fr__rates { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 560px) { .fr__rates { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); } }
+  .fr__rate { display: grid; gap: 4px; padding: var(--s-4); }
+  .fr__label { color: var(--text-muted); font-size: .9rem; }
+  .fr__price { color: var(--text); font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+  .fr__unit { color: var(--text-muted); font-size: 12px; }
 
   .guides { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
   @media (min-width: 760px) { .guides { grid-template-columns: repeat(2, 1fr); } }

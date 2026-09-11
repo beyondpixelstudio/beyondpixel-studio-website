@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Does a generated video need a label? Yes if it shows a real person saying or doing something they did not, alters footage of a real event or place, or shows a realistic scene that never happened. Plainly stylised or animated content usually does not.">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16121F"/><stop offset="1" stop-color="#0A0814"/></linearGradient>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ADA6C8"/></marker>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.box{fill:url(#g);stroke:#FAFAF8;stroke-opacity:.12}
+.ln{stroke:#ADA6C8;stroke-width:2;fill:none}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">DOES THIS GENERATED SHOT NEED A LABEL?</text>
+
+<rect x="60" y="96" width="1080" height="84" rx="14" fill="#1d1426" stroke="#F2704A" stroke-opacity=".6" stroke-width="2"/>
+<text class="t" x="88" y="134" font-size="23" font-weight="700">Could a viewer take it for a real recording?</text>
+<text class="m" x="88" y="162" font-size="16">Ask it of every generated shot in the ad, not of the ad as a whole.</text>
+
+<path class="ln" d="M330 180 L330 222" marker-end="url(#a)"/>
+<path class="ln" d="M900 180 L900 222" marker-end="url(#a)"/>
+
+<rect x="60" y="226" width="540" height="330" rx="14" fill="#1f1016" stroke="#C4553F" stroke-opacity=".6"/>
+<text class="t" x="88" y="268" font-size="22" font-weight="700" style="fill:#F09A86">Yes: label it</text>
+<text class="t" x="88" y="314" font-size="18" font-weight="600">A real person says or does</text>
+<text class="t" x="88" y="338" font-size="18" font-weight="600">something they did not</text>
+<text class="t" x="88" y="386" font-size="18" font-weight="600">Footage of a real event or</text>
+<text class="t" x="88" y="410" font-size="18" font-weight="600">place is altered</text>
+<text class="t" x="88" y="458" font-size="18" font-weight="600">A realistic scene that never</text>
+<text class="t" x="88" y="482" font-size="18" font-weight="600">happened</text>
+<text class="m" x="88" y="530" font-size="15">YouTube's three triggers for disclosure</text>
+
+<rect x="620" y="226" width="520" height="330" rx="14" fill="#12211a" stroke="#3F9D6B" stroke-opacity=".6"/>
+<text class="t" x="648" y="268" font-size="22" font-weight="700" style="fill:#7FD1A0">No: usually not required</text>
+<text class="t" x="648" y="314" font-size="18" font-weight="600">Plainly animated or stylised</text>
+<text class="t" x="648" y="362" font-size="18" font-weight="600">Motion graphics, illustration</text>
+<text class="t" x="648" y="410" font-size="18" font-weight="600">AI used only to assist —</text>
+<text class="t" x="648" y="434" font-size="18" font-weight="600">cleanup, subtitles, colour</text>
+<text class="m" x="648" y="490" font-size="15">Disclosing anyway costs nothing</text>
+<text class="m" x="648" y="512" font-size="15">and protects the brand.</text>
+
+<text class="m" x="60" y="604" font-size="16">India's IT Rules amendment (in force 20 Feb 2026) makes platforms label synthetic content.</text>
+<text class="m" x="60" y="630" font-size="16">Whatever the rule: never synthesise a real person without their written consent.</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="A one-page photography brief in six blocks: what the images are for, the shot list with counts, deliverables, usage rights, people and places, and logistics">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16121F"/><stop offset="1" stop-color="#0A0814"/></linearGradient>
+<style>
+.t{font-family:'DM Sans',system-ui,sans-serif;fill:#FAFAF8}
+.m{font-family:'DM Mono',ui-monospace,monospace;fill:#ADA6C8}
+.lbl{font-family:'DM Sans',system-ui,sans-serif;fill:#F2704A;letter-spacing:2.6px}
+.n{font-family:'DM Mono',ui-monospace,monospace;fill:#F2704A}
+.box{fill:url(#g);stroke:#FAFAF8;stroke-opacity:.12}
+</style>
+</defs>
+<rect width="1200" height="675" fill="#05040B"/>
+<text class="lbl" x="60" y="58" font-size="15" font-weight="700">A PHOTOGRAPHY BRIEF, ON ONE PAGE</text>
+
+<rect class="box" x="60" y="92" width="345" height="230" rx="14"/>
+<text class="n" x="84" y="130" font-size="18" font-weight="700">01</text><text class="t" x="124" y="130" font-size="21" font-weight="700">What they're for</text>
+<text class="m" x="84" y="166" font-size="15">hoarding · marketplace</text><text class="m" x="84" y="190" font-size="15">Instagram 1:1, 4:5, 9:16</text><text class="m" x="84" y="214" font-size="15">annual report, print</text>
+<text class="m" x="84" y="292" font-size="14" style="fill:#7FD1A0">decides crops and resolution</text>
+
+<rect class="box" x="427" y="92" width="345" height="230" rx="14"/>
+<text class="n" x="451" y="130" font-size="18" font-weight="700">02</text><text class="t" x="491" y="130" font-size="21" font-weight="700">Shot list, counted</text>
+<text class="m" x="451" y="166" font-size="15">40 SKUs × 3 angles</text><text class="m" x="451" y="190" font-size="15">= 120 frames</text><text class="m" x="451" y="214" font-size="15">exterior: at dusk</text>
+<text class="m" x="451" y="292" font-size="14" style="fill:#7FD1A0">decides whether it fits a day</text>
+
+<rect class="box" x="794" y="92" width="346" height="230" rx="14"/>
+<text class="n" x="818" y="130" font-size="18" font-weight="700">03</text><text class="t" x="858" y="130" font-size="21" font-weight="700">Deliverables</text>
+<text class="m" x="818" y="166" font-size="15">TIFF for print, JPEG web</text><text class="m" x="818" y="190" font-size="15">crops pre-made</text><text class="m" x="818" y="214" font-size="15">named to SKU codes</text>
+<text class="m" x="818" y="292" font-size="14" style="fill:#7FD1A0">and the final image count</text>
+
+<rect x="60" y="342" width="345" height="230" rx="14" fill="#1d1426" stroke="#F2704A" stroke-opacity=".7" stroke-width="2"/>
+<text class="n" x="84" y="380" font-size="18" font-weight="700">04</text><text class="t" x="124" y="380" font-size="21" font-weight="700">Usage rights</text>
+<text class="m" x="84" y="416" font-size="15">paid ads? which media?</text><text class="m" x="84" y="440" font-size="15">how long? exclusive?</text><text class="m" x="84" y="464" font-size="15">in writing, before the day</text>
+<text class="m" x="84" y="542" font-size="14" style="fill:#F2704A">the one most briefs miss</text>
+
+<rect class="box" x="427" y="342" width="345" height="230" rx="14"/>
+<text class="n" x="451" y="380" font-size="18" font-weight="700">05</text><text class="t" x="491" y="380" font-size="21" font-weight="700">People and places</text>
+<text class="m" x="451" y="416" font-size="15">written releases</text><text class="m" x="451" y="440" font-size="15">location permission</text><text class="m" x="451" y="464" font-size="15">wardrobe and props</text>
+
+<rect class="box" x="794" y="342" width="346" height="230" rx="14"/>
+<text class="n" x="818" y="380" font-size="18" font-weight="700">06</text><text class="t" x="858" y="380" font-size="21" font-weight="700">Logistics</text>
+<text class="m" x="818" y="416" font-size="15">date, hours, address</text><text class="m" x="818" y="440" font-size="15">access, parking, power</text><text class="m" x="818" y="464" font-size="15">one approver on set</text>
+
+<text class="m" x="60" y="620" font-size="16">Six answers, one page. Everything a photographer would otherwise have to guess.</text>
+</svg>
