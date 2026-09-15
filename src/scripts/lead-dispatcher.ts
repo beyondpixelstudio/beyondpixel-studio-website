@@ -12,6 +12,31 @@ export interface LeadPayload {
   message?: string;
   pageUrl?: string;
   timestamp?: string;
+  /** Where the visit began - saved by the script in the site's <head>. */
+  gclid?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  referrer?: string;
+  landingPage?: string;
+}
+
+/** The ad click, campaign or referrer this browser arrived from, if any. */
+function attribution(): Partial<LeadPayload> {
+  try {
+    const a = JSON.parse(localStorage.getItem('bps_attribution') || 'null');
+    if (!a) return {};
+    return {
+      gclid: a.gclid || a.gbraid || a.wbraid || '',
+      utmSource: a.utm_source || '',
+      utmMedium: a.utm_medium || '',
+      utmCampaign: a.utm_campaign || '',
+      referrer: a.referrer || '',
+      landingPage: a.landingPage || '',
+    };
+  } catch {
+    return {};
+  }
 }
 
 /**
@@ -24,6 +49,7 @@ export interface LeadPayload {
 export async function dispatchLead(lead: LeadPayload): Promise<void> {
   lead.timestamp = lead.timestamp || new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
   lead.pageUrl = lead.pageUrl || (typeof window !== 'undefined' ? window.location.href : '');
+  if (typeof window !== 'undefined') Object.assign(lead, attribution());
 
   // 1. Meta Pixel Lead Tracking
   try {

@@ -368,6 +368,34 @@ const schema = {
         } catch (e) {}
       })();
     </script>
+    {/* Where this visitor came from - a Google Ads click (gclid), a campaign
+        link (utm_*), Google Maps or search (referrer). Kept for 90 days in
+        this browser, so an enquiry sent three pages later still says where the
+        visit began. Forms send it with the lead; nothing leaves the browser
+        otherwise. */}
+    <script is:inline>
+      (function () {
+        try {
+          var q = new URLSearchParams(location.search);
+          var t = {};
+          ['gclid', 'gbraid', 'wbraid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'fbclid'].forEach(function (k) {
+            var v = q.get(k);
+            if (v) t[k] = v.slice(0, 300);
+          });
+          var ref = document.referrer;
+          if (ref && ref.indexOf(location.hostname) === -1) t.referrer = ref.slice(0, 300);
+          var key = 'bps_attribution';
+          if (Object.keys(t).length) {
+            t.landingPage = location.href.split('#')[0].slice(0, 500);
+            t.at = Date.now();
+            localStorage.setItem(key, JSON.stringify(t));
+          } else {
+            var saved = JSON.parse(localStorage.getItem(key) || 'null');
+            if (saved && Date.now() - saved.at > 90 * 864e5) localStorage.removeItem(key);
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
 
   <body>
