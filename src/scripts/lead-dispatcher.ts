@@ -51,14 +51,33 @@ export async function dispatchLead(lead: LeadPayload): Promise<void> {
   lead.pageUrl = lead.pageUrl || (typeof window !== 'undefined' ? window.location.href : '');
   if (typeof window !== 'undefined') Object.assign(lead, attribution());
 
-  // 1. Meta Pixel Lead Tracking
+  // 1. Meta Lead - pushed to the dataLayer, NOT fbq() directly.
+  // GTM (GTM-5QHKZKSP) turns generate_lead into a Meta Pixel "Lead" and the
+  // Meta-enabled Conversions API sends the same event with the SAME event_id,
+  // so browser + server are deduplicated. user_data (email / phone / name)
+  // raises Event Match Quality; Meta hashes it before it leaves the browser.
   try {
-    if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
-      (window as any).fbq('track', 'Lead', {
-        content_name: lead.formType === 'portfolio_download' ? '2026 Portfolio PDF Download' : 'Website Enquiry',
+    if (typeof window !== 'undefined') {
+      const w = window as any;
+      w.dataLayer = w.dataLayer || [];
+      const nameParts = (lead.name || '').trim().split(/\s+/).filter(Boolean);
+      const digits = (lead.phone || '').replace(/\D/g, '');
+      const phone = digits.length === 10 ? '+91' + digits : digits ? '+' + digits.replace(/^0+/, '') : undefined;
+      w.dataLayer.push({
+        event: 'generate_lead',
+        lead_source: lead.formType === 'portfolio_download' ? '2026 Portfolio PDF Download' : 'Website Enquiry',
         content_category: lead.service || lead.purpose || 'Media Production',
-        value: 0,
-        currency: 'INR',
+        eventModel: {
+          user_data: {
+            email: lead.email ? lead.email.trim().toLowerCase() : undefined,
+            phone_number: phone,
+            address: {
+              first_name: nameParts[0] ? nameParts[0].toLowerCase() : undefined,
+              last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ').toLowerCase() : undefined,
+              country: 'in',
+            },
+          },
+        },
       });
     }
   } catch (e) {
