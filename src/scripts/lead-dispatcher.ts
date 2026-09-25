@@ -67,15 +67,13 @@ export async function dispatchLead(lead: LeadPayload): Promise<void> {
         event: 'generate_lead',
         lead_source: lead.formType === 'portfolio_download' ? '2026 Portfolio PDF Download' : 'Website Enquiry',
         content_category: lead.service || lead.purpose || 'Media Production',
-        eventModel: {
-          user_data: {
-            email: lead.email ? lead.email.trim().toLowerCase() : undefined,
-            phone_number: phone,
-            address: {
-              first_name: nameParts[0] ? nameParts[0].toLowerCase() : undefined,
-              last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ').toLowerCase() : undefined,
-              country: 'in',
-            },
+        user_data: {
+          email: lead.email ? lead.email.trim().toLowerCase() : undefined,
+          phone_number: phone,
+          address: {
+            first_name: nameParts[0] ? nameParts[0].toLowerCase() : undefined,
+            last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ').toLowerCase() : undefined,
+            country: 'in',
           },
         },
       });
