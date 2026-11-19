@@ -51,6 +51,19 @@ export interface LeadPayload {
   utmCampaign?: string;
   referrer?: string;
   landingPage?: string;
+  /** Meta ids - the same event_id goes to the pixel, Conversions API and the CRM. */
+  eventId?: string;
+  metaEventId?: string;
+  fbc?: string;
+  fbp?: string;
+}
+
+/** GTM (Event_ID_Constant) puts this in front of eventId; metaEventId is what Meta receives. */
+const META_EVENT_PREFIX = '3c15e849-8868-444b-a1e2-ec7670abe2b6_';
+
+function readCookie(name: string): string {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : '';
 }
 
 /** The ad click, campaign or referrer this browser arrived from, if any. */
@@ -83,20 +96,60 @@ export async function dispatchLead(lead: LeadPayload): Promise<void> {
   lead.pageUrl = lead.pageUrl || (typeof window !== 'undefined' ? window.location.href : '');
   if (typeof window !== 'undefined') Object.assign(lead, attribution());
 
-  // 1. Meta Pixel Lead Tracking
+  // 0. Meta ids for deduplication + ad attribution (also saved with the lead for the CRM)
+  if (typeof window !== 'undefined') {
+    try {
+      lead.eventId = lead.eventId || 'bps_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+      lead.metaEventId = META_EVENT_PREFIX + lead.eventId;
+      lead.fbp = readCookie('_fbp');
+      let fbc = readCookie('_fbc');
+      if (!fbc) {
+        const clid = new URLSearchParams(window.location.search).get('fbclid');
+        if (clid) fbc = 'fb.1.' + Date.now() + '.' + clid;
+      }
+      lead.fbc = fbc;
+    } catch {
+      // Non-blocking
+    }
+  }
+
+  // 1. Meta Lead - pushed to the dataLayer, NOT fbq() directly.
+  // GTM (GTM-5QHKZKSP) turns generate_lead into a Meta Pixel "Lead" and the
+  // Meta-enabled Conversions API sends the same event with the SAME event_id,
+  // so browser + server are deduplicated. user_data (email / phone / name)
+  // raises Event Match Quality; Meta hashes it before it leaves the browser.
   try {
-    if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
-      (window as any).fbq('track', 'Lead', {
-        content_name:
+    if (typeof window !== 'undefined') {
+      const w = window as any;
+      w.dataLayer = w.dataLayer || [];
+      const nameParts = (lead.name || '').trim().split(/\s+/).filter(Boolean);
+      const digits = (lead.phone || '').replace(/\D/g, '');
+      const phone = digits.length === 10 ? '+91' + digits : digits ? '+' + digits.replace(/^0+/, '') : undefined;
+      w.dataLayer.push({
+        event: 'generate_lead',
+        event_id: lead.eventId,
+        /* Three branches, not two. A vendor registering is not a sales lead, and
+           labelling it "Website Enquiry" would quietly pollute the Meta lead
+           audience with people looking for work rather than buying. */
+        lead_source:
           lead.formType === 'portfolio_download'
             ? '2026 Portfolio PDF Download'
             : lead.formType === 'vendor_registration'
               ? 'Vendor Registration'
               : 'Website Enquiry',
         content_category: lead.service || lead.purpose || 'Media Production',
-        value: 0,
-        currency: 'INR',
+        user_data: {
+          email: lead.email ? lead.email.trim().toLowerCase() : undefined,
+          phone_number: phone,
+          address: {
+            first_name: nameParts[0] ? nameParts[0].toLowerCase() : undefined,
+            last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ').toLowerCase() : undefined,
+            country: 'in',
+          },
+        },
       });
+      // Clear so later events on the page get their own ids / no stale user data.
+      w.dataLayer.push({ event_id: undefined, user_data: undefined });
     }
   } catch (e) {
     // Non-blocking
