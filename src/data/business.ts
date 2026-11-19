@@ -177,6 +177,22 @@ export const business = {
    */
   googleScriptUrl:
     'https://script.google.com/macros/s/AKfycbyVTuMtsgkVo3kzX6eKp7cTjiyVttA0ambKHsc57Z5-L67gDLCxzryYn-R-eE4H_8qmdA/exec',
+  /**
+   * SEPARATE Apps Script Web App for vendor and freelancer registrations,
+   * writing to its own "BPS Vendor and Freelancer Registrations" sheet.
+   *
+   * Separate on purpose, twice over. A vendor is not a sales lead, and mixing
+   * the two would pollute the pipeline the studio sells from — Rajesh asked for
+   * them kept apart. And a standalone deployment means nothing here can break
+   * the enquiry/portfolio script, which had just been recovered when this was
+   * added.
+   *
+   * Its doPost writes the phone with setNumberFormat('@') before setValue,
+   * because a number like "+91 76089 24893" is otherwise evaluated as a formula
+   * and the cell reads #ERROR!. The leads sheet has real rows damaged that way.
+   */
+  vendorScriptUrl:
+    'https://script.google.com/macros/s/AKfycbwIZP12IDlB9wubDam1y1FuRu09UEz2totxZhSqzdg1mZuy_bDvRnfTIx_fl83AJA8s/exec',
   telegramBot: '@beyondpixelstudio_bot',
 
   /**

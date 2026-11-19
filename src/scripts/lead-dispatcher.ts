@@ -162,10 +162,20 @@ export async function dispatchLead(lead: LeadPayload): Promise<void> {
     }
   } catch (e) {}
 
-  // 3. Dispatch to Google Apps Script Webhook
-  if (business.googleScriptUrl) {
+  // 3. Dispatch to the Google Apps Script Webhook.
+  //
+  // Vendor registrations go to their OWN deployment and their OWN sheet.
+  // Falling back to the leads endpoint would put them straight back in the
+  // sales pipeline Rajesh asked to keep them out of, so if the vendor URL is
+  // ever blank this sends nothing rather than sending it to the wrong place.
+  const endpoint =
+    lead.formType === 'vendor_registration'
+      ? business.vendorScriptUrl
+      : business.googleScriptUrl;
+
+  if (endpoint) {
     try {
-      fetch(business.googleScriptUrl, {
+      fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(lead),
