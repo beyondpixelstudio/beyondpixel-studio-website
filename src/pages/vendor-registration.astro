@@ -1,0 +1,205 @@
+---
+/**
+ * Vendor and freelancer registration.
+ *
+ * SEPARATE FROM CAREERS ON PURPOSE. Careers is employment — a role, a salary
+ * conversation, a seat. This is the contractor bench: crew hired by the day,
+ * kit hired by the job, services bought per event. Same studio, different
+ * relationship, different questions, and a candidate landing on the wrong one
+ * wastes their time and ours. The two pages link to each other instead.
+ *
+ * NO JobPosting SCHEMA, for the same reason Careers has none: Google wants a
+ * specific title, location and posting date per listing, and this is a standing
+ * invitation with none of those. Marking up an open bench as structured job
+ * postings is how a site earns a manual action.
+ *
+ * WHAT IS PROMISED HERE IS ONLY WHAT CAN BE KEPT. Registering is not a job
+ * offer and the page says so in the one place somebody will read it — right
+ * where they are deciding whether to fill the thing in.
+ */
+import Base from '../layouts/Base.astro';
+import VendorForm from '../components/VendorForm.astro';
+import { business } from '../data/business.ts';
+
+/* The four kinds, and for each the thing a reader wants to know before they
+   decide this page is for them: what we actually call on them for. */
+const kinds = [
+  {
+    name: 'Freelance crew',
+    body: 'Camera operators, photographers, editors, drone pilots, sound recordists, gaffers and anchors. We call freelancers for multi-camera event days, second units, and shoots outside Bhubaneswar where a local crew beats a travelling one.',
+  },
+  {
+    name: 'Equipment rental',
+    body: 'Cameras, lenses, lighting, grip, LED walls, sound systems. Most of our kit is our own, so what we hire in is the overflow on a big day and the specialist piece a job needs once.',
+  },
+  {
+    name: 'Event services',
+    body: 'Stage and truss, decor, LED and projection, transport, printing, power. Usually on jobs where we are covering the event and the client wants one team to deal with rather than five.',
+  },
+  {
+    name: 'Post-production studios',
+    body: 'Editors, colourists, VFX and animation, subtitling and dubbing. Long-form and high-volume work is where we most often need a second pair of hands on a deadline.',
+  },
+];
+
+/* Written against what actually happens, not an aspirational SLA. The studio
+   cannot promise a reply date for an open bench, so this does not invent one —
+   it says what is true, including the part nobody likes saying. */
+const steps = [
+  { n: '01', h: 'You register', b: 'The form below. The link to your work matters more than anything else on it.' },
+  { n: '02', h: 'We read it', b: 'In batches, not the same day. We look at the work first and the CV second.' },
+  { n: '03', h: 'We call when a job fits', b: 'Not before. A registration is a place on the bench, not a booking — there is no queue and no guaranteed turn.' },
+  { n: '04', h: 'Rates and paperwork', b: 'Agreed per job, in writing, before the day. PAN and bank details come at that point, directly — never through this page.' },
+];
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: business.url },
+    { '@type': 'ListItem', position: 2, name: 'Vendor Registration', item: `${business.url}/vendor-registration/` },
+  ],
+};
+---
+
+<Base
+  title="Vendor & Freelancer Registration | Beyond Pixel Studio"
+  description="Register as a freelancer, equipment vendor, event services supplier or post-production studio with Beyond Pixel Studio in Bhubaneswar. Work across Odisha."
+>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumb)} />
+
+  <section class="shead">
+    <span class="flare" aria-hidden="true"></span>
+    <div class="wrap">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">Vendor Registration</li>
+        </ol>
+      </nav>
+
+      <span class="badge shead__badge">Bhubaneswar, Odisha</span>
+      <h1>Work with us as a freelancer or vendor</h1>
+      <p class="lead shead__lead">
+        We shoot across Odisha — convocations, conferences, plant films, ministerial
+        events — and we do not pretend to carry every crew member and every piece of
+        kit in-house. When a job needs more hands, a specialist lens or a stage, we
+        call people on this bench. This is how you get on it.
+      </p>
+
+      <div class="shead__cta">
+        <a class="btn" href="#register">Register now</a>
+        <a class="btn btn--ghost" href="/work/">See the kind of work</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="letterbox"></div>
+
+  <section class="section section--band">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Who we hire</p>
+        <h2>Four kinds of people on this bench.</h2>
+        <p>
+          If what you do is not on this list but sits next to it, register anyway and
+          say so in the notes — the list describes what we need most, not everything.
+        </p>
+      </div>
+
+      <ul class="vk__grid">
+        {kinds.map((k, i) => (
+          <li class="vk__card panel" data-reveal style={`--reveal-delay:${i * 55}ms`}>
+            <h3 class="vk__h">{k.name}</h3>
+            <p class="vk__b">{k.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">What happens next</p>
+        <h2>Registering is not a job offer.</h2>
+        <p>
+          Worth being blunt about, because plenty of places are not: this is a bench we
+          call from, and some people on it never get a call. Here is the actual process.
+        </p>
+      </div>
+
+      <ol class="vs__list">
+        {steps.map((s, i) => (
+          <li class="vs__step panel" data-reveal style={`--reveal-delay:${i * 50}ms`}>
+            <span class="vs__n mono">{s.n}</span>
+            <h3 class="vs__h">{s.h}</h3>
+            <p class="vs__b">{s.b}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--band" id="register">
+    <div class="wrap wrap--narrow">
+      <div class="sechead">
+        <p class="eyebrow">Registration</p>
+        <h2>Tell us what you do.</h2>
+        <p>
+          Four fields are required; the rest help us match you to the right job. The
+          link to your work is the part we look at first.
+        </p>
+      </div>
+
+      <VendorForm />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sechead">
+        <p class="eyebrow">Looking for a job instead?</p>
+        <h2>This page is for contractors.</h2>
+        <p>
+          If you want a role with the studio rather than work by the day — creative,
+          camera, edit, marketing or operations — that is a different page, and a
+          different conversation.
+        </p>
+      </div>
+      <p class="vcta">
+        <a class="btn btn--ghost btn--lg" href="/careers/">See open roles at Beyond Pixel Studio</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shead {
+    position: relative; z-index: 2;
+    padding-block: clamp(40px, 6vw, 76px) clamp(32px, 5vw, 60px);
+  }
+  .shead__badge { margin-bottom: var(--s-4); }
+  .shead h1 { max-width: 20ch; }
+  .shead__lead { margin-top: var(--s-4); max-width: 62ch; }
+  .shead__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
+
+  /* The form reads as a column, not a full-width sheet — a 1200px-wide form is
+     a scan across the monitor for every row. */
+  .wrap--narrow { max-width: 820px; }
+
+  .vk__grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 620px) { .vk__grid { grid-template-columns: repeat(2, 1fr); } }
+  .vk__card { padding: var(--s-4); display: grid; gap: var(--s-2); align-content: start; }
+  .vk__h { margin: 0; font-size: 1.05rem; color: var(--text); }
+  .vk__b { margin: 0; font-size: .92rem; line-height: 1.65; color: var(--text-muted); }
+
+  .vs__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  @media (min-width: 760px) { .vs__list { grid-template-columns: repeat(4, 1fr); } }
+  .vs__step { padding: var(--s-4); display: grid; gap: var(--s-2); align-content: start; }
+  .vs__n { font-size: 12px; color: var(--ember-text); letter-spacing: .1em; }
+  .vs__h { margin: 0; font-size: 1rem; color: var(--text); line-height: 1.3; }
+  .vs__b { margin: 0; font-size: .9rem; line-height: 1.6; color: var(--text-muted); }
+
+  .vcta { margin: 0; }
+</style>

@@ -1,0 +1,396 @@
+---
+/**
+ * Vendor and freelancer registration.
+ *
+ * THIS ONE ACTUALLY SUBMITS, which makes it the odd one out on this site.
+ * EnquiryForm composes a WhatsApp message and sends nothing; this posts to the
+ * Apps Script and stays on the page. The reason is the length: somebody who has
+ * just filled in twelve fields should not be thrown into WhatsApp to send it
+ * themselves, and a registration is a record to file rather than a conversation
+ * to start.
+ *
+ * WHAT IS DELIBERATELY NOT ASKED FOR: PAN, Aadhaar, bank details, and the GSTIN
+ * number itself — only whether one exists. The post goes out with mode:'no-cors'
+ * from a public page, so the browser cannot see whether it arrived. That is not
+ * a channel for identity documents. They are collected after selection.
+ *
+ * THE SUCCESS MESSAGE SAYS "sent", NOT "received", for the same reason. An
+ * opaque response cannot tell us the row landed, so the panel claims only what
+ * is true — the browser sent it — and gives WhatsApp as the way to chase it.
+ *
+ * WITHOUT JAVASCRIPT the submit cannot fire, so <noscript> hands over the
+ * WhatsApp link and the phone number instead of leaving a dead button.
+ */
+import { business, wa } from '../data/business.ts';
+
+const fallback = wa('Hello, I would like to register as a vendor / freelancer.');
+
+/* Each kind names the one extra fieldset it reveals. The `panel` id is what the
+   script toggles, so adding a kind is a change here and nowhere else. */
+const KINDS = [
+  { value: 'Freelance crew', panel: 'crew', hint: 'Camera, photo, edit, drone, sound, lights, anchor' },
+  { value: 'Equipment rental', panel: 'kit', hint: 'Camera, lighting, grip, LED wall, sound' },
+  { value: 'Event services', panel: 'event', hint: 'Stage, decor, transport, printing, catering' },
+  { value: 'Post-production studio', panel: 'post', hint: 'Edit, colour, VFX, animation, subtitling, dubbing' },
+];
+---
+
+<form class="vf panel" data-vendor data-wa={business.phone.wa} novalidate>
+  <div class="vf__grid">
+    {/* ---------------------------------------------------------- WHO */}
+    <fieldset class="vf__set">
+      <legend class="vf__legend">About you</legend>
+
+      <p class="vf__field">
+        <label for="vf-name">Your name or business name <span class="vf__req" aria-hidden="true">*</span></label>
+        <input id="vf-name" name="name" type="text" autocomplete="name" required aria-describedby="vf-name-err" />
+        <span class="vf__err" id="vf-name-err" hidden></span>
+      </p>
+
+      <div class="vf__pair">
+        <p class="vf__field">
+          <label for="vf-phone">Phone / WhatsApp <span class="vf__req" aria-hidden="true">*</span></label>
+          <input id="vf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required aria-describedby="vf-phone-err" />
+          <span class="vf__err" id="vf-phone-err" hidden></span>
+        </p>
+        <p class="vf__field">
+          <label for="vf-email">Email <span class="vf__opt">(optional)</span></label>
+          <input id="vf-email" name="email" type="email" autocomplete="email" />
+        </p>
+      </div>
+
+      <div class="vf__pair">
+        <p class="vf__field">
+          <label for="vf-city">Where you are based <span class="vf__req" aria-hidden="true">*</span></label>
+          <input id="vf-city" name="city" type="text" placeholder="e.g. Bhubaneswar" autocomplete="address-level2" required aria-describedby="vf-city-err" />
+          <span class="vf__err" id="vf-city-err" hidden></span>
+        </p>
+        <p class="vf__field">
+          <label for="vf-coverage">Where you will travel to work</label>
+          <select id="vf-coverage" name="coverage">
+            <option value="">Select…</option>
+            <option>My city only</option>
+            <option>Bhubaneswar and Cuttack</option>
+            <option>Anywhere in Odisha</option>
+            <option>Anywhere in India</option>
+          </select>
+        </p>
+      </div>
+    </fieldset>
+
+    {/* --------------------------------------------------------- WHAT */}
+    <fieldset class="vf__set">
+      <legend class="vf__legend">What you do</legend>
+
+      <p class="vf__field">
+        <label for="vf-type">You are registering as <span class="vf__req" aria-hidden="true">*</span></label>
+        <select id="vf-type" name="vendorType" required aria-describedby="vf-type-err">
+          <option value="">Select…</option>
+          {KINDS.map((k) => <option value={k.value} data-panel={k.panel}>{k.value} — {k.hint}</option>)}
+        </select>
+        <span class="vf__err" id="vf-type-err" hidden></span>
+      </p>
+
+      {/* Every panel renders. The script hides the irrelevant ones once the
+          kind is chosen; with no JS all four stay visible and labelled, which
+          is longer but never a form that cannot be completed. */}
+      <div class="vf__panel" data-panel="crew">
+        <p class="vf__field">
+          <label for="vf-crew">Your discipline</label>
+          <input id="vf-crew" name="skillsCrew" type="text" placeholder="e.g. Cinematographer and editor, 2-cam events" />
+        </p>
+      </div>
+
+      <div class="vf__panel" data-panel="kit">
+        <p class="vf__field">
+          <label for="vf-kit">What you rent out</label>
+          <input id="vf-kit" name="skillsKit" type="text" placeholder="e.g. Sony FX3 bodies, Aputure lights, tripods" />
+        </p>
+      </div>
+
+      <div class="vf__panel" data-panel="event">
+        <p class="vf__field">
+          <label for="vf-event">Services you provide</label>
+          <input id="vf-event" name="skillsEvent" type="text" placeholder="e.g. Stage and truss, LED wall, transport" />
+        </p>
+      </div>
+
+      <div class="vf__panel" data-panel="post">
+        <p class="vf__field">
+          <label for="vf-post">Post-production you take on</label>
+          <input id="vf-post" name="skillsPost" type="text" placeholder="e.g. Long-form edit, DaVinci colour, subtitling" />
+        </p>
+      </div>
+
+      <div class="vf__pair">
+        <p class="vf__field">
+          <label for="vf-exp">Years doing this</label>
+          <select id="vf-exp" name="experience">
+            <option value="">Select…</option>
+            <option>Less than 1 year</option>
+            <option>1–3 years</option>
+            <option>3–5 years</option>
+            <option>5–10 years</option>
+            <option>More than 10 years</option>
+          </select>
+        </p>
+        <p class="vf__field">
+          <label for="vf-avail">Availability</label>
+          <select id="vf-avail" name="availability">
+            <option value="">Select…</option>
+            <option>Full-time freelance</option>
+            <option>Weekends and evenings</option>
+            <option>Project by project</option>
+            <option>On call</option>
+          </select>
+        </p>
+      </div>
+
+      <p class="vf__field">
+        <label for="vf-portfolio">Link to your work <span class="vf__opt">(showreel, Drive, Instagram, website)</span></label>
+        <input id="vf-portfolio" name="portfolioUrl" type="url" inputmode="url" placeholder="https://" aria-describedby="vf-portfolio-help" />
+        <span class="vf__help" id="vf-portfolio-help">This is the part we look at first. One link is enough.</span>
+      </p>
+
+      <p class="vf__field">
+        <label for="vf-own">Equipment you own and bring</label>
+        <input id="vf-own" name="ownEquipment" type="text" placeholder="e.g. Own camera and lights, or none" />
+      </p>
+    </fieldset>
+
+    {/* ------------------------------------------------------- WORKING */}
+    <fieldset class="vf__set">
+      <legend class="vf__legend">Working together</legend>
+
+      <div class="vf__pair">
+        <p class="vf__field">
+          <label for="vf-rate">Your rate <span class="vf__opt">(a range is fine)</span></label>
+          <input id="vf-rate" name="rate" type="text" placeholder="e.g. ₹4,000–6,000 per day" />
+        </p>
+        <p class="vf__field">
+          <label for="vf-gst">Are you GST registered?</label>
+          <select id="vf-gst" name="gstRegistered">
+            <option value="">Select…</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </p>
+      </div>
+
+      <p class="vf__field">
+        <label for="vf-msg">Anything else we should know</label>
+        <textarea id="vf-msg" name="message" rows="3" placeholder="Work you are proud of, who you have shot for, what you would rather not do."></textarea>
+      </p>
+    </fieldset>
+  </div>
+
+  <div class="vf__foot">
+    <button class="btn btn--lg" type="submit" data-vf-submit>Register</button>
+    <p class="vf__note">
+      We do not ask for PAN, Aadhaar, bank details or your GST number here. If we
+      work together, those come later — directly, not through this page.
+    </p>
+  </div>
+
+  <noscript>
+    <p class="vf__note vf__note--ns">
+      This form needs JavaScript to send.
+      <a href={fallback}>Register over WhatsApp</a> instead, or call
+      <a href={business.phone.href}>{business.phone.display}</a>.
+    </p>
+  </noscript>
+</form>
+
+{/* Replaces the form on success. aria-live so it is announced rather than
+    silently swapped for anyone not watching the screen. */}
+<div class="vf__done panel" data-vendor-done hidden role="status" aria-live="polite">
+  <h3 class="vf__doneh">Sent. Thank you.</h3>
+  <p>
+    Your details are on their way to us. We go through registrations in batches
+    and get in touch when a job matches what you do — that can take a few weeks,
+    and we will not spam you in the meantime.
+  </p>
+  <p class="vf__note">
+    Heard nothing and want to check it arrived? Message us on
+    <a href={fallback}>WhatsApp</a> or call
+    <a href={business.phone.href}>{business.phone.display}</a>.
+  </p>
+</div>
+
+<script>
+  import { dispatchLead } from '../scripts/lead-dispatcher.ts';
+
+  const form = document.querySelector<HTMLFormElement>('[data-vendor]');
+  const done = document.querySelector<HTMLElement>('[data-vendor-done]');
+
+  if (form && done) {
+    const panels = Array.from(form.querySelectorAll<HTMLElement>('.vf__panel'));
+    const kind = document.getElementById('vf-type') as HTMLSelectElement;
+
+    /* Progressive disclosure, applied only once JS is running. The panels start
+       visible in the markup so a no-JS visitor sees a complete form. */
+    const showPanel = () => {
+      const want = kind.selectedOptions[0]?.dataset.panel ?? null;
+      panels.forEach((p) => {
+        const on = want === null || p.dataset.panel === want;
+        p.hidden = !on;
+        /* A hidden input still submits, and an empty one would overwrite a
+           real answer if somebody switched kind halfway. Disabled keeps it out
+           of the payload entirely. */
+        p.querySelectorAll<HTMLInputElement>('input').forEach((i) => (i.disabled = !on));
+      });
+    };
+    kind.addEventListener('change', showPanel);
+    showPanel();
+
+    const fieldError = (input: HTMLInputElement | HTMLSelectElement, msg: string | null) => {
+      const err = document.getElementById(`${input.id}-err`);
+      if (!err) return;
+      if (msg) {
+        err.textContent = msg;
+        err.hidden = false;
+        input.setAttribute('aria-invalid', 'true');
+      } else {
+        err.hidden = true;
+        input.removeAttribute('aria-invalid');
+      }
+    };
+
+    const required = ['vf-name', 'vf-phone', 'vf-city', 'vf-type'];
+    required.forEach((id) => {
+      const el = document.getElementById(id) as HTMLInputElement | null;
+      el?.addEventListener('input', () => el.value.trim() && fieldError(el, null));
+      el?.addEventListener('change', () => el.value.trim() && fieldError(el, null));
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      let firstBad: HTMLElement | null = null;
+      for (const id of required) {
+        const el = document.getElementById(id) as HTMLInputElement;
+        const ok = el.value.trim().length > 0;
+        fieldError(el, ok ? null : 'This one we do need.');
+        if (!ok && !firstBad) firstBad = el;
+      }
+      /* A phone number is the only way we can reach most of these people, so it
+         is checked for shape as well as presence — 10 digits, ignoring spaces,
+         dashes and a +91. */
+      const phone = document.getElementById('vf-phone') as HTMLInputElement;
+      const digits = phone.value.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
+      if (phone.value.trim() && digits.length !== 10) {
+        fieldError(phone, 'That does not look like a 10-digit number.');
+        if (!firstBad) firstBad = phone;
+      }
+      if (firstBad) {
+        firstBad.focus();
+        firstBad.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        return;
+      }
+
+      const val = (n: string) => {
+        const el = form.elements.namedItem(n) as HTMLInputElement | null;
+        return el && !el.disabled ? el.value.trim() : '';
+      };
+      const skills = val('skillsCrew') || val('skillsKit') || val('skillsEvent') || val('skillsPost');
+
+      /* The same details twice, on purpose. The named keys are for the day the
+         Apps Script learns them; `message` is what the sheet writes TODAY, so
+         nothing is lost either way. See lead-dispatcher.ts. */
+      const summary = [
+        `Registering as: ${val('vendorType')}`,
+        skills && `Does: ${skills}`,
+        val('experience') && `Experience: ${val('experience')}`,
+        val('city') && `Based: ${val('city')}`,
+        val('coverage') && `Travels: ${val('coverage')}`,
+        val('portfolioUrl') && `Work: ${val('portfolioUrl')}`,
+        val('ownEquipment') && `Owns: ${val('ownEquipment')}`,
+        val('rate') && `Rate: ${val('rate')}`,
+        val('availability') && `Available: ${val('availability')}`,
+        val('gstRegistered') && `GST registered: ${val('gstRegistered')}`,
+        val('message') && `\nNotes: ${val('message')}`,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      dispatchLead({
+        formType: 'vendor_registration',
+        name: val('name'),
+        phone: val('phone'),
+        email: val('email'),
+        /* Mirrored into `service` because that column already exists in the
+           sheet, so the kind is filterable before any script change. */
+        service: `Vendor — ${val('vendorType')}`,
+        vendorType: val('vendorType'),
+        vendorSkills: skills,
+        city: val('city'),
+        coverage: val('coverage'),
+        experience: val('experience'),
+        portfolioUrl: val('portfolioUrl'),
+        ownEquipment: val('ownEquipment'),
+        rate: val('rate'),
+        availability: val('availability'),
+        gstRegistered: val('gstRegistered'),
+        message: summary,
+        pageUrl: window.location.href,
+      });
+
+      form.hidden = true;
+      done.hidden = false;
+      done.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      (done.querySelector('h3') as HTMLElement | null)?.focus?.();
+    });
+  }
+</script>
+
+<style>
+  .vf { padding: clamp(var(--s-4), 3vw, var(--s-6)); }
+  .vf__grid { display: grid; gap: var(--s-5); }
+
+  .vf__set { border: 0; margin: 0; padding: 0; display: grid; gap: var(--s-4); min-width: 0; }
+  .vf__legend {
+    padding: 0; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ember-text); font-weight: 600;
+  }
+
+  .vf__field { display: grid; gap: var(--s-2); margin: 0; min-width: 0; }
+  .vf__pair { display: grid; gap: var(--s-4); }
+  @media (min-width: 620px) { .vf__pair { grid-template-columns: 1fr 1fr; } }
+
+  .vf label { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+  .vf__req { color: var(--ember-text); }
+  .vf__opt { font-weight: 400; color: var(--text-muted); }
+  .vf__help { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .vf__err { font-size: 12px; color: var(--ember-text); }
+
+  .vf input,
+  .vf select,
+  .vf textarea {
+    width: 100%; min-height: 46px;
+    padding: 11px var(--s-3);
+    font: inherit; font-size: var(--fs-sm);
+    color: var(--text);
+    background: var(--void);
+    border: 1px solid rgb(255 255 255 / .12);
+    border-radius: var(--r-sm);
+  }
+  .vf textarea { min-height: 92px; resize: vertical; }
+  .vf input:focus-visible,
+  .vf select:focus-visible,
+  .vf textarea:focus-visible {
+    outline: 2px solid var(--ember-text);
+    outline-offset: 2px;
+    border-color: transparent;
+  }
+  .vf [aria-invalid='true'] { border-color: var(--ember-text); }
+  .vf ::placeholder { color: var(--text-dim); }
+
+  .vf__foot { margin-top: var(--s-5); display: grid; gap: var(--s-3); justify-items: start; }
+  .vf__note { margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.6; max-width: 60ch; }
+  .vf__note a { color: var(--ember-text); }
+  .vf__note--ns { margin-top: var(--s-3); }
+
+  .vf__done { padding: clamp(var(--s-4), 3vw, var(--s-6)); display: grid; gap: var(--s-3); }
+  .vf__doneh { margin: 0; font-size: 1.3rem; color: var(--text); }
+  .vf__done p { margin: 0; color: var(--text-muted); line-height: 1.7; max-width: 62ch; }
+</style>

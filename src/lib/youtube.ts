@@ -64,6 +64,10 @@ const bestThumb = (t: Record<string, { url: string }> | undefined): string =>
  * Fetch one playlist's title, total count and first `max` videos.
  * Returns null on any failure — see the header.
  */
+/** Per-request ceiling. Generous for a healthy API, short enough that five
+    dead playlists cost seconds rather than a hung build. */
+const TIMEOUT_MS = 8000;
+
 export async function fetchPlaylist(id: string, max: number): Promise<PlaylistData | null> {
   const key = process.env.YOUTUBE_API_KEY;
   if (!key) return null;
@@ -74,10 +78,25 @@ export async function fetchPlaylist(id: string, max: number): Promise<PlaylistDa
        `playlistItems.list` cannot: its `totalResults` counts what the page
        size allowed, not what the playlist holds. Without the real total the
        "see all N" link would lie. Two units of quota out of 10,000 a day. */
+    /* EVERY FETCH HERE IS ON A TIMEOUT, and that is not belt-and-braces.
+       Without one, a build hangs forever the moment the API accepts the
+       connection and then goes quiet — which is a different failure from the
+       403 this code was written against, and far worse: 403 returns in
+       milliseconds and the build carries on with the seed, while a silent
+       socket blocks node with no output and no CPU until somebody kills it.
+       Hit on 2026-11-19; the build sat at 0% CPU for three minutes.
+
+       It matters most where nobody is watching. GitHub Actions would burn its
+       whole job allowance on one stalled socket, and the nightly deploy would
+       simply stop producing builds. The catch below already treats any failure
+       as "use the seed", so an abort lands exactly where a 403 does. */
     const [metaRes, itemsRes] = await Promise.all([
-      fetch(`${API}/playlists?part=snippet,contentDetails&id=${id}&key=${key}`),
+      fetch(`${API}/playlists?part=snippet,contentDetails&id=${id}&key=${key}`, {
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      }),
       fetch(
-        `${API}/playlistItems?part=snippet&playlistId=${id}&maxResults=${max}&key=${key}`
+        `${API}/playlistItems?part=snippet&playlistId=${id}&maxResults=${max}&key=${key}`,
+        { signal: AbortSignal.timeout(TIMEOUT_MS) }
       ),
     ]);
 

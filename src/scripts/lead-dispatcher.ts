@@ -1,7 +1,7 @@
 import { business } from '../data/business.ts';
 
 export interface LeadPayload {
-  formType: 'portfolio_download' | 'general_enquiry';
+  formType: 'portfolio_download' | 'general_enquiry' | 'vendor_registration';
   name: string;
   phone: string;
   email: string;
@@ -14,6 +14,38 @@ export interface LeadPayload {
   timestamp?: string;
   /** Where the visit began - saved by the script in the site's <head>. */
   gclid?: string;
+
+  /* ---------------------------------------------------------------------
+     VENDOR REGISTRATION ONLY.
+
+     Extra keys on the same payload, additive on purpose: the Apps Script
+     appends the columns it knows, so until it is taught these names they are
+     ignored — and the same details ALSO go out inside `message` as labelled
+     lines, which the script already writes. A registration is never lost
+     waiting on a script change, and gains real columns the day it happens.
+
+     NOTHING FINANCIAL IS HERE. No PAN, no Aadhaar, no bank details, and no
+     GSTIN — only whether one exists. This payload is posted from a public
+     page with mode:'no-cors', so the browser cannot even see whether it
+     arrived; that is not a channel for identity documents. Those are
+     collected after selection, over a channel where both sides can confirm. */
+  /** Which of the four vendor kinds. Also sent as `service`, a column the sheet has. */
+  vendorType?: string;
+  /** Discipline, equipment list, service type or post-production specialities. */
+  vendorSkills?: string;
+  city?: string;
+  /** Where they will travel to work. */
+  coverage?: string;
+  experience?: string;
+  /** Showreel, Drive folder, Instagram or site. */
+  portfolioUrl?: string;
+  /** What they own and bring to a job. */
+  ownEquipment?: string;
+  /** A range, in their own words. Never a quoted rate. */
+  rate?: string;
+  availability?: string;
+  /** 'Yes' or 'No' ONLY — never the number. */
+  gstRegistered?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
@@ -55,7 +87,12 @@ export async function dispatchLead(lead: LeadPayload): Promise<void> {
   try {
     if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
       (window as any).fbq('track', 'Lead', {
-        content_name: lead.formType === 'portfolio_download' ? '2026 Portfolio PDF Download' : 'Website Enquiry',
+        content_name:
+          lead.formType === 'portfolio_download'
+            ? '2026 Portfolio PDF Download'
+            : lead.formType === 'vendor_registration'
+              ? 'Vendor Registration'
+              : 'Website Enquiry',
         content_category: lead.service || lead.purpose || 'Media Production',
         value: 0,
         currency: 'INR',
