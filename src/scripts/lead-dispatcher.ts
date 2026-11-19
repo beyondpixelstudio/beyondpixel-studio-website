@@ -44,6 +44,16 @@ export interface LeadPayload {
   /** A range, in their own words. Never a quoted rate. */
   rate?: string;
   availability?: string;
+  /* Per-kind answers. Each is asked of ONE vendor kind only, so most rows
+     carry a few of these and leave the rest empty — which is correct, not
+     missing data: an equipment company has no turnaround and a post house has
+     no delivery policy. */
+  deliverySetup?: string;
+  rentalBasis?: string;
+  capacity?: string;
+  pastWork?: string;
+  software?: string;
+  turnaround?: string;
   /** 'Yes' or 'No' ONLY — never the number. */
   gstRegistered?: string;
   utmSource?: string;

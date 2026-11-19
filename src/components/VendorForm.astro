@@ -54,8 +54,9 @@ const KINDS = [
           <span class="vf__err" id="vf-phone-err" hidden></span>
         </p>
         <p class="vf__field">
-          <label for="vf-email">Email <span class="vf__opt">(optional)</span></label>
-          <input id="vf-email" name="email" type="email" autocomplete="email" />
+          <label for="vf-email">Email <span class="vf__req" aria-hidden="true">*</span></label>
+          <input id="vf-email" name="email" type="email" autocomplete="email" required aria-describedby="vf-email-err" />
+          <span class="vf__err" id="vf-email-err" hidden></span>
         </p>
       </div>
 
@@ -94,67 +95,123 @@ const KINDS = [
       {/* Every panel renders. The script hides the irrelevant ones once the
           kind is chosen; with no JS all four stay visible and labelled, which
           is longer but never a form that cannot be completed. */}
+      {/* One panel per kind. Each asks only what that kind can answer: an
+          equipment company has no "own equipment" to declare, and a post house
+          is booked on turnaround rather than availability. The first field in
+          each is required — it is the one that says what they actually do. */}
       <div class="vf__panel" data-panel="crew">
         <p class="vf__field">
-          <label for="vf-crew">Your discipline</label>
-          <input id="vf-crew" name="skillsCrew" type="text" placeholder="e.g. Cinematographer and editor, 2-cam events" />
+          <label for="vf-crew">Your discipline <span class="vf__req" aria-hidden="true">*</span></label>
+          <input id="vf-crew" name="skillsCrew" type="text" data-required placeholder="e.g. Cinematographer and editor, 2-cam events" aria-describedby="vf-crew-err" />
+          <span class="vf__err" id="vf-crew-err" hidden></span>
         </p>
+        <div class="vf__pair">
+          <p class="vf__field">
+            <label for="vf-own">Equipment you own and bring</label>
+            <input id="vf-own" name="ownEquipment" type="text" placeholder="e.g. Own camera and lights, or none" />
+          </p>
+          <p class="vf__field">
+            <label for="vf-avail">Availability</label>
+            <select id="vf-avail" name="availability">
+              <option value="">Select…</option>
+              <option>Full-time freelance</option>
+              <option>Weekends and evenings</option>
+              <option>Project by project</option>
+              <option>On call</option>
+            </select>
+          </p>
+        </div>
       </div>
 
       <div class="vf__panel" data-panel="kit">
         <p class="vf__field">
-          <label for="vf-kit">What you rent out</label>
-          <input id="vf-kit" name="skillsKit" type="text" placeholder="e.g. Sony FX3 bodies, Aputure lights, tripods" />
+          <label for="vf-kit">What you rent out <span class="vf__req" aria-hidden="true">*</span></label>
+          <input id="vf-kit" name="skillsKit" type="text" data-required placeholder="e.g. Sony FX3 bodies, Aputure lights, LED wall" aria-describedby="vf-kit-err" />
+          <span class="vf__err" id="vf-kit-err" hidden></span>
         </p>
+        <div class="vf__pair">
+          <p class="vf__field">
+            <label for="vf-delivery">Do you deliver and set up?</label>
+            <select id="vf-delivery" name="deliverySetup">
+              <option value="">Select…</option>
+              <option>Yes, delivery and setup included</option>
+              <option>Yes, delivery only</option>
+              <option>Yes, charged extra</option>
+              <option>No, collection from us</option>
+            </select>
+          </p>
+          <p class="vf__field">
+            <label for="vf-basis">How you rent</label>
+            <select id="vf-basis" name="rentalBasis">
+              <option value="">Select…</option>
+              <option>Per day</option>
+              <option>Per event</option>
+              <option>Weekly</option>
+              <option>Monthly</option>
+            </select>
+          </p>
+        </div>
       </div>
 
       <div class="vf__panel" data-panel="event">
         <p class="vf__field">
-          <label for="vf-event">Services you provide</label>
-          <input id="vf-event" name="skillsEvent" type="text" placeholder="e.g. Stage and truss, LED wall, transport" />
+          <label for="vf-event">Services you provide <span class="vf__req" aria-hidden="true">*</span></label>
+          <input id="vf-event" name="skillsEvent" type="text" data-required placeholder="e.g. Stage and truss, LED wall, transport" aria-describedby="vf-event-err" />
+          <span class="vf__err" id="vf-event-err" hidden></span>
         </p>
+        <div class="vf__pair">
+          <p class="vf__field">
+            <label for="vf-capacity">Largest event you can handle</label>
+            <input id="vf-capacity" name="capacity" type="text" placeholder="e.g. Up to 2,000 guests" />
+          </p>
+          <p class="vf__field">
+            <label for="vf-past">Events or clients you have worked</label>
+            <input id="vf-past" name="pastWork" type="text" placeholder="e.g. KIIT convocation, NALCO foundation day" />
+          </p>
+        </div>
       </div>
 
       <div class="vf__panel" data-panel="post">
         <p class="vf__field">
-          <label for="vf-post">Post-production you take on</label>
-          <input id="vf-post" name="skillsPost" type="text" placeholder="e.g. Long-form edit, DaVinci colour, subtitling" />
+          <label for="vf-post">Post-production you take on <span class="vf__req" aria-hidden="true">*</span></label>
+          <input id="vf-post" name="skillsPost" type="text" data-required placeholder="e.g. Long-form edit, DaVinci colour, subtitling" aria-describedby="vf-post-err" />
+          <span class="vf__err" id="vf-post-err" hidden></span>
         </p>
+        <div class="vf__pair">
+          <p class="vf__field">
+            <label for="vf-software">Software you work in</label>
+            <input id="vf-software" name="software" type="text" placeholder="e.g. Premiere, DaVinci Resolve, After Effects" />
+          </p>
+          <p class="vf__field">
+            <label for="vf-turnaround">Typical turnaround</label>
+            <select id="vf-turnaround" name="turnaround">
+              <option value="">Select…</option>
+              <option>Same day</option>
+              <option>2–3 days</option>
+              <option>Within a week</option>
+              <option>1–2 weeks</option>
+              <option>Depends on the job</option>
+            </select>
+          </p>
+        </div>
       </div>
 
-      <div class="vf__pair">
-        <p class="vf__field">
-          <label for="vf-exp">Years doing this</label>
-          <select id="vf-exp" name="experience">
-            <option value="">Select…</option>
-            <option>Less than 1 year</option>
-            <option>1–3 years</option>
-            <option>3–5 years</option>
-            <option>5–10 years</option>
-            <option>More than 10 years</option>
-          </select>
-        </p>
-        <p class="vf__field">
-          <label for="vf-avail">Availability</label>
-          <select id="vf-avail" name="availability">
-            <option value="">Select…</option>
-            <option>Full-time freelance</option>
-            <option>Weekends and evenings</option>
-            <option>Project by project</option>
-            <option>On call</option>
-          </select>
-        </p>
-      </div>
+      <p class="vf__field">
+        <label for="vf-exp">Years doing this</label>
+        <select id="vf-exp" name="experience">
+          <option value="">Select…</option>
+          <option>Less than 1 year</option>
+          <option>1–3 years</option>
+          <option>3–5 years</option>
+          <option>5–10 years</option>
+          <option>More than 10 years</option>
+        </select>
+      </p>
 
       <p class="vf__field">
         <label for="vf-portfolio">Link to your work <span class="vf__opt">(showreel, Drive, Instagram, website)</span></label>
         <input id="vf-portfolio" name="portfolioUrl" type="url" inputmode="url" placeholder="https://" aria-describedby="vf-portfolio-help" />
         <span class="vf__help" id="vf-portfolio-help">This is the part we look at first. One link is enough.</span>
-      </p>
-
-      <p class="vf__field">
-        <label for="vf-own">Equipment you own and bring</label>
-        <input id="vf-own" name="ownEquipment" type="text" placeholder="e.g. Own camera and lights, or none" />
       </p>
     </fieldset>
 
@@ -237,7 +294,9 @@ const KINDS = [
         /* A hidden input still submits, and an empty one would overwrite a
            real answer if somebody switched kind halfway. Disabled keeps it out
            of the payload entirely. */
-        p.querySelectorAll<HTMLInputElement>('input').forEach((i) => (i.disabled = !on));
+        p.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select').forEach(
+          (i) => (i.disabled = !on)
+        );
       });
     };
     kind.addEventListener('change', showPanel);
@@ -256,18 +315,29 @@ const KINDS = [
       }
     };
 
-    const required = ['vf-name', 'vf-phone', 'vf-city', 'vf-type'];
-    required.forEach((id) => {
-      const el = document.getElementById(id) as HTMLInputElement | null;
-      el?.addEventListener('input', () => el.value.trim() && fieldError(el, null));
-      el?.addEventListener('change', () => el.value.trim() && fieldError(el, null));
+    const BASE_REQUIRED = ['vf-name', 'vf-phone', 'vf-email', 'vf-city', 'vf-type'];
+
+    /* Base fields, plus whatever the CHOSEN kind marks data-required. A hidden
+       panel's field is disabled, so it can never hold the form hostage for an
+       answer the person was never shown. */
+    const requiredNow = () => [
+      ...BASE_REQUIRED,
+      ...Array.from(form.querySelectorAll<HTMLInputElement>('.vf__panel [data-required]'))
+        .filter((el) => !el.disabled)
+        .map((el) => el.id),
+    ];
+
+    form.querySelectorAll<HTMLInputElement>('input, select').forEach((el) => {
+      const clear = () => el.value.trim() && fieldError(el, null);
+      el.addEventListener('input', clear);
+      el.addEventListener('change', clear);
     });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
 
       let firstBad: HTMLElement | null = null;
-      for (const id of required) {
+      for (const id of requiredNow()) {
         const el = document.getElementById(id) as HTMLInputElement;
         const ok = el.value.trim().length > 0;
         fieldError(el, ok ? null : 'This one we do need.');
@@ -276,6 +346,16 @@ const KINDS = [
       /* A phone number is the only way we can reach most of these people, so it
          is checked for shape as well as presence — 10 digits, ignoring spaces,
          dashes and a +91. */
+      /* Email is required now because the studio replies to it — a wrong
+         address means a registration nobody can acknowledge. Shape only: this
+         cannot prove the inbox exists, and pretending otherwise would be
+         worse than letting a typo through. */
+      const email = document.getElementById('vf-email') as HTMLInputElement;
+      if (email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) {
+        fieldError(email, 'That does not look like an email address.');
+        if (!firstBad) firstBad = email;
+      }
+
       const phone = document.getElementById('vf-phone') as HTMLInputElement;
       const digits = phone.value.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
       if (phone.value.trim() && digits.length !== 10) {
@@ -305,8 +385,14 @@ const KINDS = [
         val('coverage') && `Travels: ${val('coverage')}`,
         val('portfolioUrl') && `Work: ${val('portfolioUrl')}`,
         val('ownEquipment') && `Owns: ${val('ownEquipment')}`,
-        val('rate') && `Rate: ${val('rate')}`,
         val('availability') && `Available: ${val('availability')}`,
+        val('deliverySetup') && `Delivery and setup: ${val('deliverySetup')}`,
+        val('rentalBasis') && `Rents: ${val('rentalBasis')}`,
+        val('capacity') && `Capacity: ${val('capacity')}`,
+        val('pastWork') && `Past work: ${val('pastWork')}`,
+        val('software') && `Software: ${val('software')}`,
+        val('turnaround') && `Turnaround: ${val('turnaround')}`,
+        val('rate') && `Rate: ${val('rate')}`,
         val('gstRegistered') && `GST registered: ${val('gstRegistered')}`,
         val('message') && `\nNotes: ${val('message')}`,
       ]
@@ -330,6 +416,12 @@ const KINDS = [
         ownEquipment: val('ownEquipment'),
         rate: val('rate'),
         availability: val('availability'),
+        deliverySetup: val('deliverySetup'),
+        rentalBasis: val('rentalBasis'),
+        capacity: val('capacity'),
+        pastWork: val('pastWork'),
+        software: val('software'),
+        turnaround: val('turnaround'),
         gstRegistered: val('gstRegistered'),
         message: summary,
         pageUrl: window.location.href,
